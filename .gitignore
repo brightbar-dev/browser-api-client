@@ -1,0 +1,7 @@
+node_modules/
+.wxt/
+.output/
+*.zip
+*.crx
+*.pem
+.DS_Store

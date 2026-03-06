@@ -1,0 +1,22 @@
+{
+  "name": "browser-api-client",
+  "description": "Lightweight API client right in your browser — build requests, inspect responses, manage environments. No desktop app needed.",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt --browser firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build --browser firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip --browser firefox",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9",
+    "wxt": "^0.20.5"
+  }
+}

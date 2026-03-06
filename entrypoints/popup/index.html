@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser API Client</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="bac-app">
+    <header class="bac-header">
+      <h1>API Client</h1>
+      <div class="bac-env-select">
+        <select id="env-selector" title="Environment">
+          <option value="">No Environment</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Request builder -->
+    <section class="bac-request">
+      <div class="bac-url-bar">
+        <select id="method-select" class="bac-method">
+          <option>GET</option>
+          <option>POST</option>
+          <option>PUT</option>
+          <option>PATCH</option>
+          <option>DELETE</option>
+          <option>HEAD</option>
+          <option>OPTIONS</option>
+        </select>
+        <input type="text" id="url-input" class="bac-url-input" placeholder="https://api.example.com/endpoint" />
+        <button id="send-btn" class="bac-send-btn">Send</button>
+      </div>
+
+      <!-- Tabs: Params, Headers, Auth, Body -->
+      <div class="bac-tabs">
+        <button class="bac-tab active" data-tab="params">Params</button>
+        <button class="bac-tab" data-tab="headers">Headers</button>
+        <button class="bac-tab" data-tab="auth">Auth</button>
+        <button class="bac-tab" data-tab="body">Body</button>
+      </div>
+
+      <div class="bac-tab-content" id="tab-params">
+        <div id="params-list" class="bac-kv-list"></div>
+        <button class="bac-add-row" id="add-param">+ Add Param</button>
+      </div>
+
+      <div class="bac-tab-content" id="tab-headers" style="display:none">
+        <div id="headers-list" class="bac-kv-list"></div>
+        <button class="bac-add-row" id="add-header">+ Add Header</button>
+      </div>
+
+      <div class="bac-tab-content" id="tab-auth" style="display:none">
+        <select id="auth-type" class="bac-auth-type">
+          <option value="none">No Auth</option>
+          <option value="bearer">Bearer Token</option>
+          <option value="basic">Basic Auth</option>
+          <option value="api-key">API Key</option>
+        </select>
+        <div id="auth-fields"></div>
+      </div>
+
+      <div class="bac-tab-content" id="tab-body" style="display:none">
+        <select id="body-type" class="bac-body-type">
+          <option value="none">None</option>
+          <option value="json">JSON</option>
+          <option value="form">Form Data</option>
+          <option value="text">Raw Text</option>
+        </select>
+        <textarea id="body-input" class="bac-body-input" placeholder="Request body..." rows="5"></textarea>
+      </div>
+    </section>
+
+    <!-- Response viewer -->
+    <section class="bac-response" id="response-section" style="display:none">
+      <div class="bac-response-bar">
+        <span id="response-status" class="bac-status"></span>
+        <span id="response-time" class="bac-time"></span>
+        <span id="response-size" class="bac-size"></span>
+        <div class="bac-response-actions">
+          <button id="copy-response" class="bac-icon-btn" title="Copy response">Copy</button>
+          <button id="export-curl" class="bac-icon-btn" title="Export as cURL">cURL</button>
+        </div>
+      </div>
+      <div class="bac-response-tabs">
+        <button class="bac-tab active" data-rtab="body">Body</button>
+        <button class="bac-tab" data-rtab="headers">Headers</button>
+      </div>
+      <pre id="response-body" class="bac-response-body"></pre>
+      <div id="response-headers" class="bac-response-headers" style="display:none"></div>
+    </section>
+
+    <footer class="bac-footer">
+      <span class="bac-version">v0.1.0</span>
+      <a href="#" id="options-link" class="bac-options-link">Settings</a>
+    </footer>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>
