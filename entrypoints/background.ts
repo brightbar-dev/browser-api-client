@@ -1,4 +1,10 @@
+import ExtPay from 'extpay';
+import { EXTPAY_ID } from '@/utils/payment';
+
 export default defineBackground(() => {
+  const extpay = ExtPay(EXTPAY_ID);
+  extpay.startBackground();
+
   // Set defaults on install
   browser.runtime.onInstalled.addListener(async (details) => {
     if (details.reason === 'install') {
@@ -9,7 +15,6 @@ export default defineBackground(() => {
         collections: [],
         activeEnvId: null,
         maxHistory: 100,
-        proUnlocked: false,
       });
     }
   });
@@ -97,6 +102,30 @@ export default defineBackground(() => {
 
     if (msg.action === 'saveCollections') {
       return browser.storage.local.set({ collections: msg.collections });
+    }
+
+    if (msg.action === 'getProStatus') {
+      return extpay.getUser().then(user => ({
+        paid: user.paid,
+        paidAt: user.paidAt,
+        trialStartedAt: user.trialStartedAt,
+      })).catch(() => ({
+        paid: false,
+        paidAt: null,
+        trialStartedAt: null,
+      }));
+    }
+
+    if (msg.action === 'openPayment') {
+      return extpay.openPaymentPage();
+    }
+
+    if (msg.action === 'openTrial') {
+      return extpay.openTrialPage('7-day free trial');
+    }
+
+    if (msg.action === 'openLogin') {
+      return extpay.openLoginPage();
     }
   });
 });

@@ -18,5 +18,8 @@
     "typescript": "^5.8.2",
     "vitest": "^3.0.9",
     "wxt": "^0.20.5"
+  },
+  "dependencies": {
+    "extpay": "^3.1.2"
   }
 }
