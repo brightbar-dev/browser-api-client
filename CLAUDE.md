@@ -13,6 +13,8 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - **utils/environment.ts** — Environment variable interpolation (`{{var}}` syntax), variable extraction, merging.
 - **utils/export.ts** — Export requests as cURL, JavaScript fetch(), or Python requests.
 - **utils/history.ts** — Request history sorting, filtering (method, URL, status), truncation.
+- **utils/collections.ts** — Named request groups: create, add/remove/update/move/search/duplicate.
+- **utils/import-export.ts** — Postman v2.1 import/export, native backup/restore, format detection.
 
 ## Key Implementation Details
 - Requests execute via background service worker (bypasses page CORS restrictions)
@@ -21,7 +23,9 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - Response body auto-formats JSON with pretty-print
 - Export to cURL, fetch(), or Python requests
 - History auto-saves with configurable max entries
-- Data export/import via JSON for portability
+- Collections: named groups of saved requests with search and duplicate
+- Import/export: Postman v2.1 collections and environments, native backup format
+- Auto-detects import format (Postman collection, Postman environment, or native)
 - All DOM elements prefixed with `bac-` to avoid host page conflicts
 
 ## Monetization
@@ -44,8 +48,8 @@ npm run test:watch   # Watch mode
 ```bash
 npm test
 ```
-- 61 unit tests via Vitest + WXT testing plugin
-- 4 test files: request (31), environment (12), export (9), history (9)
+- 96 unit tests via Vitest + WXT testing plugin
+- 6 test files: request (31), environment (12), export (9), history (9), collections (19), import-export (16)
 - All pure utility logic, no browser API mocking needed
 
 ## Conventions
