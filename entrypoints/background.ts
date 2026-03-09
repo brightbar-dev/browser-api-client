@@ -1,9 +1,20 @@
 import ExtPay from 'extpay';
-import { EXTPAY_ID } from '@/utils/payment';
+import { EXTPAY_ID, resolveProStatus, maxHistory, maxEnvironments, collectionsEnabled } from '@/utils/payment';
+import type { PaymentUser } from '@/utils/payment';
 
 export default defineBackground(() => {
   const extpay = ExtPay(EXTPAY_ID);
   extpay.startBackground();
+
+  /** Resolve current pro-unlocked status, defaulting to false on error. */
+  async function isUnlocked(): Promise<boolean> {
+    try {
+      const user = await extpay.getUser();
+      return resolveProStatus(user as PaymentUser).unlocked;
+    } catch {
+      return false;
+    }
+  }
 
   // Set defaults on install
   browser.runtime.onInstalled.addListener(async (details) => {
@@ -74,9 +85,11 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'addHistory') {
-      const { history = [], maxHistory = 100 } = await browser.storage.local.get(['history', 'maxHistory']);
+      const unlocked = await isUnlocked();
+      const limit = maxHistory(unlocked);
+      const { history = [] } = await browser.storage.local.get('history');
       history.unshift(msg.entry);
-      if (history.length > maxHistory) history.length = maxHistory;
+      if (history.length > limit) history.length = limit;
       await browser.storage.local.set({ history });
       return true;
     }
@@ -92,7 +105,13 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'saveEnvironments') {
-      return browser.storage.local.set({ environments: msg.environments });
+      const unlocked = await isUnlocked();
+      const max = maxEnvironments(unlocked);
+      const envs = msg.environments || [];
+      if (envs.length > max) {
+        return { error: 'limit', max, current: envs.length };
+      }
+      return browser.storage.local.set({ environments: envs });
     }
 
     if (msg.action === 'getCollections') {
@@ -101,6 +120,10 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'saveCollections') {
+      const unlocked = await isUnlocked();
+      if (!collectionsEnabled(unlocked)) {
+        return { error: 'pro_required', feature: 'collections' };
+      }
       return browser.storage.local.set({ collections: msg.collections });
     }
 

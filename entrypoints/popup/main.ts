@@ -1,8 +1,11 @@
 import { buildUrl, buildHeaders, formatSize, formatTime, statusColor, newRequest, isJsonContentType, prettyJson } from '@/utils/request';
 import { interpolate } from '@/utils/environment';
 import { toCurl } from '@/utils/export';
+import { resolveProStatus, statusLabel } from '@/utils/payment';
+import { checkHistoryLimit, checkEnvironmentLimit, checkCollectionsAccess, buildUpsell } from '@/utils/tier-gate';
 import type { ApiRequest, KeyValuePair, AuthConfig } from '@/utils/request';
 import type { EnvVariable, Environment } from '@/utils/environment';
+import type { ProStatus, PaymentUser } from '@/utils/payment';
 
 // DOM elements
 const methodSelect = document.getElementById('method-select') as HTMLSelectElement;
@@ -26,19 +29,54 @@ const responseHeaders = document.getElementById('response-headers')!;
 const copyResponseBtn = document.getElementById('copy-response')!;
 const exportCurlBtn = document.getElementById('export-curl')!;
 const optionsLink = document.getElementById('options-link')!;
+const upsellBanner = document.getElementById('upsell-banner')!;
+const upsellMessage = document.getElementById('upsell-message')!;
+const upsellCta = document.getElementById('upsell-cta') as HTMLButtonElement;
+const upsellDismiss = document.getElementById('upsell-dismiss')!;
+const statusBadge = document.getElementById('status-badge')!;
 
 let currentRequest: ApiRequest = newRequest();
 let environments: Environment[] = [];
 let activeEnvVars: EnvVariable[] = [];
+let proStatus: ProStatus = { unlocked: false, paid: false, paidAt: null, trialActive: false, trialDaysLeft: 0 };
 
 async function init() {
   const settings = await browser.runtime.sendMessage({ action: 'getSettings' });
   applyTheme(settings.theme || 'auto');
+  await loadProStatus();
   await loadEnvironments();
   setupTabs();
   setupListeners();
   renderKvList(paramsList, currentRequest.params, 'param');
   renderKvList(headersList, currentRequest.headers, 'header');
+}
+
+async function loadProStatus() {
+  try {
+    const user: PaymentUser = await browser.runtime.sendMessage({ action: 'getProStatus' });
+    proStatus = resolveProStatus(user);
+  } catch {
+    // Default to free tier on error
+  }
+  renderStatusBadge();
+}
+
+function renderStatusBadge() {
+  const label = statusLabel(proStatus);
+  statusBadge.textContent = label;
+  statusBadge.className = 'bac-status-badge' + (proStatus.unlocked ? ' bac-badge-pro' : ' bac-badge-free');
+}
+
+function showUpsell(feature: 'history' | 'environments' | 'collections') {
+  const upsell = buildUpsell(feature, proStatus);
+  upsellMessage.textContent = upsell.message;
+  upsellCta.textContent = upsell.ctaLabel;
+  upsellCta.dataset.action = upsell.ctaAction;
+  upsellBanner.style.display = '';
+}
+
+function hideUpsell() {
+  upsellBanner.style.display = 'none';
 }
 
 function applyTheme(theme: string) {
@@ -119,6 +157,12 @@ function setupListeners() {
     e.preventDefault();
     browser.runtime.openOptionsPage();
   });
+  upsellCta.addEventListener('click', () => {
+    const action = upsellCta.dataset.action === 'trial' ? 'openTrial' : 'openPayment';
+    browser.runtime.sendMessage({ action });
+    hideUpsell();
+  });
+  upsellDismiss.addEventListener('click', hideUpsell);
 }
 
 function renderKvList(container: HTMLElement, items: KeyValuePair[], prefix: string) {
@@ -240,7 +284,10 @@ async function sendRequest() {
 
     displayResponse(response);
 
-    // Save to history
+    // Save to history (background enforces the cap, but we show upsell when near limit)
+    const history = await browser.runtime.sendMessage({ action: 'getHistory' });
+    const historyCheck = checkHistoryLimit(history.length, proStatus.unlocked);
+
     await browser.runtime.sendMessage({
       action: 'addHistory',
       entry: {
@@ -250,6 +297,11 @@ async function sendRequest() {
         timestamp: Date.now(),
       },
     });
+
+    // Show upsell when at or near the limit (oldest entries are being dropped)
+    if (!historyCheck.allowed) {
+      showUpsell('history');
+    }
   } catch (error) {
     displayResponse({
       status: 0,

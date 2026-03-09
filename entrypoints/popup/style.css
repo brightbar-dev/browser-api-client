@@ -313,6 +313,68 @@ body {
 .bac-options-link { color: var(--bac-primary); text-decoration: none; }
 .bac-options-link:hover { text-decoration: underline; }
 
+/* Status badge */
+.bac-status-badge {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bac-badge-free { background: var(--bac-surface); color: var(--bac-text-secondary); border: 1px solid var(--bac-border); }
+.bac-badge-pro { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.bac-dark .bac-badge-pro { background: #1e3a5f; color: #93c5fd; border-color: #3b82f6; }
+
+/* Upsell banner */
+.bac-upsell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #1e40af;
+}
+
+.bac-dark .bac-upsell { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+
+.bac-upsell-msg { flex: 1; line-height: 1.3; }
+
+.bac-upsell-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+
+.bac-upsell-cta {
+  padding: 3px 10px;
+  background: var(--bac-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.bac-upsell-cta:hover { background: var(--bac-primary-hover); }
+
+.bac-upsell-dismiss {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  opacity: 0.6;
+}
+
+.bac-upsell-dismiss:hover { opacity: 1; }
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

@@ -9,13 +9,22 @@
 <body>
   <div class="bac-app">
     <header class="bac-header">
-      <h1>API Client</h1>
+      <h1>API Client <span id="status-badge" class="bac-status-badge bac-badge-free"></span></h1>
       <div class="bac-env-select">
         <select id="env-selector" title="Environment">
           <option value="">No Environment</option>
         </select>
       </div>
     </header>
+
+    <!-- Upsell banner (hidden by default) -->
+    <div id="upsell-banner" class="bac-upsell" style="display:none">
+      <span id="upsell-message" class="bac-upsell-msg"></span>
+      <div class="bac-upsell-actions">
+        <button id="upsell-cta" class="bac-upsell-cta"></button>
+        <button id="upsell-dismiss" class="bac-upsell-dismiss" title="Dismiss">&times;</button>
+      </div>
+    </div>
 
     <!-- Request builder -->
     <section class="bac-request">
