@@ -53,4 +53,4 @@ importFileInput.addEventListener('change', async () => {
   }
 });
 
-init();
+init().catch(err => console.error('Options init failed:', err));

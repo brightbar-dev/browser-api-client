@@ -41,8 +41,13 @@ let activeEnvVars: EnvVariable[] = [];
 let proStatus: ProStatus = { unlocked: false, paid: false, paidAt: null, trialActive: false, trialDaysLeft: 0 };
 
 async function init() {
-  const settings = await browser.runtime.sendMessage({ action: 'getSettings' });
-  applyTheme(settings.theme || 'auto');
+  try {
+    const settings = await browser.runtime.sendMessage({ action: 'getSettings' });
+    applyTheme(settings?.theme || 'auto');
+  } catch (err) {
+    console.warn('Failed to load settings, using defaults:', err);
+    applyTheme('auto');
+  }
   await loadProStatus();
   await loadEnvironments();
   setupTabs();
@@ -349,4 +354,4 @@ function escapeAttr(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
 
-init();
+init().catch(err => console.error('Popup init failed:', err));

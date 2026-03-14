@@ -3,11 +3,17 @@ import { EXTPAY_ID, resolveProStatus, maxHistory, maxEnvironments, collectionsEn
 import type { PaymentUser } from '@/utils/payment';
 
 export default defineBackground(() => {
-  const extpay = ExtPay(EXTPAY_ID);
-  extpay.startBackground();
+  let extpay: ReturnType<typeof ExtPay> | null = null;
+  try {
+    extpay = ExtPay(EXTPAY_ID);
+    extpay.startBackground();
+  } catch (err) {
+    console.warn('ExtPay initialization failed (expected when running unpacked):', err);
+  }
 
   /** Resolve current pro-unlocked status, defaulting to false on error. */
   async function isUnlocked(): Promise<boolean> {
+    if (!extpay) return false;
     try {
       const user = await extpay.getUser();
       return resolveProStatus(user as PaymentUser).unlocked;
@@ -128,6 +134,7 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'getProStatus') {
+      if (!extpay) return { paid: false, paidAt: null, trialStartedAt: null };
       return extpay.getUser().then(user => ({
         paid: user.paid,
         paidAt: user.paidAt,
@@ -140,14 +147,17 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'openPayment') {
+      if (!extpay) return;
       return extpay.openPaymentPage();
     }
 
     if (msg.action === 'openTrial') {
+      if (!extpay) return;
       return extpay.openTrialPage('7-day free trial');
     }
 
     if (msg.action === 'openLogin') {
+      if (!extpay) return;
       return extpay.openLoginPage();
     }
   });
