@@ -20,7 +20,7 @@
     "wxt": "^0.20.5"
   },
   "dependencies": {
-    "@brightbar-dev/wxt-extpay": "file:../../packages/wxt-extpay",
+    "@brightbar-dev/wxt-extpay": "^0.2.0",
     "extpay": "^3.1.2"
   }
 }
