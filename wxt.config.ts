@@ -4,7 +4,7 @@ export default defineConfig({
   modules: ['@brightbar-dev/wxt-extpay'],
   extpay: {
     extensionId: 'browser-api-client',
-    priceDisplay: '$49/yr',
+    priceDisplay: '$50/yr',
     priceLabel: 'per year',
     trialDays: 7,
   },

@@ -17,8 +17,8 @@ export {
 /** ExtensionPay extension ID. Replace after registering at extensionpay.com */
 export const EXTPAY_ID = 'browser-api-client';
 
-/** Pricing: $49/yr or $5/mo subscription */
-export const PRICE_YEARLY = '$49/yr';
+/** Pricing: $50/yr or $5/mo subscription */
+export const PRICE_YEARLY = '$50/yr';
 export const PRICE_MONTHLY = '$5/mo';
 
 /** Trial duration in days */
