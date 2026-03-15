@@ -1,26 +1,10 @@
-import ExtPay from 'extpay';
-import { EXTPAY_ID, resolveProStatus, maxHistory, maxEnvironments, collectionsEnabled } from '@/utils/payment';
-import type { PaymentUser } from '@/utils/payment';
+import { initBackground } from '@brightbar-dev/wxt-extpay/helpers';
+import { EXTPAY_ID, maxHistory, maxEnvironments, collectionsEnabled } from '@/utils/payment';
 
 export default defineBackground(() => {
-  let extpay: ReturnType<typeof ExtPay> | null = null;
-  try {
-    extpay = ExtPay(EXTPAY_ID);
-    extpay.startBackground();
-  } catch (err) {
-    console.warn('ExtPay initialization failed (expected when running unpacked):', err);
-  }
-
-  /** Resolve current pro-unlocked status, defaulting to false on error. */
-  async function isUnlocked(): Promise<boolean> {
-    if (!extpay) return false;
-    try {
-      const user = await extpay.getUser();
-      return resolveProStatus(user as PaymentUser).unlocked;
-    } catch {
-      return false;
-    }
-  }
+  // ExtPay: only startBackground() runs here.
+  // Popup/options call ExtPay directly — do NOT proxy via messaging.
+  initBackground(EXTPAY_ID);
 
   // Set defaults on install
   browser.runtime.onInstalled.addListener(async (details) => {
@@ -91,8 +75,9 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'addHistory') {
-      const unlocked = await isUnlocked();
-      const limit = maxHistory(unlocked);
+      // Pro status check via storage flag (set by popup when it resolves status)
+      const { proUnlocked = false } = await browser.storage.local.get('proUnlocked');
+      const limit = maxHistory(proUnlocked);
       const { history = [] } = await browser.storage.local.get('history');
       history.unshift(msg.entry);
       if (history.length > limit) history.length = limit;
@@ -111,8 +96,8 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'saveEnvironments') {
-      const unlocked = await isUnlocked();
-      const max = maxEnvironments(unlocked);
+      const { proUnlocked = false } = await browser.storage.local.get('proUnlocked');
+      const max = maxEnvironments(proUnlocked);
       const envs = msg.environments || [];
       if (envs.length > max) {
         return { error: 'limit', max, current: envs.length };
@@ -126,39 +111,11 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'saveCollections') {
-      const unlocked = await isUnlocked();
-      if (!collectionsEnabled(unlocked)) {
+      const { proUnlocked = false } = await browser.storage.local.get('proUnlocked');
+      if (!collectionsEnabled(proUnlocked)) {
         return { error: 'pro_required', feature: 'collections' };
       }
       return browser.storage.local.set({ collections: msg.collections });
-    }
-
-    if (msg.action === 'getProStatus') {
-      if (!extpay) return { paid: false, paidAt: null, trialStartedAt: null };
-      return extpay.getUser().then(user => ({
-        paid: user.paid,
-        paidAt: user.paidAt,
-        trialStartedAt: user.trialStartedAt,
-      })).catch(() => ({
-        paid: false,
-        paidAt: null,
-        trialStartedAt: null,
-      }));
-    }
-
-    if (msg.action === 'openPayment') {
-      if (!extpay) return;
-      return extpay.openPaymentPage();
-    }
-
-    if (msg.action === 'openTrial') {
-      if (!extpay) return;
-      return extpay.openTrialPage('7-day free trial');
-    }
-
-    if (msg.action === 'openLogin') {
-      if (!extpay) return;
-      return extpay.openLoginPage();
     }
   });
 });

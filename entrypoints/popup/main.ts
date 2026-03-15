@@ -1,11 +1,15 @@
 import { buildUrl, buildHeaders, formatSize, formatTime, statusColor, newRequest, isJsonContentType, prettyJson } from '@/utils/request';
 import { interpolate } from '@/utils/environment';
 import { toCurl } from '@/utils/export';
-import { resolveProStatus, statusLabel } from '@/utils/payment';
-import { checkHistoryLimit, checkEnvironmentLimit, checkCollectionsAccess, buildUpsell } from '@/utils/tier-gate';
+import { EXTPAY_ID, resolveProStatus, statusLabel } from '@/utils/payment';
+import { checkHistoryLimit, buildUpsell } from '@/utils/tier-gate';
+import { createExtPay } from '@brightbar-dev/wxt-extpay/helpers';
 import type { ApiRequest, KeyValuePair, AuthConfig } from '@/utils/request';
 import type { EnvVariable, Environment } from '@/utils/environment';
 import type { ProStatus, PaymentUser } from '@/utils/payment';
+
+// ExtPay: create instance directly in popup (do NOT route through background)
+const extpay = createExtPay(EXTPAY_ID);
 
 // DOM elements
 const methodSelect = document.getElementById('method-select') as HTMLSelectElement;
@@ -58,8 +62,10 @@ async function init() {
 
 async function loadProStatus() {
   try {
-    const user: PaymentUser = await browser.runtime.sendMessage({ action: 'getProStatus' });
+    const user = await extpay.getUser() as PaymentUser;
     proStatus = resolveProStatus(user);
+    // Persist unlocked flag so background can check tier limits
+    await browser.storage.local.set({ proUnlocked: proStatus.unlocked });
   } catch {
     // Default to free tier on error
   }
@@ -163,8 +169,12 @@ function setupListeners() {
     browser.runtime.openOptionsPage();
   });
   upsellCta.addEventListener('click', () => {
-    const action = upsellCta.dataset.action === 'trial' ? 'openTrial' : 'openPayment';
-    browser.runtime.sendMessage({ action });
+    // Call ExtPay directly from popup (not via background messaging)
+    if (upsellCta.dataset.action === 'trial') {
+      extpay.openTrialPage('7-day free trial');
+    } else {
+      extpay.openPaymentPage();
+    }
     hideUpsell();
   });
   upsellDismiss.addEventListener('click', hideUpsell);
