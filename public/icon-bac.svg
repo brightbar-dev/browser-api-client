@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Emerald rounded square background -->
+  <rect x="4" y="4" width="120" height="120" rx="24" fill="#10B981"/>
+
+  <!-- Lightning bolt (fast API requests) -->
+  <polygon points="72,20 42,68 60,68 52,108 90,54 70,54 80,20" fill="#FFFFFF"/>
+</svg>
