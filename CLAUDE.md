@@ -57,6 +57,6 @@ npm test
 
 ## Conventions
 - WXT framework with vanilla TypeScript (no UI framework)
-- Version: semver, 0.1.x (MVP), 1.x = production-ready
+- Version: semver, 0.2.x (CWS-submitted), 1.x = production-ready
 - Conventional commits: feat:, fix:, chore:
 - Do NOT add Claude/AI as co-author or contributor
