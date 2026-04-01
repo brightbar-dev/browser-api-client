@@ -1,0 +1,20 @@
+{
+  "extension_id": null,
+  "category": "Developer Tools",
+  "language": "English (United States)",
+  "homepage_url": "https://brightbar.dev/products/browser-api-client/",
+  "support_url": "https://github.com/brightbar-dev/browser-api-client/issues",
+  "privacy_policy_url": "https://brightbar.dev/privacy/browser-api-client",
+  "description": "Browser API Client is a lightweight API testing tool that lives in your browser. No desktop app to install, no account to create, no cloud sync you didn't ask for. Open the popup, build a request, hit Send.\n\nCORE FEATURES (free, no limits):\n- Full HTTP support — GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS.\n- Request builder — URL bar, query params, headers, body (JSON, form data, raw text).\n- Authentication — Bearer token, Basic auth, API key header. One click to set up.\n- Response viewer — Status code, timing, size. Pretty-printed JSON, raw body, response headers.\n- Code export — Generate cURL, JavaScript fetch(), or Python requests code from any request.\n- Dark and light themes.\n\nFREE TIER LIMITS:\n- 50 saved history entries\n- 1 environment\n- Full request builder with all HTTP methods and auth types\n\nPRO TIER ($50/yr, 7-day free trial):\n- Unlimited request history — never lose a request.\n- Multiple environments — switch between dev, staging, and production with one click. Variables use {{name}} syntax and interpolate at send time.\n- Collections — organize requests into named groups. Search, duplicate, reorder.\n- Postman import/export — bring your Postman collections and environments over. Export back if you want. No lock-in.\n\nWHY BROWSER API CLIENT?\n- Postman killed its free team plan. API testing shouldn't require a subscription to a bloated desktop app.\n- Thunder Client, REST Client — they live in VS Code. This lives in your browser, where you're already looking at the API docs.\n- Zero tracking. Zero analytics. Your API keys and tokens stay on your device.\n- Requests execute via the extension's background worker, bypassing CORS. Test any API from any page.\n\nBuilt by Brightbar (brightbar.dev).",
+  "single_purpose": "Send HTTP requests to any API endpoint and inspect responses, with support for multiple HTTP methods, request headers, query parameters, body, authentication, environment variables, request history, and export to cURL, JavaScript fetch, and Python requests formats.",
+  "permission_justifications": {
+    "storage": "Used to save request history, environment variables, collections, and user preferences (theme, history limit) locally on the user's device. All data stays on the device.",
+    "activeTab": "Used to display the extension popup in context of the current tab. The extension does not read or modify page content.",
+    "host_permissions": "Core functionality. The extension sends HTTP requests to API endpoints specified by the user. Since developers need to test APIs on any domain, broad host permission is required. Requests are only sent when the user explicitly clicks Send. The extension does not access any URL automatically or in the background."
+  },
+  "remote_code": false,
+  "mature_content": false,
+  "payment_model": "freemium",
+  "payment_provider": "extensionpay",
+  "extensionpay_id": "browser-api-client"
+}
