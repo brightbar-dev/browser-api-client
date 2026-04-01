@@ -9,8 +9,9 @@ export default defineConfig({
     trialDays: 7,
   },
   manifest: {
-    name: 'Browser API Client',
-    description: 'Lightweight API client in your browser. Build requests, inspect responses, manage environments.',
+    name: '__MSG_appName__',
+    description: '__MSG_appDescription__',
+    default_locale: 'en',
     permissions: ['storage', 'activeTab'],
     host_permissions: ['<all_urls>'],
   },

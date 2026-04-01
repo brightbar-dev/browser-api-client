@@ -1,0 +1,8 @@
+{
+  "appName": {
+    "message": "Browser API Client"
+  },
+  "appDescription": {
+    "message": "Lightweight API client in your browser. Build requests, inspect responses, manage environments. No account required."
+  }
+}

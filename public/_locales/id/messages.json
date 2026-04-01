@@ -1,0 +1,8 @@
+{
+  "appName": {
+    "message": "Browser API Client"
+  },
+  "appDescription": {
+    "message": "Klien API ringan di browser Anda. Buat permintaan, periksa respons, kelola environment. Tanpa perlu akun."
+  }
+}
