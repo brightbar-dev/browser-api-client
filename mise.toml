@@ -1,0 +1,29 @@
+[tools]
+node = "22"
+
+[tasks.test]
+run = "npm test"
+description = "Run Vitest tests"
+
+[tasks.build]
+run = "npx wxt build"
+description = "Production build (Chrome)"
+
+[tasks."build:firefox"]
+run = "npx wxt build --browser firefox"
+
+[tasks.dev]
+run = "npx wxt dev"
+description = "Dev mode with HMR (Chrome)"
+
+[tasks.setup]
+run = "npm ci && npx wxt prepare"
+description = "Install deps and prepare WXT"
+
+[tasks.zip]
+run = "npx wxt zip"
+description = "Build + zip for store submission"
+
+[tasks.ci]
+run = ["npm ci", "npx wxt prepare", "npm test", "npx wxt build"]
+description = "Full CI pipeline"
