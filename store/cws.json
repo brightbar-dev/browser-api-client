@@ -9,7 +9,6 @@
   "single_purpose": "Send HTTP requests to any API endpoint and inspect responses, with support for multiple HTTP methods, request headers, query parameters, body, authentication, environment variables, request history, and export to cURL, JavaScript fetch, and Python requests formats.",
   "permission_justifications": {
     "storage": "Used to save request history, environment variables, collections, and user preferences (theme, history limit) locally on the user's device. All data stays on the device.",
-    "activeTab": "Used to display the extension popup in context of the current tab. The extension does not read or modify page content.",
     "host_permissions": "Core functionality. The extension sends HTTP requests to API endpoints specified by the user. Since developers need to test APIs on any domain, broad host permission is required. Requests are only sent when the user explicitly clicks Send. The extension does not access any URL automatically or in the background."
   },
   "remote_code": false,
