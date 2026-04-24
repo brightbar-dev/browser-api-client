@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.3.0...browser-api-client-v0.3.1) (2026-04-24)
+
+
+### Bug Fixes
+
+* restore GitHub Packages auth for @brightbar-dev/wxt-extpay ([260984e](https://github.com/brightbar-dev/browser-api-client/commit/260984e8766cf9b14dcf6960012f5d0468be425a))
+
 ## [0.3.0](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.2.0...browser-api-client-v0.3.0) (2026-04-24)
 
 
