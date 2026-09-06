@@ -1,4 +1,5 @@
 {
-  "git_commit": "autonomous",
-  "git_push": "requiresApproval"
+  "git_commit": "allow",
+  "git_push": "ask",
+  "description": "Product repo — autonomous commits during development, push requires approval"
 }
