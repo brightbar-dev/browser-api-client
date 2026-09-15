@@ -4,6 +4,7 @@ import {
 } from '../utils/sanitize';
 import { newRequest } from '../utils/request';
 import type { ApiRequest } from '../utils/request';
+import type { Collection } from '../utils/collections';
 
 const rows = (n: number) => Array.from({ length: n }, (_, i) => ({ key: `k${i}`, value: `v${i}`, enabled: true }));
 
@@ -228,9 +229,27 @@ describe('sanitizeEnvironment', () => {
       name: 'Dev',
       variables: [
         { key: 'port', value: '8080', enabled: true },
-        { key: 'off', value: 'x', enabled: false },
+        { key: 'off', value: 'x', enabled: false, secret: true },
       ],
     });
+  });
+
+  it('keeps secret only when it is exactly true', () => {
+    const e = sanitizeEnvironment({
+      variables: [
+        { key: 'a', value: '1', secret: true },
+        { key: 'b', value: '2', secret: 'true' },
+        { key: 'c', value: '3', secret: 1 },
+        { key: 'd', value: '4', secret: false },
+      ],
+    })!;
+    expect(e.variables[0]).toEqual({ key: 'a', value: '1', enabled: true, secret: true });
+    for (const v of e.variables.slice(1)) expect('secret' in v).toBe(false);
+  });
+
+  it('keeps a valid environment with secrets unchanged', () => {
+    const env = { id: 'e1', name: 'Prod', variables: [{ key: 'token', value: 't', enabled: true, secret: true }, { key: 'url', value: 'u', enabled: false }] };
+    expect(sanitizeEnvironment(JSON.parse(JSON.stringify(env)))).toEqual(env);
   });
 
   it('treats non-array variables as empty and caps at 500', () => {
@@ -279,6 +298,55 @@ describe('sanitizeCollection', () => {
     expect(c.created).not.toBe('100');
     expect(Number.isFinite(c.updated)).toBe(true);
     expect(c.requests).toEqual([]);
+  });
+
+  it('keeps a valid collection with folders unchanged', () => {
+    const full: Collection = {
+      id: 'c1',
+      name: 'API',
+      description: '',
+      requests: [newRequest('Root')],
+      folders: [
+        { id: 'f1', name: 'Users', requests: [newRequest('List'), { ...newRequest('Create'), method: 'POST' }] },
+        { id: 'f2', name: 'Empty', requests: [] },
+      ],
+      created: 100,
+      updated: 200,
+    };
+    expect(sanitizeCollection(JSON.parse(JSON.stringify(full)))).toEqual(full);
+  });
+
+  it('sanitizes folders, dropping malformed ones and filling defaults', () => {
+    const c = sanitizeCollection({
+      id: 'c1',
+      folders: [
+        { id: 'f1', name: 'Users', requests: [{ id: 'r1', method: 'delete' }, null, 'bad'], color: 'red' },
+        null,
+        'folder',
+        ['f'],
+        7,
+        { requests: 'nope' },
+        { id: '', name: 12, requests: [{ id: 'r2' }] },
+      ],
+    })!;
+    expect(c.folders).toHaveLength(3);
+    const [a, b, d] = c.folders!;
+    expect(Object.keys(a!).sort()).toEqual(['id', 'name', 'requests']);
+    expect(a!.id).toBe('f1');
+    expect(a!.name).toBe('Users');
+    expect(a!.requests.map(r => [r.id, r.method])).toEqual([['r1', 'DELETE']]);
+    expect(b!.name).toBe('Folder');
+    expect(b!.id).toBeTruthy();
+    expect(b!.requests).toEqual([]);
+    expect(d!.id).not.toBe('');
+    expect(d!.name).toBe('12');
+    expect(d!.requests.map(r => r.id)).toEqual(['r2']);
+  });
+
+  it('only sets folders when they are an array', () => {
+    expect('folders' in sanitizeCollection({ folders: { f: 1 } })!).toBe(false);
+    expect('folders' in sanitizeCollection({ folders: null })!).toBe(false);
+    expect(sanitizeCollection({ folders: [] })!.folders).toEqual([]);
   });
 });
 

@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'preact/hooks';
 import { browser } from 'wxt/browser';
-import { getState, setActiveEnv, setLayout, useApp } from '../store';
+import { getState, openDialog, setActiveEnv, setLayout, useApp } from '../store';
+import { createEnvironment, requestSave } from '../library';
+import { Dialogs, Toast } from './Dialogs';
 import { cancelSend, sendTab } from '../send';
 import { Sidebar } from './Sidebar';
 import { TabStrip } from './TabStrip';
@@ -31,6 +33,9 @@ function useShortcuts() {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         void sendTab(activeTabId);
+      } else if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        if (!getState().dialog) requestSave(activeTabId);
       } else if (e.key === 'Escape' && getState().runs[activeTabId]?.state === 'sending') {
         cancelSend(activeTabId);
       }
@@ -84,6 +89,20 @@ function Header() {
           ))}
         </select>
       </label>
+      <button
+        type="button"
+        class="bac-icon-btn"
+        aria-label={activeEnvId ? 'Edit the active environment' : 'Create an environment'}
+        title={activeEnvId ? 'Edit environment' : 'New environment'}
+        onClick={() => openDialog({ type: 'environment', envId: activeEnvId ?? createEnvironment('New environment').id })}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z" />
+        </svg>
+      </button>
+      <button type="button" class="bac-btn bac-btn-ghost" onClick={() => openDialog({ type: 'import' })}>
+        Import
+      </button>
       <button type="button" class="bac-btn bac-btn-ghost" onClick={() => browser.runtime.openOptionsPage()}>
         <IconSettings /> Settings
       </button>
@@ -138,6 +157,8 @@ export function App() {
           <Workbench />
         </main>
       </div>
+      <Dialogs />
+      <Toast />
     </div>
   );
 }

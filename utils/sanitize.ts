@@ -7,7 +7,7 @@
 import type { ApiRequest, ApiResponse, AuthConfig, BodyType, FileRef, HttpMethod, KeyValuePair, MultipartField } from './request';
 import { HTTP_METHODS, generateId } from './request';
 import type { Environment, EnvVariable } from './environment';
-import type { Collection } from './collections';
+import type { Collection, CollectionFolder } from './collections';
 import type { HistoryEntry } from './history';
 
 const MAX_ROWS = 500;
@@ -109,24 +109,41 @@ export function sanitizeRequest(v: unknown): ApiRequest | null {
 export function sanitizeEnvironment(v: unknown): Environment | null {
   if (!isObj(v)) return null;
   const variables: EnvVariable[] = Array.isArray(v.variables)
-    ? v.variables.slice(0, MAX_ROWS).filter(isObj).map(row => ({
-        key: str(row.key),
-        value: str(row.value),
-        enabled: typeof row.enabled === 'boolean' ? row.enabled : true,
-      }))
+    ? v.variables.slice(0, MAX_ROWS).filter(isObj).map(row => {
+        const variable: EnvVariable = {
+          key: str(row.key),
+          value: str(row.value),
+          enabled: typeof row.enabled === 'boolean' ? row.enabled : true,
+        };
+        if (row.secret === true) variable.secret = true;
+        return variable;
+      })
     : [];
   return { id: id(v.id), name: str(v.name, 'Environment'), variables };
+}
+
+function sanitizeRequests(v: unknown): ApiRequest[] {
+  return Array.isArray(v) ? v.map(sanitizeRequest).filter((r): r is ApiRequest => r !== null) : [];
+}
+
+/** A folder must be an object; its id, name and requests are filled or sanitized. */
+function sanitizeFolder(v: unknown): CollectionFolder | null {
+  if (!isObj(v)) return null;
+  return { id: id(v.id), name: str(v.name, 'Folder'), requests: sanitizeRequests(v.requests) };
 }
 
 export function sanitizeCollection(v: unknown): Collection | null {
   if (!isObj(v)) return null;
   const now = Date.now();
-  const requests = Array.isArray(v.requests) ? v.requests.map(sanitizeRequest).filter((r): r is ApiRequest => r !== null) : [];
+  const folders = Array.isArray(v.folders)
+    ? v.folders.map(sanitizeFolder).filter((f): f is CollectionFolder => f !== null)
+    : undefined;
   return {
     id: id(v.id),
     name: str(v.name, 'Collection'),
     description: str(v.description),
-    requests,
+    requests: sanitizeRequests(v.requests),
+    ...(folders ? { folders } : {}),
     created: num(v.created, now),
     updated: num(v.updated, now),
   };
