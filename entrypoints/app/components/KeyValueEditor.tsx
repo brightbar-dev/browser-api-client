@@ -1,5 +1,6 @@
 import type { KeyValuePair } from '@/utils/request';
 import { IconClose } from './icons';
+import { VarField } from './VarField';
 
 interface KeyValueEditorProps {
   label: string;
@@ -48,7 +49,7 @@ export function KeyValueEditor({ label, rows, onChange, keyPlaceholder = 'Key', 
               )}
             </span>
             <span role="cell">
-              <input
+              <VarField
                 class="bac-input bac-mono"
                 value={row?.key ?? ''}
                 placeholder={row ? '' : `Add ${keyPlaceholder.toLowerCase()}`}
@@ -56,18 +57,18 @@ export function KeyValueEditor({ label, rows, onChange, keyPlaceholder = 'Key', 
                 list={listId}
                 spellcheck={false}
                 autocomplete="off"
-                onInput={(e) => setRow(i, { key: e.currentTarget.value })}
+                onValue={(key) => setRow(i, { key })}
               />
             </span>
             <span role="cell">
-              <input
+              <VarField
                 class="bac-input bac-mono"
                 value={row?.value ?? ''}
                 placeholder={row ? '' : valuePlaceholder}
                 aria-label={row ? `${valuePlaceholder} of ${name}` : `New ${valuePlaceholder.toLowerCase()}`}
                 spellcheck={false}
                 autocomplete="off"
-                onInput={(e) => setRow(i, { value: e.currentTarget.value })}
+                onValue={(value) => setRow(i, { value })}
               />
             </span>
             <span role="cell" class="bac-kv-del">

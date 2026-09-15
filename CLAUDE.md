@@ -7,7 +7,7 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 
 ## Architecture
 - **entrypoints/background.ts** — Service worker. The toolbar button opens `app.html` in a tab, or focuses the one already open (Chrome: `runtime.getContexts`; Firefox: the app page answers a `focusApp` message). Serializes history writes and owns the history, environment and collection storage messages.
-- **entrypoints/app/** — The workspace, a full-tab Preact app. `store.ts` holds state and persists the open tabs' drafts to `storage.local` (debounced, flushed on pagehide); `send.ts` executes requests from the page itself (extension pages bypass CORS for `<all_urls>`), with `AbortController` cancel and `credentials: 'omit'`; `components/` has the sidebar (History, Collections, Environments), request tab strip, request editor (URL ⇄ params sync, headers, auth, body modes) and response viewer (pretty/tree/raw JSON, sandboxed HTML preview, image preview, hex view, search, download).
+- **entrypoints/app/** — The workspace, a full-tab Preact app. `library.ts` holds collection/environment actions (save to collection, move across collections, environment CRUD); `components/Dialogs.tsx` has the save, environment editor, import and code-snippet dialogs; `components/VarField.tsx` colours `{{variables}}` (defined vs undefined) in any input or textarea. `store.ts` holds state and persists the open tabs' drafts to `storage.local` (debounced, flushed on pagehide); `send.ts` executes requests from the page itself (extension pages bypass CORS for `<all_urls>`), with `AbortController` cancel and `credentials: 'omit'`; `components/` has the sidebar (History grouped by day with method/status filters; Collections tree with one level of folders, drag and Alt+Arrow reorder, rename, duplicate, Postman export; Environments with active switch, duplicate, export), request tab strip, request editor (URL ⇄ params sync, headers, auth, body modes) and response viewer (pretty/tree/raw JSON, sandboxed HTML preview, image preview, hex view, search, download).
 - **entrypoints/options/** — Settings page (theme, history limit, backup export/import through `utils/backup.ts`).
 - **utils/request.ts** — Request model (body modes: none, JSON, x-www-form-urlencoded, multipart, raw text, binary file, GraphQL), resolved-request types, formatting.
 - **utils/url.ts** — Raw-text URL ⇄ query params sync, scheme defaulting (`http://` for local hosts, `https://` otherwise).
@@ -16,11 +16,15 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - **utils/workspace.ts** — Open request tabs: add/close/move, unsaved-change detection, restore from storage.
 - **utils/sanitize.ts** / **utils/backup.ts** — Validate stored and imported data; backups only ever carry known keys.
 - **utils/idb.ts** — IndexedDB for file bodies and each tab's last response (bytes that don't belong in `storage.local`).
-- **utils/environment.ts** — Environment variable interpolation (`{{var}}` syntax), variable extraction, merging.
-- **utils/export.ts** — Export requests as cURL, JavaScript fetch(), or Python requests.
-- **utils/history.ts** — Request history sorting, filtering (method, URL, status), truncation.
-- **utils/collections.ts** — Named request groups: create, add/remove/update/move/search/duplicate.
-- **utils/import-export.ts** — Postman v2.1 import/export, native backup/restore, format detection.
+- **utils/environment.ts** — Environment variable interpolation (`{{var}}` names may use letters, digits, `_ . -`), segmentation for highlighting, duplicate/rename, secret flag.
+- **utils/codegen.ts** — Code snippets from a resolved request: cURL, JavaScript fetch, Node axios, Python requests, Go net/http, PHP cURL, C# HttpClient, HTTPie; every string literal escaped for its language.
+- **utils/curl-import.ts** — Parse a `curl` command (bash, DevTools cmd style) into a request.
+- **utils/openapi-import.ts** — OpenAPI 3 / Swagger 2 JSON to a collection (folders by tag, example bodies from schemas) plus an environment of variables.
+- **utils/har-import.ts** — HAR 1.2 entries to requests.
+- **utils/import-detect.ts** — Detect what pasted text is and run the matching importer.
+- **utils/history.ts** — Request history sorting, grouping by day, filtering (query, method, status bucket), truncation.
+- **utils/collections.ts** — Collections with one level of folders: upsert/move/duplicate/remove requests anywhere, folder operations, tree search.
+- **utils/import-export.ts** — Postman v2.1 collection (nested folders, every body mode) and environment import/export, native export.
 
 ## Key Implementation Details
 - The UI is a full browser tab, never a popup, so nothing is lost when focus leaves it. Every edit to an open request is saved as a draft and restored on reload; a page with an in-flight request asks before unloading.
@@ -29,7 +33,8 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - Auth support: Bearer Token, Basic Auth, API Key (header or query)
 - Files chosen for multipart/binary bodies are stored in IndexedDB so drafts with files survive a reload
 - History is written by the background (serialized) up to the user's max-entries setting; response bodies over 64 KB are cut in history
-- Import/export: Postman v2.1 collections and environments, native backup format
+- Import: Postman v2.1 collections and environments, cURL (dialog or paste into the URL bar), OpenAPI 3 / Swagger 2 JSON, HAR. Export: collections to Postman v2.1, environments to Postman, code snippets in 8 languages, native backup from Settings
+- Save with Cmd/Ctrl+S: in place for a request opened from a collection, otherwise a dialog asks where
 - No account, no pairing, no cloud — ever. Everything stays in the browser.
 - UI framework: Preact (MIT, ~10 KB), because the workspace is large enough that declarative rendering removes a class of stale-DOM bugs. Keep logic in `utils/` (Node-tested); components stay thin.
 - All DOM classes are prefixed with `bac-`

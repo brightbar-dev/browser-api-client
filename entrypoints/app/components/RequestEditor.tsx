@@ -1,8 +1,13 @@
-import { useState } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
 import type { ApiRequest, AuthConfig, HttpMethod } from '@/utils/request';
 import { HTTP_METHODS } from '@/utils/request';
 import { impliedScheme, paramsFromUrl, urlWithParams } from '@/utils/url';
-import { updateRequest, useApp } from '../store';
+import { resolveRequest } from '@/utils/resolve';
+import { parseCurl } from '@/utils/curl-import';
+import * as col from '@/utils/collections';
+import { openDialog, showToast, updateRequest, useApp } from '../store';
+import { requestSave } from '../library';
+import { VarField } from './VarField';
 import { cancelSend, sendTab } from '../send';
 import { COMMON_HEADERS, KeyValueEditor } from './KeyValueEditor';
 import { BodyEditor } from './BodyEditor';
@@ -30,10 +35,15 @@ const BODY_LABELS: Record<ApiRequest['bodyType'], string> = {
 
 const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
 export const SEND_SHORTCUT = isMac ? '⌘↵' : 'Ctrl+Enter';
+export const SAVE_SHORTCUT = isMac ? '⌘S' : 'Ctrl+S';
 
 export function RequestEditor({ tabId }: { tabId: string }) {
   const request = useApp((s) => s.workspace.tabs.find((t) => t.id === tabId)?.request);
+  const source = useApp((s) => s.workspace.tabs.find((t) => t.id === tabId)?.source);
   const sending = useApp((s) => s.runs[tabId]?.state === 'sending');
+  const env = useApp((s) => s.environments.find((e) => e.id === s.activeEnvId));
+  const collections = useApp((s) => s.collections);
+  const unresolved = useMemo(() => (request ? resolveRequest(request, env?.variables ?? []).unresolved : []), [request, env]);
   const [section, setSectionState] = useState<Section>(
     () => sectionMemory.get(tabId) ?? (request && request.bodyType !== 'none' ? 'body' : 'params'),
   );
@@ -55,8 +65,50 @@ export function RequestEditor({ tabId }: { tabId: string }) {
     { id: 'body', label: 'Body', badge: request.bodyType !== 'none' ? BODY_LABELS[request.bodyType] : undefined },
   ];
 
+  const home = source ? collections.find((c) => c.id === source.collectionId) : undefined;
+  const homeFolder = home && source ? col.findRequestLocation([home], source.requestId)?.folderId : null;
+  const folderName = home && homeFolder ? home.folders?.find((f) => f.id === homeFolder)?.name : undefined;
+
+  const onUrlPaste = (e: ClipboardEvent) => {
+    const text = e.clipboardData?.getData('text') ?? '';
+    if (!/^\s*(\$\s*)?curl\s/i.test(text)) return;
+    e.preventDefault();
+    try {
+      const { value, warnings } = parseCurl(text);
+      update((r) => ({ ...value, id: r.id, name: r.name && r.name !== 'New Request' ? r.name : value.name }));
+      showToast(warnings.length ? `Imported the cURL command. ${warnings[0]}` : 'Imported the cURL command');
+    } catch (err) {
+      showToast((err as Error).message);
+    }
+  };
+
   return (
     <section class="bac-request" aria-label="Request">
+      <div class="bac-reqhead">
+        {home && (
+          <span class="bac-breadcrumb" title="Saved in">
+            {home.name}
+            {folderName ? ` / ${folderName}` : ''} /
+          </span>
+        )}
+        <input
+          class="bac-name-input"
+          aria-label="Request name"
+          placeholder="Untitled request"
+          value={request.name === 'New Request' ? '' : request.name}
+          onInput={(e) => {
+            const name = e.currentTarget.value;
+            update((r) => ({ ...r, name: name || 'New Request' }));
+          }}
+        />
+        <div class="bac-spacer" />
+        <button type="button" class="bac-btn bac-btn-small bac-btn-ghost" onClick={() => openDialog({ type: 'code', tabId })} title="Generate code for this request">
+          {'</>'} Code
+        </button>
+        <button type="button" class="bac-btn bac-btn-small" onClick={() => requestSave(tabId)} title={`Save (${SAVE_SHORTCUT})`}>
+          {source && home ? 'Save' : 'Save…'}
+        </button>
+      </div>
       <form
         class="bac-urlbar"
         onSubmit={(e) => {
@@ -76,17 +128,15 @@ export function RequestEditor({ tabId }: { tabId: string }) {
             </option>
           ))}
         </select>
-        <input
+        <VarField
           class="bac-url-input bac-mono"
           aria-label="Request URL"
-          placeholder="https://api.example.com/users?page=1"
+          placeholder="https://api.example.com/users?page=1 — or paste a cURL command"
           spellcheck={false}
           autocomplete="off"
           value={request.url}
-          onInput={(e) => {
-            const url = e.currentTarget.value;
-            update((r) => ({ ...r, url, params: paramsFromUrl(url, r.params) }));
-          }}
+          onPaste={onUrlPaste}
+          onValue={(url) => update((r) => ({ ...r, url, params: paramsFromUrl(url, r.params) }))}
         />
         {sending ? (
           <button key="cancel" type="button" class="bac-btn bac-btn-danger bac-send" onClick={() => cancelSend(tabId)} title="Cancel (Esc)">
@@ -101,6 +151,17 @@ export function RequestEditor({ tabId }: { tabId: string }) {
       {scheme && (
         <p class="bac-url-hint" role="note">
           No scheme typed — this request will be sent over <strong>{scheme}://</strong>
+        </p>
+      )}
+      {unresolved.length > 0 && (
+        <p class="bac-url-hint is-warn" role="note">
+          {env ? `Not defined in “${env.name}”: ` : 'No environment is active, so these stay as typed: '}
+          {unresolved.map((name, i) => (
+            <span key={name}>
+              {i > 0 && ', '}
+              <code>{`{{${name}}}`}</code>
+            </span>
+          ))}
         </p>
       )}
 

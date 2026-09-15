@@ -17,8 +17,17 @@ import { clampMaxHistory, type Theme } from '@/utils/backup';
 import { idbDelete, idbGet } from '@/utils/idb';
 import { DEFAULT_LAYOUT, type Layout, type ResponseData, type TabRun } from './types';
 
+export type DialogState =
+  | null
+  | { type: 'save'; tabId: string }
+  | { type: 'environment'; envId: string }
+  | { type: 'import' }
+  | { type: 'code'; tabId: string };
+
 export interface AppState {
   ready: boolean;
+  dialog: DialogState;
+  toast: { id: number; message: string } | null;
   version: string;
   workspace: Workspace;
   runs: Record<string, TabRun>;
@@ -33,6 +42,8 @@ export interface AppState {
 
 let state: AppState = {
   ready: false,
+  dialog: null,
+  toast: null,
   version: '',
   workspace: wsOps.newWorkspace(),
   runs: {},
@@ -243,4 +254,21 @@ export async function clearHistory(): Promise<void> {
 
 export async function deleteHistory(ids: string[]): Promise<void> {
   await browser.runtime.sendMessage({ action: 'deleteHistory', ids });
+}
+
+// --- dialogs and toasts ---
+
+export function openDialog(dialog: DialogState): void {
+  setState((s) => ({ ...s, dialog }));
+}
+
+export function closeDialog(): void {
+  setState((s) => (s.dialog ? { ...s, dialog: null } : s));
+}
+
+let toastSeq = 0;
+export function showToast(message: string): void {
+  const id = ++toastSeq;
+  setState((s) => ({ ...s, toast: { id, message } }));
+  setTimeout(() => setState((s) => (s.toast?.id === id ? { ...s, toast: null } : s)), 4000);
 }

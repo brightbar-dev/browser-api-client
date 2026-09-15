@@ -7,6 +7,7 @@ import { idbPut } from '@/utils/idb';
 import { useApp } from '../store';
 import { KeyValueEditor } from './KeyValueEditor';
 import { IconClose } from './icons';
+import { VarField } from './VarField';
 
 const MODES: Array<{ id: BodyType; label: string }> = [
   { id: 'none', label: 'None' },
@@ -73,12 +74,13 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
               </datalist>
             </label>
           </div>
-          <textarea
+          <VarField
+            multiline
             class="bac-code-input"
             aria-label="Raw body"
             spellcheck={false}
             value={request.body}
-            onInput={(e) => update((r) => ({ ...r, body: e.currentTarget.value }))}
+            onValue={(body) => update((r) => ({ ...r, body }))}
           />
         </div>
       )}
@@ -145,13 +147,14 @@ function JsonBody({ body, variables, onChange }: { body: string; variables: Arra
           Format
         </button>
       </div>
-      <textarea
+      <VarField
+        multiline
         class="bac-code-input"
         aria-label="JSON body"
         spellcheck={false}
         placeholder={'{\n  "name": "Ada Lovelace"\n}'}
         value={body}
-        onInput={(e) => onChange(e.currentTarget.value)}
+        onValue={onChange}
       />
     </div>
   );
@@ -208,13 +211,13 @@ function MultipartEditor({ fields, onChange }: { fields: MultipartField[]; onCha
               {field?.kind === 'file' ? (
                 <FilePicker label={`File for ${name}`} file={field.file} onChange={(file) => setField(i, { file })} />
               ) : (
-                <input
+                <VarField
                   class="bac-input bac-mono"
                   value={field?.value ?? ''}
                   aria-label={field ? `Value of ${name}` : 'New field value'}
                   spellcheck={false}
                   autocomplete="off"
-                  onInput={(e) => setField(i, { value: e.currentTarget.value })}
+                  onValue={(value) => setField(i, { value })}
                 />
               )}
             </span>
