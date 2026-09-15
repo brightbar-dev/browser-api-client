@@ -3,6 +3,6 @@
     "message": "Browser API Client"
   },
   "appDescription": {
-    "message": "Lightweight API client in your browser. Build requests, inspect responses, manage environments. No account required."
+    "message": "REST client and API tester in a full browser tab: a Postman alternative with collections, OAuth 2.0 and tests. No account."
   }
 }
