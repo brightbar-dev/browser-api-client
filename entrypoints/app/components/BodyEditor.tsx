@@ -8,14 +8,15 @@ import { useApp } from '../store';
 import { KeyValueEditor } from './KeyValueEditor';
 import { IconClose } from './icons';
 import { VarField } from './VarField';
+import { t } from '@/utils/i18n';
 
 const MODES: Array<{ id: BodyType; label: string }> = [
-  { id: 'none', label: 'None' },
+  { id: 'none', label: t('bodyModeNone') },
   { id: 'json', label: 'JSON' },
-  { id: 'form', label: 'Form URL-encoded' },
-  { id: 'multipart', label: 'Multipart form' },
-  { id: 'text', label: 'Raw' },
-  { id: 'binary', label: 'File' },
+  { id: 'form', label: t('bodyModeForm') },
+  { id: 'multipart', label: t('bodyModeMultipart') },
+  { id: 'text', label: t('bodyModeRaw') },
+  { id: 'binary', label: t('bodyFile') },
   { id: 'graphql', label: 'GraphQL' },
 ];
 
@@ -31,7 +32,7 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
 
   return (
     <div class="bac-body-editor">
-      <div class="bac-segmented" role="radiogroup" aria-label="Body type">
+      <div class="bac-segmented" role="radiogroup" aria-label={t('bodyTypeLabel')}>
         {MODES.map((m) => (
           <label key={m.id} class={`bac-seg${mode === m.id ? ' is-on' : ''}`}>
             <input type="radio" name={`bac-body-${tabId}`} checked={mode === m.id} onChange={() => update((r) => ({ ...r, bodyType: m.id }))} />
@@ -42,11 +43,11 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
 
       {mode !== 'none' && !methodAllowsBody(request.method) && (
         <p class="bac-notice bac-notice-warn" role="note">
-          Browsers never send a body with {request.method}. Change the method to send this body.
+          {t('bodyMethodNoBody', request.method)}
         </p>
       )}
 
-      {mode === 'none' && <p class="bac-muted">This request has no body.</p>}
+      {mode === 'none' && <p class="bac-muted">{t('bodyNone')}</p>}
 
       {mode === 'json' && (
         <JsonBody
@@ -78,7 +79,7 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
           <VarField
             multiline
             class="bac-code-input"
-            aria-label="Raw body"
+            aria-label={t('bodyRawLabel')}
             spellcheck={false}
             value={request.body}
             onValue={(body) => update((r) => ({ ...r, body }))}
@@ -88,8 +89,8 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
 
       {mode === 'form' && (
         <KeyValueEditor
-          label="Form fields"
-          keyPlaceholder="Field"
+          label={t('bodyFormFieldsLabel')}
+          keyKind="field"
           rows={request.formFields ?? []}
           onChange={(formFields) => update((r) => ({ ...r, formFields }))}
         />
@@ -106,13 +107,13 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
         <div class="bac-graphql">
           <div class="bac-code-editor">
             <div class="bac-editor-toolbar">
-              <span class="bac-small bac-strong">Query</span>
-              <span class="bac-muted bac-small">Sent as a JSON POST: {'{ "query", "variables" }'}</span>
+              <span class="bac-small bac-strong">{t('bodyGraphqlQuery')}</span>
+              <span class="bac-muted bac-small">{t('bodyGraphqlHint', '{ "query", "variables" }')}</span>
             </div>
             <VarField
               multiline
               class="bac-code-input"
-              aria-label="GraphQL query"
+              aria-label={t('bodyGraphqlQueryLabel')}
               spellcheck={false}
               placeholder={'query User($id: ID!) {\n  user(id: $id) {\n    id\n    name\n  }\n}'}
               value={request.body}
@@ -120,8 +121,8 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
             />
           </div>
           <JsonBody
-            label="GraphQL variables"
-            title="Variables"
+            label={t('bodyGraphqlVariablesLabel')}
+            title={t('bodyGraphqlVariables')}
             body={request.graphqlVariables ?? ''}
             variables={env?.variables ?? []}
             onChange={(graphqlVariables) => update((r) => ({ ...r, graphqlVariables }))}
@@ -131,8 +132,8 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
 
       {mode === 'binary' && (
         <div class="bac-form">
-          <p class="bac-muted">The file’s bytes are sent as the body, with its type as Content-Type unless you set one.</p>
-          <FilePicker label="Body file" file={request.binaryFile} onChange={(binaryFile) => update((r) => ({ ...r, binaryFile }))} />
+          <p class="bac-muted">{t('bodyBinaryHint')}</p>
+          <FilePicker label={t('bodyFileLabel')} file={request.binaryFile} onChange={(binaryFile) => update((r) => ({ ...r, binaryFile }))} />
         </div>
       )}
     </div>
@@ -143,7 +144,7 @@ function JsonBody({
   body,
   variables,
   onChange,
-  label = 'JSON body',
+  label = t('bodyJsonLabel'),
   title,
 }: {
   body: string;
@@ -156,7 +157,7 @@ function JsonBody({
     if (!body.trim()) return null;
     try {
       JSON.parse(interpolate(body, variables));
-      return { ok: true as const, message: 'Valid JSON' };
+      return { ok: true as const, message: t('bodyJsonValid') };
     } catch (e) {
       return { ok: false as const, message: (e as Error).message };
     }
@@ -182,10 +183,10 @@ function JsonBody({
           type="button"
           class="bac-btn bac-btn-small"
           disabled={!formattable}
-          title={formattable ? 'Pretty-print the JSON' : 'Only valid JSON can be formatted'}
+          title={formattable ? t('bodyFormatTitle') : t('bodyFormatDisabledTitle')}
           onClick={() => onChange(prettyJson(body))}
         >
-          Format
+          {t('bodyFormat')}
         </button>
       </div>
       <VarField
@@ -207,31 +208,31 @@ function MultipartEditor({ fields, onChange }: { fields: MultipartField[]; onCha
     else onChange(fields.map((f, i) => (i === index ? { ...f, ...patch } : f)));
   };
   return (
-    <div class="bac-kv bac-kv-multipart" role="table" aria-label="Multipart fields">
+    <div class="bac-kv bac-kv-multipart" role="table" aria-label={t('bodyMultipartLabel')}>
       <div class="bac-kv-row bac-kv-head" role="row">
         <span role="columnheader">
-          <span class="bac-visually-hidden">Enabled</span>
+          <span class="bac-visually-hidden">{t('commonEnabled')}</span>
         </span>
-        <span role="columnheader">Field</span>
-        <span role="columnheader">Type</span>
-        <span role="columnheader">Value</span>
+        <span role="columnheader">{t('kvField')}</span>
+        <span role="columnheader">{t('bodyMultipartType')}</span>
+        <span role="columnheader">{t('commonValue')}</span>
         <span role="columnheader">
-          <span class="bac-visually-hidden">Remove</span>
+          <span class="bac-visually-hidden">{t('commonRemove')}</span>
         </span>
       </div>
       {[...fields, null].map((field, i) => {
-        const name = field?.key || `field ${i + 1}`;
+        const name = field?.key || t('kvFieldN', i + 1);
         return (
           <div key={i} role="row" class={`bac-kv-row${field && !field.enabled ? ' is-disabled' : ''}${field ? '' : ' is-new'}`}>
             <span role="cell" class="bac-kv-check">
-              {field && <input type="checkbox" checked={field.enabled} aria-label={`Include ${name}`} onChange={(e) => setField(i, { enabled: e.currentTarget.checked })} />}
+              {field && <input type="checkbox" checked={field.enabled} aria-label={t('kvIncludeNamed', name)} onChange={(e) => setField(i, { enabled: e.currentTarget.checked })} />}
             </span>
             <span role="cell">
               <input
                 class="bac-input bac-mono"
                 value={field?.key ?? ''}
-                placeholder={field ? '' : 'Add field'}
-                aria-label={field ? `Name of ${name}` : 'New field name'}
+                placeholder={field ? '' : t('kvAddField')}
+                aria-label={field ? t('kvNameOf', name) : t('bodyMultipartNewName')}
                 spellcheck={false}
                 autocomplete="off"
                 onInput={(e) => setField(i, { key: e.currentTarget.value })}
@@ -240,22 +241,22 @@ function MultipartEditor({ fields, onChange }: { fields: MultipartField[]; onCha
             <span role="cell">
               <select
                 class="bac-select"
-                aria-label={`Type of ${name}`}
+                aria-label={t('bodyMultipartTypeOf', name)}
                 value={field?.kind ?? 'text'}
                 onChange={(e) => setField(i, { kind: e.currentTarget.value === 'file' ? 'file' : 'text' })}
               >
-                <option value="text">Text</option>
-                <option value="file">File</option>
+                <option value="text">{t('bodyMultipartText')}</option>
+                <option value="file">{t('bodyFile')}</option>
               </select>
             </span>
             <span role="cell">
               {field?.kind === 'file' ? (
-                <FilePicker label={`File for ${name}`} file={field.file} onChange={(file) => setField(i, { file })} />
+                <FilePicker label={t('bodyMultipartFileFor', name)} file={field.file} onChange={(file) => setField(i, { file })} />
               ) : (
                 <VarField
                   class="bac-input bac-mono"
                   value={field?.value ?? ''}
-                  aria-label={field ? `Value of ${name}` : 'New field value'}
+                  aria-label={field ? t('kvValueOf', name) : t('bodyMultipartNewValue')}
                   spellcheck={false}
                   autocomplete="off"
                   onValue={(value) => setField(i, { value })}
@@ -264,7 +265,7 @@ function MultipartEditor({ fields, onChange }: { fields: MultipartField[]; onCha
             </span>
             <span role="cell" class="bac-kv-del">
               {field && (
-                <button type="button" class="bac-icon-btn" aria-label={`Remove ${name}`} title="Remove" onClick={() => onChange(fields.filter((_, j) => j !== i))}>
+                <button type="button" class="bac-icon-btn" aria-label={t('commonRemoveNamed', name)} title={t('commonRemove')} onClick={() => onChange(fields.filter((_, j) => j !== i))}>
                   <IconClose />
                 </button>
               )}
@@ -292,14 +293,14 @@ function FilePicker({ label, file, onChange }: { label: string; file?: FileRef; 
           {file.name} <span class="bac-muted">{formatSize(file.size)}</span>
         </span>
       ) : (
-        <span class="bac-muted">No file chosen</span>
+        <span class="bac-muted">{t('bodyNoFile')}</span>
       )}
       <label class="bac-btn bac-btn-small">
-        {file ? 'Replace…' : 'Choose file…'}
+        {file ? t('bodyReplaceFile') : t('commonChooseFile')}
         <input type="file" class="bac-visually-hidden" aria-label={label} onChange={(e) => void pick(e.currentTarget)} />
       </label>
       {file && (
-        <button type="button" class="bac-icon-btn" aria-label={`Remove ${file.name}`} title="Remove file" onClick={() => onChange(undefined)}>
+        <button type="button" class="bac-icon-btn" aria-label={t('commonRemoveNamed', file.name)} title={t('bodyRemoveFile')} onClick={() => onChange(undefined)}>
           <IconClose />
         </button>
       )}

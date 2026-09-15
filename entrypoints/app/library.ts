@@ -12,6 +12,7 @@ import type { Environment } from '@/utils/environment';
 import { duplicateEnvironment, newEnvironment } from '@/utils/environment';
 import { markTabSaved, updateTabRequest } from '@/utils/workspace';
 import { findTab, getState, openDialog, openRequest, setActiveEnv, setState, showToast, updateWorkspace } from './store';
+import { t } from '@/utils/i18n';
 
 let collectionsTimer: ReturnType<typeof setTimeout> | undefined;
 let environmentsTimer: ReturnType<typeof setTimeout> | undefined;
@@ -41,7 +42,7 @@ export function updateCollection(id: string, fn: (c: Collection) => Collection, 
   );
 }
 
-export function createCollection(name = 'New collection'): Collection {
+export function createCollection(name = t('collectionDefaultName')): Collection {
   const c = col.newCollection(name);
   c.folders = [];
   commitCollections([...getState().collections, c]);
@@ -117,7 +118,7 @@ export function updateEnvironment(id: string, fn: (e: Environment) => Environmen
   );
 }
 
-export function createEnvironment(name = 'New environment'): Environment {
+export function createEnvironment(name = t('envDefaultName')): Environment {
   const env = newEnvironment(name);
   env.variables = [];
   commitEnvironments([...getState().environments, env]);
@@ -138,7 +139,7 @@ export function duplicateEnvironmentById(id: string): void {
 
 /** Cmd/Ctrl+S: save in place when the tab has a home, otherwise ask where. */
 export function requestSave(tabId: string): void {
-  if (saveTabInPlace(tabId)) showToast('Saved');
+  if (saveTabInPlace(tabId)) showToast(t('requestSavedToast'));
   else openDialog({ type: 'save', tabId });
 }
 

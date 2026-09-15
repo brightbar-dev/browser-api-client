@@ -11,9 +11,16 @@ import type { ResponseData, TabRun } from '../types';
 import { JsonTree } from './JsonTree';
 import { SEND_SHORTCUT } from './RequestEditor';
 import { IconChevronDown, IconChevronUp, IconCopy, IconDownload, IconSearch } from './icons';
+import { t, tParts } from '@/utils/i18n';
 
 type Mode = 'pretty' | 'tree' | 'raw' | 'preview' | 'hex';
-const MODE_LABELS: Record<Mode, string> = { pretty: 'Pretty', tree: 'Tree', raw: 'Raw', preview: 'Preview', hex: 'Hex' };
+const MODE_LABELS: Record<Mode, string> = {
+  pretty: t('responseModePretty'),
+  tree: t('responseModeTree'),
+  raw: t('responseModeRaw'),
+  preview: t('responseModePreview'),
+  hex: t('responseModeHex'),
+};
 const modeMemory = new Map<string, Mode>();
 
 function modesFor(kind: BodyKind): Mode[] {
@@ -41,20 +48,20 @@ export function ResponsePane({ tabId }: { tabId: string }) {
   const run = useApp((s) => s.runs[tabId]);
 
   return (
-    <section class="bac-response" aria-label="Response" aria-busy={run?.state === 'sending' || run?.state === 'streaming'}>
+    <section class="bac-response" aria-label={t('responseSectionLabel')} aria-busy={run?.state === 'sending' || run?.state === 'streaming'}>
       {!run && <EmptyResponse />}
       {run?.state === 'sending' && <SendingBar startedAt={run.startedAt ?? Date.now()} onCancel={() => cancelSend(tabId)} />}
       {run?.state === 'streaming' && (
         <div class="bac-sending" role="status">
           <span class="bac-live-dot" aria-hidden="true" />
-          <span>Receiving events… {run.response?.events?.length ?? 0} so far</span>
+          <span>{t('responseReceivingEvents', run.response?.events?.length ?? 0)}</span>
           <button type="button" class="bac-btn bac-btn-small" onClick={() => cancelSend(tabId)}>
-            Stop
+            {t('commonStop')}
           </button>
         </div>
       )}
       {run && run.warnings.length > 0 && (
-        <ul class="bac-notice bac-notice-warn bac-warnings" aria-label="Warnings">
+        <ul class="bac-notice bac-notice-warn bac-warnings" aria-label={t('responseWarningsLabel')}>
           {run.warnings.map((w) => (
             <li key={w}>{w}</li>
           ))}
@@ -76,21 +83,18 @@ function EmptyResponse() {
   if (!welcomed) {
     return (
       <div class="bac-empty bac-welcome">
-        <p class="bac-empty-title">Welcome to Browser API Client</p>
+        <p class="bac-empty-title">{t('responseWelcomeTitle')}</p>
         <ul class="bac-welcome-list">
+          <li>{tParts('responseWelcomeSample', <strong>httpbin.org</strong>, <kbd>{t('requestSend')}</kbd>, <kbd>{SEND_SHORTCUT}</kbd>)}</li>
+          <li>{t('responseWelcomePrivacy')}</li>
+          <li>{tParts('responseWelcomeImport', <strong>{t('importButton')}</strong>)}</li>
           <li>
-            The tab above is a sample request to <strong>httpbin.org</strong>, a public echo service. Nothing is sent until you press <kbd>Send</kbd> or <kbd>{SEND_SHORTCUT}</kbd>.
-          </li>
-          <li>No account, no sync, no tracking — your requests, tokens and collections stay in this browser.</li>
-          <li>
-            Already have requests? Use <strong>Import</strong> for a cURL command, an OpenAPI spec, a Postman collection or a HAR file.
-          </li>
-          <li>
-            Press{' '}
-            <button type="button" class="bac-link-btn" onClick={() => openDialog({ type: 'shortcuts' })}>
-              <kbd>?</kbd> for keyboard shortcuts
-            </button>
-            .
+            {tParts(
+              'responseWelcomeShortcuts',
+              <button type="button" class="bac-link-btn" onClick={() => openDialog({ type: 'shortcuts' })}>
+                {tParts('responseWelcomeShortcutsLink', <kbd>?</kbd>)}
+              </button>,
+            )}
           </li>
         </ul>
       </div>
@@ -98,10 +102,8 @@ function EmptyResponse() {
   }
   return (
     <div class="bac-empty">
-      <p class="bac-empty-title">No response yet</p>
-      <p class="bac-muted">
-        Enter a URL and press <kbd>Send</kbd> or <kbd>{SEND_SHORTCUT}</kbd>. The response appears here with its status, timing, headers and body.
-      </p>
+      <p class="bac-empty-title">{t('responseEmptyTitle')}</p>
+      <p class="bac-muted">{tParts('responseEmptyHint', <kbd>{t('requestSend')}</kbd>, <kbd>{SEND_SHORTCUT}</kbd>)}</p>
     </div>
   );
 }
@@ -115,9 +117,9 @@ function SendingBar({ startedAt, onCancel }: { startedAt: number; onCancel: () =
   return (
     <div class="bac-sending" role="status">
       <span class="bac-spinner" aria-hidden="true" />
-      <span>Sending… {formatTime(now - startedAt)}</span>
+      <span>{t('responseSending', formatTime(now - startedAt))}</span>
       <button type="button" class="bac-btn bac-btn-small" onClick={onCancel}>
-        Cancel
+        {t('commonCancel')}
       </button>
     </div>
   );
@@ -142,7 +144,13 @@ function ResponseView({ tabId, run, response, stale }: { tabId: string; run: Tab
   const color = statusColor(response.status);
   const download = Math.max(0, response.time - response.ttfb);
   const passed = tests.filter((t) => t.pass).length;
-  const labels: Record<ResTab, string> = { events: 'Events', body: 'Body', headers: 'Headers', cookies: 'Cookies', tests: 'Tests' };
+  const labels: Record<ResTab, string> = {
+    events: t('responseTabEvents'),
+    body: t('responseTabBody'),
+    headers: t('responseTabHeaders'),
+    cookies: t('responseTabCookies'),
+    tests: t('responseTabTests'),
+  };
   const badges: Partial<Record<ResTab, string>> = {
     events: String(response.events?.length ?? 0),
     headers: String(response.headers.length),
@@ -154,22 +162,27 @@ function ResponseView({ tabId, run, response, stale }: { tabId: string; run: Tab
     <div class={`bac-response-view${stale ? ' is-stale' : ''}`}>
       <div class="bac-response-bar">
         <span class={`bac-status s-${color}`}>{statusLabel(response.status, response.statusText)}</span>
-        <span class="bac-metric" title={`Waiting for headers ${formatTime(response.ttfb)} · Downloading body ${formatTime(download)}`}>
+        <span class="bac-metric" title={t('responseTimingTitle', formatTime(response.ttfb), formatTime(download))}>
           {formatTime(response.time)}
         </span>
         <span class="bac-metric">{formatSize(response.size)}</span>
         {response.redirected && (
-          <button type="button" class="bac-badge" title={`Redirects were followed. Final URL: ${response.url}`} onClick={() => setTab('headers')}>
-            {response.redirects?.length ? `${response.redirects.length} redirect${response.redirects.length === 1 ? '' : 's'}` : 'Redirected'} → {shortUrl(response.url)}
+          <button type="button" class="bac-badge" title={t('responseRedirectedTitle', response.url)} onClick={() => setTab('headers')}>
+            {response.redirects?.length
+              ? response.redirects.length === 1
+                ? t('responseRedirectsOne', 1)
+                : t('responseRedirectsOther', response.redirects.length)
+              : t('responseRedirected')}{' '}
+            → {shortUrl(response.url)}
           </button>
         )}
         {tests.length > 0 && (
           <button type="button" class={`bac-test-pill${passed === tests.length ? ' is-pass' : ' is-fail'}`} onClick={() => setTab('tests')}>
-            {passed === tests.length ? `✓ ${passed} passed` : `✗ ${tests.length - passed} failed`}
+            {passed === tests.length ? `✓ ${t('testsCountPassed', passed)}` : `✗ ${t('testsCountFailed', tests.length - passed)}`}
           </button>
         )}
         <div class="bac-spacer" />
-        <div role="tablist" aria-label="Response parts" class="bac-subtabs bac-subtabs-inline">
+        <div role="tablist" aria-label={t('responsePartsLabel')} class="bac-subtabs bac-subtabs-inline">
           {available.map((t) => (
             <button
               key={t}
@@ -206,17 +219,19 @@ function TestsView({ run }: { run: TabRun }) {
     <div class="bac-scroll bac-results">
       {tests.length > 0 && (
         <section>
-          <h3 class="bac-results-title">{passed === tests.length ? `All ${tests.length} tests passed` : `${tests.length - passed} of ${tests.length} tests failed`}</h3>
+          <h3 class="bac-results-title">{passed === tests.length ? t('responseAllTestsPassed', tests.length) : t('responseSomeTestsFailed', tests.length - passed, tests.length)}</h3>
           <ul class="bac-test-list">
-            {tests.map((t) => (
-              <li key={t.id} class={t.pass ? 'is-pass' : 'is-fail'}>
+            {tests.map((test) => (
+              <li key={test.id} class={test.pass ? 'is-pass' : 'is-fail'}>
                 <span class="bac-test-icon" aria-hidden="true">
-                  {t.pass ? '✓' : '✗'}
+                  {test.pass ? '✓' : '✗'}
                 </span>
                 <span>
-                  <span class="bac-visually-hidden">{t.pass ? 'Passed: ' : 'Failed: '}</span>
-                  <span class="bac-test-label">{t.label}</span>
-                  {!t.pass && <span class="bac-test-msg">{t.message}</span>}
+                  <span class="bac-visually-hidden">
+                    {test.pass ? t('responseTestPassed') : t('responseTestFailed')}{' '}
+                  </span>
+                  <span class="bac-test-label">{test.label}</span>
+                  {!test.pass && <span class="bac-test-msg">{test.message}</span>}
                 </span>
               </li>
             ))}
@@ -225,7 +240,7 @@ function TestsView({ run }: { run: TabRun }) {
       )}
       {extracted.length > 0 && (
         <section>
-          <h3 class="bac-results-title">Variables from this response</h3>
+          <h3 class="bac-results-title">{t('responseExtractedTitle')}</h3>
           <ul class="bac-test-list">
             {extracted.map((x) => (
               <li key={x.id} class={x.ok ? 'is-pass' : 'is-fail'}>
@@ -259,7 +274,7 @@ function EventsView({ response, live }: { response: ResponseData; live: boolean 
     if (live && ref.current) ref.current.scrollTop = ref.current.scrollHeight;
   }, [events.length, live]);
   if (!events.length) {
-    return <p class="bac-muted bac-pad">{live ? 'Connected. Waiting for the first event…' : 'The stream ended without sending any events.'}</p>;
+    return <p class="bac-muted bac-pad">{live ? t('responseEventsWaiting') : t('responseEventsNone')}</p>;
   }
   const first = events[0]!.receivedAt;
   return (
@@ -268,10 +283,10 @@ function EventsView({ response, live }: { response: ResponseData; live: boolean 
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Arrived</th>
-            <th scope="col">Event</th>
-            <th scope="col">ID</th>
-            <th scope="col">Data</th>
+            <th scope="col">{t('responseEventsArrived')}</th>
+            <th scope="col">{t('responseEventsEvent')}</th>
+            <th scope="col">{t('responseEventsId')}</th>
+            <th scope="col">{t('responseEventsData')}</th>
           </tr>
         </thead>
         <tbody>
@@ -286,7 +301,7 @@ function EventsView({ response, live }: { response: ResponseData; live: boolean 
           ))}
         </tbody>
       </table>
-      {!live && <p class="bac-muted bac-pad">{response.streamStopped ? `You stopped the stream after ${events.length} events.` : `The server closed the stream after ${events.length} events.`}</p>}
+      {!live && <p class="bac-muted bac-pad">{response.streamStopped ? t('responseEventsStopped', events.length) : t('responseEventsClosed', events.length)}</p>}
     </div>
   );
 }
@@ -306,8 +321,8 @@ function HeadersTable({ response }: { response: ResponseData }) {
   return (
     <div class="bac-scroll">
       {hops.length > 0 && (
-        <section class="bac-redirects" aria-label="Redirect chain">
-          <h3 class="bac-results-title">Redirect chain</h3>
+        <section class="bac-redirects" aria-label={t('responseRedirectChain')}>
+          <h3 class="bac-results-title">{t('responseRedirectChain')}</h3>
           <ol class="bac-hops">
             {hops.map((hop, i) => (
               <li key={i}>
@@ -323,8 +338,8 @@ function HeadersTable({ response }: { response: ResponseData }) {
       <table class="bac-table">
         <thead>
           <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Value</th>
+            <th scope="col">{t('commonName')}</th>
+            <th scope="col">{t('commonValue')}</th>
           </tr>
         </thead>
         <tbody>
@@ -342,7 +357,7 @@ function HeadersTable({ response }: { response: ResponseData }) {
           ))}
         </tbody>
       </table>
-      {response.cookies === undefined && <p class="bac-muted bac-pad">Set-Cookie headers can’t be shown in this browser, so they are not listed here.</p>}
+      {response.cookies === undefined && <p class="bac-muted bac-pad">{t('responseSetCookieUnavailable')}</p>}
     </div>
   );
 }
@@ -354,28 +369,28 @@ function CookiesView({ response }: { response: ResponseData }) {
       <table class="bac-table bac-cookies-table">
         <thead>
           <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Value</th>
-            <th scope="col">Domain / Path</th>
-            <th scope="col">Expires</th>
-            <th scope="col">Flags</th>
+            <th scope="col">{t('commonName')}</th>
+            <th scope="col">{t('commonValue')}</th>
+            <th scope="col">{t('responseCookieDomainPath')}</th>
+            <th scope="col">{t('responseCookieExpires')}</th>
+            <th scope="col">{t('responseCookieFlags')}</th>
           </tr>
         </thead>
         <tbody>
           {cookies.map((c, i) => (
-            <tr key={i} title={`Set by ${c.from}`}>
+            <tr key={i} title={t('responseCookieSetBy', c.from)}>
               <td class="bac-mono">{c.name}</td>
               <td class="bac-mono bac-break">{c.value}</td>
               <td class="bac-mono">
-                {c.domain ?? '(this host)'} {c.path ?? '/'}
+                {c.domain ?? t('responseCookieThisHost')} {c.path ?? '/'}
               </td>
-              <td class="bac-mono">{c.maxAge ? `in ${c.maxAge} s` : (c.expires ?? 'session')}</td>
+              <td class="bac-mono">{c.maxAge ? t('responseCookieMaxAge', c.maxAge) : (c.expires ?? t('responseCookieSession'))}</td>
               <td class="bac-small">{[c.httpOnly && 'HttpOnly', c.secure && 'Secure', c.sameSite && `SameSite=${c.sameSite}`, c.partitioned && 'Partitioned'].filter(Boolean).join(' · ') || '—'}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p class="bac-muted bac-pad">These cookies came with the response. They are not added to your browser unless the request was sent with “Send this site’s cookies”.</p>
+      <p class="bac-muted bac-pad">{t('responseCookiesNote', t('requestSendCookies'))}</p>
     </div>
   );
 }
@@ -402,7 +417,7 @@ function BodyViewer({ tabId, response }: { tabId: string; response: ResponseData
   useEffect(() => setCurrent(0), [query, mode]);
 
   if (response.kind === 'empty') {
-    return <p class="bac-muted bac-pad">The response has no body.</p>;
+    return <p class="bac-muted bac-pad">{t('responseNoBody')}</p>;
   }
 
   const step = (dir: 1 | -1) => {
@@ -414,7 +429,7 @@ function BodyViewer({ tabId, response }: { tabId: string; response: ResponseData
     <div class="bac-bodyview">
       <div class="bac-body-toolbar">
         {modes.length > 1 && (
-          <div class="bac-segmented bac-segmented-small" role="radiogroup" aria-label="Body view">
+          <div class="bac-segmented bac-segmented-small" role="radiogroup" aria-label={t('responseBodyViewLabel')}>
             {modes.map((m) => (
               <label key={m} class={`bac-seg${mode === m ? ' is-on' : ''}`}>
                 <input type="radio" name={`bac-bodyview-${tabId}`} checked={mode === m} onChange={() => setMode(m)} />
@@ -429,8 +444,8 @@ function BodyViewer({ tabId, response }: { tabId: string; response: ResponseData
             <input
               type="search"
               class="bac-search-input"
-              placeholder="Find in body"
-              aria-label="Find in response body"
+              placeholder={t('responseFindPlaceholder')}
+              aria-label={t('responseFindLabel')}
               value={query}
               onInput={(e) => setQuery(e.currentTarget.value)}
               onKeyDown={(e) => {
@@ -442,13 +457,13 @@ function BodyViewer({ tabId, response }: { tabId: string; response: ResponseData
             />
             {query && (
               <span class="bac-search-count" aria-live="polite">
-                {matches.length ? `${current + 1} of ${matches.length >= 5000 ? '5000+' : matches.length}` : 'No matches'}
+                {matches.length ? t('responseMatchCount', current + 1, matches.length >= 5000 ? '5000+' : matches.length) : t('responseNoMatches')}
               </span>
             )}
-            <button type="button" class="bac-icon-btn" aria-label="Previous match" disabled={!matches.length} onClick={() => step(-1)}>
+            <button type="button" class="bac-icon-btn" aria-label={t('responsePrevMatch')} disabled={!matches.length} onClick={() => step(-1)}>
               <IconChevronUp />
             </button>
-            <button type="button" class="bac-icon-btn" aria-label="Next match" disabled={!matches.length} onClick={() => step(1)}>
+            <button type="button" class="bac-icon-btn" aria-label={t('responseNextMatch')} disabled={!matches.length} onClick={() => step(1)}>
               <IconChevronDown />
             </button>
           </div>
@@ -456,18 +471,18 @@ function BodyViewer({ tabId, response }: { tabId: string; response: ResponseData
         <div class="bac-spacer" />
         {response.text !== undefined && (
           <button type="button" class="bac-btn bac-btn-small" onClick={() => void navigator.clipboard.writeText(mode === 'pretty' ? pretty : (response.text ?? ''))}>
-            <IconCopy /> Copy
+            <IconCopy /> {t('commonCopy')}
           </button>
         )}
         <button type="button" class="bac-btn bac-btn-small" onClick={() => downloadResponse(response)}>
-          <IconDownload /> Download
+          <IconDownload /> {t('responseDownload')}
         </button>
       </div>
       <div class="bac-body-content">
         {searchable && <CodeView text={text} json={mode === 'pretty' && response.kind === 'json'} matches={query ? matches : []} current={current} />}
         {mode === 'tree' && <TreeView text={response.text ?? ''} />}
         {mode === 'preview' && response.kind === 'html' && (
-          <iframe class="bac-preview-frame" sandbox="" srcdoc={response.text} title="HTML preview (scripts disabled)" />
+          <iframe class="bac-preview-frame" sandbox="" srcdoc={response.text} title={t('responseHtmlPreviewTitle')} />
         )}
         {mode === 'preview' && response.kind === 'image' && <ImagePreview response={response} />}
         {mode === 'hex' && <BinaryView response={response} />}
@@ -523,7 +538,7 @@ function TreeView({ text }: { text: string }) {
       return { ok: false as const, message: (e as Error).message };
     }
   }, [text]);
-  if (!parsed.ok) return <p class="bac-notice bac-notice-warn">This body isn’t valid JSON: {parsed.message}</p>;
+  if (!parsed.ok) return <p class="bac-notice bac-notice-warn">{t('responseInvalidJson', parsed.message)}</p>;
   return <JsonTree value={parsed.value} />;
 }
 
@@ -540,11 +555,11 @@ function ImagePreview({ response }: { response: ResponseData }) {
     <div class="bac-image-preview">
       <img
         src={url}
-        alt={`Image response from ${shortUrl(response.url)}`}
+        alt={t('responseImageAlt', shortUrl(response.url))}
         onLoad={(e) => setDims(`${e.currentTarget.naturalWidth} × ${e.currentTarget.naturalHeight}`)}
       />
       <p class="bac-muted">
-        {response.contentType || 'image'} · {formatSize(response.size)}
+        {response.contentType || t('responseImageFallbackType')} · {formatSize(response.size)}
         {dims && ` · ${dims}`}
       </p>
     </div>
@@ -556,7 +571,7 @@ function BinaryView({ response }: { response: ResponseData }) {
   return (
     <div class="bac-binary">
       <p class="bac-muted bac-pad">
-        Binary response · {response.contentType || 'no content type'} · {formatSize(response.size)}. The first {Math.min(response.size, 1024)} bytes are shown; download it to see the rest.
+        {t('responseBinarySummary', response.contentType || t('responseNoContentType'), formatSize(response.size), Math.min(response.size, 1024))}
       </p>
       <pre class="bac-code">{dump}</pre>
     </div>

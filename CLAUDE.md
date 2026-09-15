@@ -51,6 +51,7 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - No account, no pairing, no cloud — ever. Everything stays in the browser.
 - UI framework: Preact (MIT, ~10 KB), because the workspace is large enough that declarative rendering removes a class of stale-DOM bugs. Keep logic in `utils/` (Node-tested); components stay thin.
 - All DOM classes are prefixed with `bac-`
+- UI strings live in `public/_locales/en/messages.json` and are read with `t(key, ...subs)` from `utils/i18n.ts` (browser i18n, English fallback in Node). `tests/i18n.test.ts` fails on a `t()` key missing from messages.json or a message key no code uses; add the key when you add text. Other locales fall back to English until translated.
 
 ## Store listing assets
 - `store/cws.json` — listing copy, single purpose and permission justifications (the dashboard is updated from it by hand).

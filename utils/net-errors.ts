@@ -3,6 +3,8 @@
  * webRequest API reports the real cause (Chrome `net::ERR_*`, Firefox `NS_ERROR_*`).
  */
 
+import { t } from './i18n';
+
 export type NetErrorKind = 'dns' | 'refused' | 'timeout' | 'tls' | 'offline' | 'blocked' | 'reset' | 'protocol' | 'redirects' | 'unsafe-port' | 'unknown';
 
 export interface NetErrorInfo {
@@ -30,23 +32,36 @@ export function classifyNetError(code: string): NetErrorKind {
   return RULES.find((r) => r.test.test(code))?.kind ?? 'unknown';
 }
 
+function texts(kind: NetErrorKind, where: string): [string, string] {
+  switch (kind) {
+    case 'dns':
+      return [t('errorHostNotFoundTitle'), t('errorHostNotFoundDetail', where)];
+    case 'refused':
+      return [t('errorConnectionRefusedTitle'), t('errorConnectionRefusedDetail', where)];
+    case 'timeout':
+      return [t('errorConnectionTimedOutTitle'), t('errorConnectionTimedOutDetail', where)];
+    case 'tls':
+      return [t('errorTlsTitle'), t('errorTlsDetail', where)];
+    case 'offline':
+      return [t('errorOfflineTitle'), t('errorOfflineDetail')];
+    case 'blocked':
+      return [t('errorBlockedTitle'), t('errorBlockedDetail', where)];
+    case 'reset':
+      return [t('errorConnectionDroppedTitle'), t('errorConnectionDroppedDetail', where)];
+    case 'protocol':
+      return [t('errorInvalidResponseTitle'), t('errorInvalidResponseDetail', where)];
+    case 'redirects':
+      return [t('errorTooManyRedirectsTitle'), t('errorTooManyRedirectsDetail', where)];
+    case 'unsafe-port':
+      return [t('errorUnsafePortTitle'), t('errorUnsafePortDetail', where)];
+    case 'unknown':
+      return [t('errorCouldNotConnectTitle'), t('errorNoResponseFrom', where)];
+  }
+}
+
 /** A title and next step for a browser network error code, naming the host. */
 export function describeNetError(code: string, host: string): NetErrorInfo {
   const kind = classifyNetError(code);
-  const where = host || 'the server';
-  const texts: Record<NetErrorKind, [string, string]> = {
-    dns: ['Host not found', `The name ${where} could not be resolved (DNS). Check the spelling, or whether the host only exists on a VPN or local network.`],
-    refused: ['Connection refused', `Nothing accepted the connection at ${where}. Is the server running, and on that port?`],
-    timeout: ['Connection timed out', `${where} did not answer in time. The host may be down, firewalled, or unreachable from this network.`],
-    tls: ['Secure connection failed', `The TLS connection to ${where} failed. The certificate may be self-signed, expired or issued for another name, or the server may not speak https on this port. Open the URL in a normal tab to see the details, or use http:// for a local server.`],
-    offline: ['No network', 'This computer appears to be offline or changed networks during the request.'],
-    blocked: ['Blocked in the browser', `Another extension, a browser policy or an administrator blocked this request to ${where}.`],
-    reset: ['Connection dropped', `${where} closed the connection before sending a complete response.`],
-    protocol: ['Invalid response', `${where} sent a response the browser could not read (a protocol or framing error).`],
-    redirects: ['Too many redirects', `${where} kept redirecting. Check for a redirect loop between http and https or between hosts.`],
-    'unsafe-port': ['Port blocked by the browser', `Browsers refuse to connect to this port because it belongs to another protocol (for example SMTP or IRC). Use a different port for ${where}.`],
-    unknown: ['Could not connect', `No response from ${where}.`],
-  };
-  const [title, detail] = texts[kind];
-  return { kind, title, detail: kind === 'unknown' ? `${detail} The browser reported ${code}.` : detail, code };
+  const [title, detail] = texts(kind, host || t('errorTheServer'));
+  return { kind, title, detail: kind === 'unknown' ? t('errorBrowserReported', detail, code) : detail, code };
 }

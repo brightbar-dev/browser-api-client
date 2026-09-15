@@ -26,11 +26,12 @@ import type { SidebarPanel } from '../types';
 import { Splitter } from './Splitter';
 import { Menu } from './Menu';
 import { IconChevronRight, IconClose, IconPlus } from './icons';
+import { t, tParts } from '@/utils/i18n';
 
 const PANELS: Array<{ id: SidebarPanel; label: string }> = [
-  { id: 'history', label: 'History' },
-  { id: 'collections', label: 'Collections' },
-  { id: 'environments', label: 'Environments' },
+  { id: 'history', label: t('sidebarHistory') },
+  { id: 'collections', label: t('sidebarCollections') },
+  { id: 'environments', label: t('sidebarEnvironments') },
 ];
 
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
@@ -39,8 +40,8 @@ export function Sidebar() {
   const panel = useApp((s) => s.layout.sidebarPanel);
   const width = useApp((s) => s.layout.sidebarWidth);
   return (
-    <aside class="bac-sidebar" aria-label="Library">
-      <div role="tablist" aria-label="Library sections" class="bac-side-tabs">
+    <aside class="bac-sidebar" aria-label={t('sidebarLabel')}>
+      <div role="tablist" aria-label={t('sidebarSectionsLabel')} class="bac-side-tabs">
         {PANELS.map((p) => (
           <button
             key={p.id}
@@ -63,7 +64,7 @@ export function Sidebar() {
       </div>
       <Splitter
         orientation="vertical"
-        label="Resize sidebar"
+        label={t('sidebarResize')}
         value={width}
         min={200}
         max={520}
@@ -119,12 +120,12 @@ function RenameInput({ value, label, onDone }: { value: string; label: string; o
 // --- history ---
 
 const STATUS_FILTERS: Array<{ id: StatusFilter; label: string }> = [
-  { id: 'all', label: 'Status' },
+  { id: 'all', label: t('historyFilterStatusAll') },
   { id: '2xx', label: '2xx' },
   { id: '3xx', label: '3xx' },
   { id: '4xx', label: '4xx' },
   { id: '5xx', label: '5xx' },
-  { id: 'error', label: 'Failed' },
+  { id: 'error', label: t('historyFilterFailed') },
 ];
 
 function timeOf(ts: number): string {
@@ -139,22 +140,22 @@ function HistoryPanel() {
   const groups = useMemo(() => groupByDay(filterHistory(history, { query, method, status })), [history, query, method, status]);
 
   if (!history.length) {
-    return <Empty title="No history yet">Every request you send is kept here, newest first, so you can open it again.</Empty>;
+    return <Empty title={t('historyEmptyTitle')}>{t('historyEmptyHint')}</Empty>;
   }
   return (
     <>
       <div class="bac-side-toolbar bac-side-toolbar-stack">
-        <input type="search" class="bac-input" placeholder="Search URL or name" aria-label="Search history" value={query} onInput={(e) => setQuery(e.currentTarget.value)} />
+        <input type="search" class="bac-input" placeholder={t('historySearchPlaceholder')} aria-label={t('historySearchLabel')} value={query} onInput={(e) => setQuery(e.currentTarget.value)} />
         <div class="bac-row">
-          <select class="bac-select" aria-label="Filter by method" value={method} onChange={(e) => setMethod(e.currentTarget.value)}>
-            <option value="all">Method</option>
+          <select class="bac-select" aria-label={t('historyFilterMethodLabel')} value={method} onChange={(e) => setMethod(e.currentTarget.value)}>
+            <option value="all">{t('historyFilterMethodAll')}</option>
             {HTTP_METHODS.map((m) => (
               <option key={m} value={m}>
                 {m}
               </option>
             ))}
           </select>
-          <select class="bac-select" aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.currentTarget.value as StatusFilter)}>
+          <select class="bac-select" aria-label={t('historyFilterStatusLabel')} value={status} onChange={(e) => setStatus(e.currentTarget.value as StatusFilter)}>
             {STATUS_FILTERS.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.label}
@@ -165,10 +166,10 @@ function HistoryPanel() {
             type="button"
             class="bac-btn bac-btn-small"
             onClick={() => {
-              if (window.confirm('Clear all request history?')) void clearHistory();
+              if (window.confirm(t('historyClearConfirm'))) void clearHistory();
             }}
           >
-            Clear
+            {t('commonClear')}
           </button>
         </div>
       </div>
@@ -182,7 +183,7 @@ function HistoryPanel() {
           </ul>
         </section>
       ))}
-      {!groups.length && <p class="bac-muted bac-pad">No requests match these filters.</p>}
+      {!groups.length && <p class="bac-muted bac-pad">{t('historyNoMatches')}</p>}
     </>
   );
 }
@@ -194,15 +195,15 @@ function HistoryRow({ entry }: { entry: HistoryEntry }) {
       <button
         type="button"
         class="bac-list-item"
-        title={`${request.method} ${request.url}\n${response.status ? `${response.status} ${response.statusText}` : response.statusText} · ${response.time} ms`}
+        title={`${request.method} ${request.url}\n${response.status ? `${response.status} ${response.statusText}` : response.statusText} · ${t('commonMs', response.time)}`}
         onClick={() => openRequest({ ...request, id: generateId() })}
       >
         <span class={`bac-method-tag m-${request.method.toLowerCase()}`}>{request.method}</span>
-        <span class="bac-list-main bac-mono">{request.name && request.name !== 'New Request' ? request.name : displayUrl(request.url) || '(no URL)'}</span>
-        <span class={`bac-status-mini s-${statusColor(response.status)}`}>{response.status || 'ERR'}</span>
+        <span class="bac-list-main bac-mono">{request.name && request.name !== 'New Request' ? request.name : displayUrl(request.url) || t('historyNoUrl')}</span>
+        <span class={`bac-status-mini s-${statusColor(response.status)}`}>{response.status || t('historyErrorStatus')}</span>
         <span class="bac-list-meta">{timeOf(entry.timestamp)}</span>
       </button>
-      <button type="button" class="bac-icon-btn bac-row-action" aria-label={`Delete ${request.method} ${displayUrl(request.url)} from history`} title="Delete" onClick={() => void deleteHistory([entry.id])}>
+      <button type="button" class="bac-icon-btn bac-row-action" aria-label={t('historyDeleteLabel', `${request.method} ${displayUrl(request.url)}`)} title={t('commonDelete')} onClick={() => void deleteHistory([entry.id])}>
         <IconClose />
       </button>
     </li>
@@ -226,26 +227,26 @@ function CollectionsPanel() {
 
   const toggle = (key: string) => setCollapsed({ ...collapsed, [key]: !collapsed[key] });
   const newCollection = () => {
-    const c = createCollection('New collection');
+    const c = createCollection(t('collectionDefaultName'));
     setRenaming(`c:${c.id}`);
   };
 
   if (!collections.length) {
     return (
       <Empty
-        title="No collections yet"
+        title={t('collectionsEmptyTitle')}
         actions={
           <>
             <button type="button" class="bac-btn bac-btn-small" onClick={newCollection}>
-              New collection
+              {t('collectionNew')}
             </button>
             <button type="button" class="bac-btn bac-btn-small" onClick={() => openDialog({ type: 'import' })}>
-              Import…
+              {t('collectionsImportEllipsis')}
             </button>
           </>
         }
       >
-        Save requests into collections with <kbd>{isMac ? '⌘S' : 'Ctrl+S'}</kbd>, or import a Postman collection, an OpenAPI spec or a cURL command.
+        {tParts('collectionsEmptyHint', <kbd>{isMac ? '⌘S' : 'Ctrl+S'}</kbd>)}
       </Empty>
     );
   }
@@ -293,7 +294,7 @@ function CollectionsPanel() {
           {renaming === key ? (
             <RenameInput
               value={r.name}
-              label="Request name"
+              label={t('requestNameLabel')}
               onDone={(name) => {
                 setRenaming(null);
                 if (name !== null) updateCollection(c.id, (x) => col.upsertRequest(x, { ...r, name }, folder?.id ?? null));
@@ -318,18 +319,18 @@ function CollectionsPanel() {
             </button>
           )}
           <Menu
-            label={`Actions for ${r.name}`}
+            label={t('commonActionsFor', r.name)}
             items={[
-              { label: 'Open', onSelect: () => openFromCollection(c.id, r.id) },
-              { label: 'Rename', onSelect: () => setRenaming(key) },
-              { label: 'Duplicate', onSelect: () => updateCollection(c.id, (x) => col.duplicateRequestAnywhere(x, r.id).collection) },
-              ...(index > 0 ? [{ label: 'Move up', onSelect: () => move(-1) }] : []),
-              ...(index < list.length - 1 ? [{ label: 'Move down', onSelect: () => move(1) }] : []),
+              { label: t('commonOpen'), onSelect: () => openFromCollection(c.id, r.id) },
+              { label: t('commonRename'), onSelect: () => setRenaming(key) },
+              { label: t('commonDuplicate'), onSelect: () => updateCollection(c.id, (x) => col.duplicateRequestAnywhere(x, r.id).collection) },
+              ...(index > 0 ? [{ label: t('commonMoveUp'), onSelect: () => move(-1) }] : []),
+              ...(index < list.length - 1 ? [{ label: t('commonMoveDown'), onSelect: () => move(1) }] : []),
               {
-                label: 'Delete',
+                label: t('commonDelete'),
                 danger: true,
                 onSelect: () => {
-                  if (window.confirm(`Delete “${r.name}” from “${c.name}”?`)) updateCollection(c.id, (x) => col.removeRequestAnywhere(x, r.id));
+                  if (window.confirm(t('collectionDeleteRequestConfirm', r.name, c.name))) updateCollection(c.id, (x) => col.removeRequestAnywhere(x, r.id));
                 },
               },
             ]}
@@ -342,15 +343,15 @@ function CollectionsPanel() {
   return (
     <>
       <div class="bac-side-toolbar">
-        <input type="search" class="bac-input" placeholder="Search collections" aria-label="Search collections" value={query} onInput={(e) => setQuery(e.currentTarget.value)} />
-        <button type="button" class="bac-icon-btn" aria-label="New collection" title="New collection" onClick={newCollection}>
+        <input type="search" class="bac-input" placeholder={t('collectionsSearch')} aria-label={t('collectionsSearch')} value={query} onInput={(e) => setQuery(e.currentTarget.value)} />
+        <button type="button" class="bac-icon-btn" aria-label={t('collectionNew')} title={t('collectionNew')} onClick={newCollection}>
           <IconPlus />
         </button>
         <button type="button" class="bac-btn bac-btn-small" onClick={() => openDialog({ type: 'import' })}>
-          Import
+          {t('importButton')}
         </button>
       </div>
-      <ul class="bac-tree" role="tree" aria-label="Collections">
+      <ul class="bac-tree" role="tree" aria-label={t('sidebarCollections')}>
         {tree.map((c, ci) => {
           const key = `c:${c.id}`;
           const expanded = searching || !collapsed[key];
@@ -361,7 +362,7 @@ function CollectionsPanel() {
                 {renaming === key ? (
                   <RenameInput
                     value={c.name}
-                    label="Collection name"
+                    label={t('collectionNameLabel')}
                     onDone={(name) => {
                       setRenaming(null);
                       if (name !== null) updateCollection(c.id, (x) => col.renameCollection(x, name));
@@ -390,28 +391,28 @@ function CollectionsPanel() {
                   </button>
                 )}
                 <Menu
-                  label={`Actions for ${c.name}`}
+                  label={t('commonActionsFor', c.name)}
                   items={[
-                    { label: 'Run collection', onSelect: () => openDialog({ type: 'runner', collectionId: c.id, folderId: null }) },
-                    { label: 'Rename', onSelect: () => setRenaming(key) },
+                    { label: t('collectionRun'), onSelect: () => openDialog({ type: 'runner', collectionId: c.id, folderId: null }) },
+                    { label: t('commonRename'), onSelect: () => setRenaming(key) },
                     {
-                      label: 'New folder',
+                      label: t('folderNew'),
                       onSelect: () => {
-                        const { collection, folder } = col.addFolder(full, 'New folder');
+                        const { collection, folder } = col.addFolder(full, t('folderDefaultName'));
                         updateCollection(c.id, () => collection);
                         setCollapsed({ ...collapsed, [key]: false });
                         setRenaming(`f:${c.id}:${folder.id}`);
                       },
                     },
-                    { label: 'Duplicate', onSelect: () => duplicateCollection(c.id) },
-                    { label: 'Export as Postman v2.1', onSelect: () => downloadText(`${safeFileName(c.name, 'collection')}.postman_collection.json`, exportToPostman(full)) },
-                    ...(ci > 0 && !searching ? [{ label: 'Move up', onSelect: () => moveCollection(c.id, ci - 1) }] : []),
-                    ...(ci < tree.length - 1 && !searching ? [{ label: 'Move down', onSelect: () => moveCollection(c.id, ci + 1) }] : []),
+                    { label: t('commonDuplicate'), onSelect: () => duplicateCollection(c.id) },
+                    { label: t('collectionExportPostman'), onSelect: () => downloadText(`${safeFileName(c.name, 'collection')}.postman_collection.json`, exportToPostman(full)) },
+                    ...(ci > 0 && !searching ? [{ label: t('commonMoveUp'), onSelect: () => moveCollection(c.id, ci - 1) }] : []),
+                    ...(ci < tree.length - 1 && !searching ? [{ label: t('commonMoveDown'), onSelect: () => moveCollection(c.id, ci + 1) }] : []),
                     {
-                      label: 'Delete',
+                      label: t('commonDelete'),
                       danger: true,
                       onSelect: () => {
-                        if (window.confirm(`Delete the collection “${c.name}” and its ${col.countRequests(full)} requests?`)) deleteCollection(c.id);
+                        if (window.confirm(t('collectionDeleteConfirm', c.name, col.countRequests(full)))) deleteCollection(c.id);
                       },
                     },
                   ]}
@@ -430,7 +431,7 @@ function CollectionsPanel() {
                           {renaming === fkey ? (
                             <RenameInput
                               value={f.name}
-                              label="Folder name"
+                              label={t('folderNameLabel')}
                               onDone={(name) => {
                                 setRenaming(null);
                                 if (name !== null) updateCollection(c.id, (x) => col.renameFolder(x, f.id, name));
@@ -462,18 +463,18 @@ function CollectionsPanel() {
                             </button>
                           )}
                           <Menu
-                            label={`Actions for folder ${f.name}`}
+                            label={t('folderActionsFor', f.name)}
                             items={[
-                              { label: 'Run folder', onSelect: () => openDialog({ type: 'runner', collectionId: c.id, folderId: f.id }) },
-                              { label: 'Rename', onSelect: () => setRenaming(fkey) },
-                              { label: 'Duplicate', onSelect: () => updateCollection(c.id, (x) => col.duplicateFolder(x, f.id)) },
-                              ...(fi > 0 ? [{ label: 'Move up', onSelect: () => moveFolder(-1) }] : []),
-                              ...(fi < (c.folders?.length ?? 0) - 1 ? [{ label: 'Move down', onSelect: () => moveFolder(1) }] : []),
+                              { label: t('folderRun'), onSelect: () => openDialog({ type: 'runner', collectionId: c.id, folderId: f.id }) },
+                              { label: t('commonRename'), onSelect: () => setRenaming(fkey) },
+                              { label: t('commonDuplicate'), onSelect: () => updateCollection(c.id, (x) => col.duplicateFolder(x, f.id)) },
+                              ...(fi > 0 ? [{ label: t('commonMoveUp'), onSelect: () => moveFolder(-1) }] : []),
+                              ...(fi < (c.folders?.length ?? 0) - 1 ? [{ label: t('commonMoveDown'), onSelect: () => moveFolder(1) }] : []),
                               {
-                                label: 'Delete',
+                                label: t('commonDelete'),
                                 danger: true,
                                 onSelect: () => {
-                                  if (window.confirm(`Delete the folder “${f.name}” and its ${f.requests.length} requests?`)) updateCollection(c.id, (x) => col.deleteFolder(x, f.id));
+                                  if (window.confirm(t('folderDeleteConfirm', f.name, f.requests.length))) updateCollection(c.id, (x) => col.deleteFolder(x, f.id));
                                 },
                               },
                             ]}
@@ -482,20 +483,20 @@ function CollectionsPanel() {
                         {fexpanded && (
                           <ul role="group">
                             {f.requests.map((_, i) => requestRow(c, f, i))}
-                            {!f.requests.length && <li role="none" class="bac-tree-empty">Empty folder — drag requests here</li>}
+                            {!f.requests.length && <li role="none" class="bac-tree-empty">{t('folderEmpty')}</li>}
                           </ul>
                         )}
                       </li>
                     );
                   })}
-                  {!c.requests.length && !(c.folders ?? []).length && <li role="none" class="bac-tree-empty">No requests yet — save one with {isMac ? '⌘S' : 'Ctrl+S'}</li>}
+                  {!c.requests.length && !(c.folders ?? []).length && <li role="none" class="bac-tree-empty">{t('collectionEmpty', isMac ? '⌘S' : 'Ctrl+S')}</li>}
                 </ul>
               )}
             </li>
           );
         })}
       </ul>
-      {searching && !tree.length && <p class="bac-muted bac-pad">Nothing matches “{query}”.</p>}
+      {searching && !tree.length && <p class="bac-muted bac-pad">{t('collectionsNoMatch', query)}</p>}
     </>
   );
 }
@@ -508,32 +509,32 @@ function EnvironmentsPanel() {
   const environments = useApp((s) => s.environments);
   const activeEnvId = useApp((s) => s.activeEnvId);
   const create = () => {
-    const env = createEnvironment('New environment');
+    const env = createEnvironment(t('envDefaultName'));
     openDialog({ type: 'environment', envId: env.id });
   };
   if (!environments.length) {
     return (
       <Empty
-        title="No environments yet"
+        title={t('envsEmptyTitle')}
         actions={
           <button type="button" class="bac-btn bac-btn-small" onClick={create}>
-            New environment
+            {t('envNew')}
           </button>
         }
       >
-        Environments hold {'{{variables}}'} such as a base URL or a token, so one request works against dev, staging and production.
+        {t('envsEmptyHint', '{{variables}}')}
       </Empty>
     );
   }
   return (
     <>
       <div class="bac-side-toolbar">
-        <span class="bac-muted bac-small bac-grow">Click one to edit it; the dot marks the active environment.</span>
-        <button type="button" class="bac-icon-btn" aria-label="New environment" title="New environment" onClick={create}>
+        <span class="bac-muted bac-small bac-grow">{t('envsHint')}</span>
+        <button type="button" class="bac-icon-btn" aria-label={t('envNew')} title={t('envNew')} onClick={create}>
           <IconPlus />
         </button>
       </div>
-      <ul class="bac-list" aria-label="Environments">
+      <ul class="bac-list" aria-label={t('sidebarEnvironments')}>
         {environments.map((env) => {
           const active = env.id === activeEnvId;
           const count = env.variables.filter((v) => v.key).length;
@@ -542,29 +543,29 @@ function EnvironmentsPanel() {
               <button
                 type="button"
                 class={`bac-env-dot${active ? ' is-active' : ''}`}
-                aria-label={active ? `${env.name} is active; turn it off` : `Use ${env.name}`}
+                aria-label={active ? t('envActiveTurnOff', env.name) : t('envUseNamed', env.name)}
                 aria-pressed={active}
-                title={active ? 'Active — click to turn off' : 'Use this environment'}
+                title={active ? t('envActiveTitle') : t('envUse')}
                 onClick={() => setActiveEnv(active ? null : env.id)}
               />
               <button type="button" class="bac-tree-main" onClick={() => openDialog({ type: 'environment', envId: env.id })}>
                 <span class="bac-list-main">{env.name}</span>
                 <span class="bac-list-meta">
-                  {count} variable{count === 1 ? '' : 's'}
+                  {count === 1 ? t('envVariableCountOne', count) : t('envVariableCountOther', count)}
                 </span>
               </button>
               <Menu
-                label={`Actions for ${env.name}`}
+                label={t('commonActionsFor', env.name)}
                 items={[
-                  { label: 'Edit', onSelect: () => openDialog({ type: 'environment', envId: env.id }) },
-                  { label: active ? 'Stop using' : 'Use this environment', onSelect: () => setActiveEnv(active ? null : env.id) },
-                  { label: 'Duplicate', onSelect: () => duplicateEnvironmentById(env.id) },
-                  { label: 'Export as Postman environment', onSelect: () => downloadText(`${safeFileName(env.name, 'environment')}.postman_environment.json`, exportEnvironmentToPostman(env)) },
+                  { label: t('commonEdit'), onSelect: () => openDialog({ type: 'environment', envId: env.id }) },
+                  { label: active ? t('envStopUsing') : t('envUse'), onSelect: () => setActiveEnv(active ? null : env.id) },
+                  { label: t('commonDuplicate'), onSelect: () => duplicateEnvironmentById(env.id) },
+                  { label: t('envExportPostman'), onSelect: () => downloadText(`${safeFileName(env.name, 'environment')}.postman_environment.json`, exportEnvironmentToPostman(env)) },
                   {
-                    label: 'Delete',
+                    label: t('commonDelete'),
                     danger: true,
                     onSelect: () => {
-                      if (window.confirm(`Delete the environment “${env.name}”?`)) deleteEnvironment(env.id);
+                      if (window.confirm(t('envDeleteConfirm', env.name))) deleteEnvironment(env.id);
                     },
                   },
                 ]}

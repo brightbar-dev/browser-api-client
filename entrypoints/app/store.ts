@@ -17,6 +17,7 @@ import { clampMaxHistory, type Theme } from '@/utils/backup';
 import { idbDelete, idbGet } from '@/utils/idb';
 import { DEFAULT_LAYOUT, type Layout, type ResponseData, type TabRun } from './types';
 import { startNetworkObserver } from './network';
+import { t } from '@/utils/i18n';
 
 export type DialogState =
   | null
@@ -147,7 +148,7 @@ function sampleWorkspace(): Workspace {
   const tab = ws.tabs[0]!;
   tab.request = {
     ...tab.request,
-    name: 'Try it: GET with a query parameter',
+    name: t('sampleRequestName'),
     url: 'https://httpbin.org/get?hello=world',
     params: [{ key: 'hello', value: 'world', enabled: true }],
     headers: [{ key: 'Accept', value: 'application/json', enabled: true }],

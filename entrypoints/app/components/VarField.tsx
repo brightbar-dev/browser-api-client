@@ -3,6 +3,7 @@ import type { JSX } from 'preact';
 import type { EnvVariable } from '@/utils/environment';
 import { segmentVariables } from '@/utils/environment';
 import { useApp } from '../store';
+import { t } from '@/utils/i18n';
 
 const NO_VARS: EnvVariable[] = [];
 
@@ -47,7 +48,7 @@ export function VarField({ value, onValue, class: className, multiline, title, .
     ref: fieldRef,
     class: className,
     value,
-    title: unresolved.length ? `Not defined in the active environment: ${unresolved.join(', ')}` : title,
+    title: unresolved.length ? t('varUndefinedTitle', unresolved.join(', ')) : title,
     'aria-invalid': unresolved.length > 0 ? true : undefined,
     onInput: (e: Event) => onValue((e.currentTarget as HTMLInputElement).value),
     onScroll: sync,

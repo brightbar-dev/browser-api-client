@@ -11,6 +11,7 @@ import { RequestEditor } from './RequestEditor';
 import { ResponsePane } from './ResponsePane';
 import { Splitter } from './Splitter';
 import { IconSettings, IconSidebar } from './icons';
+import { t } from '@/utils/i18n';
 
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 
@@ -29,7 +30,7 @@ function useTheme() {
 
 function focusUrl() {
   requestAnimationFrame(() => {
-    const input = document.querySelector<HTMLInputElement>('input[aria-label="Request URL"]');
+    const input = document.querySelector<HTMLInputElement>('input.bac-url-input');
     input?.focus();
     input?.select();
   });
@@ -102,26 +103,26 @@ function Header() {
       <button
         type="button"
         class="bac-icon-btn"
-        aria-label={sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
+        aria-label={sidebarOpen ? t('headerHideSidebar') : t('headerShowSidebar')}
         aria-pressed={sidebarOpen}
-        title={sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
+        title={sidebarOpen ? t('headerHideSidebar') : t('headerShowSidebar')}
         onClick={() => setLayout({ sidebarOpen: !sidebarOpen })}
       >
         <IconSidebar />
       </button>
       <div class="bac-brand">
         <img src="/icon-bac.svg" alt="" width={20} height={20} />
-        <span>Browser API Client</span>
+        <span>{t('appName')}</span>
       </div>
       <div class="bac-spacer" />
       <label class="bac-env-picker">
-        <span class="bac-env-label">Environment</span>
+        <span class="bac-env-label">{t('headerEnvironment')}</span>
         <select
           class="bac-select"
           value={activeEnvId ?? ''}
           onChange={(e) => setActiveEnv(e.currentTarget.value || null)}
         >
-          <option value="">No environment</option>
+          <option value="">{t('headerNoEnvironment')}</option>
           {environments.map((env) => (
             <option key={env.id} value={env.id}>
               {env.name}
@@ -132,22 +133,22 @@ function Header() {
       <button
         type="button"
         class="bac-icon-btn"
-        aria-label={activeEnvId ? 'Edit the active environment' : 'Create an environment'}
-        title={activeEnvId ? 'Edit environment' : 'New environment'}
-        onClick={() => openDialog({ type: 'environment', envId: activeEnvId ?? createEnvironment('New environment').id })}
+        aria-label={activeEnvId ? t('headerEditEnvLabel') : t('headerCreateEnvLabel')}
+        title={activeEnvId ? t('headerEditEnvTitle') : t('envNew')}
+        onClick={() => openDialog({ type: 'environment', envId: activeEnvId ?? createEnvironment(t('envDefaultName')).id })}
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <path d="M11 2.5l2.5 2.5L6 12.5H3.5V10z" />
         </svg>
       </button>
       <button type="button" class="bac-btn bac-btn-ghost" onClick={() => openDialog({ type: 'import' })}>
-        Import
+        {t('importButton')}
       </button>
-      <button type="button" class="bac-icon-btn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)" onClick={() => openDialog({ type: 'shortcuts' })}>
+      <button type="button" class="bac-icon-btn" aria-label={t('shortcutsTitle')} title={t('headerShortcutsTooltip')} onClick={() => openDialog({ type: 'shortcuts' })}>
         <span aria-hidden="true" class="bac-kbd-icon">?</span>
       </button>
       <button type="button" class="bac-btn bac-btn-ghost" onClick={() => browser.runtime.openOptionsPage()}>
-        <IconSettings /> Settings
+        <IconSettings /> {t('headerSettings')}
       </button>
     </header>
   );
@@ -167,7 +168,7 @@ function Workbench() {
       <RequestEditor key={tabId} tabId={tabId} />
       <Splitter
         orientation="horizontal"
-        label="Resize request and response"
+        label={t('benchResizeLabel')}
         value={Math.round(fraction * 100)}
         min={15}
         max={85}

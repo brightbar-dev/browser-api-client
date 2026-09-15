@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks';
 import { IconChevronRight } from './icons';
+import { t } from '@/utils/i18n';
 
 const PAGE = 200;
 
@@ -50,7 +51,7 @@ function Node({ name, value, depth }: { name?: string | number; value: unknown; 
           {entries.length > limit && (
             <li role="none">
               <button type="button" class="bac-link-btn" onClick={() => setLimit(limit + PAGE * 5)}>
-                Show {Math.min(PAGE * 5, entries.length - limit)} more of {entries.length - limit}…
+                {t('jsonTreeShowMore', Math.min(PAGE * 5, entries.length - limit), entries.length - limit)}
               </button>
             </li>
           )}
@@ -62,7 +63,7 @@ function Node({ name, value, depth }: { name?: string | number; value: unknown; 
 
 export function JsonTree({ value }: { value: unknown }) {
   return (
-    <ul role="tree" aria-label="JSON tree" class="bac-jt bac-mono">
+    <ul role="tree" aria-label={t('jsonTreeLabel')} class="bac-jt bac-mono">
       <Node value={value} depth={0} />
     </ul>
   );

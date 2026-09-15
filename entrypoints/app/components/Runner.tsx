@@ -7,6 +7,7 @@ import { statusLabel } from '@/utils/http-status';
 import { activeVariables, closeDialog, useApp } from '../store';
 import { executeResolved, failureOf, prepareRequest, runTests } from '../send';
 import { Dialog } from './Dialog';
+import { t } from '@/utils/i18n';
 
 const sender: RunSender = async (item, signal) => {
   let url = item.request.url;
@@ -48,7 +49,7 @@ export function RunnerDialog({ collectionId, folderId }: { collectionId: string;
 
   if (!collection) return null;
   const folderName = folderId ? collection.folders?.find((f) => f.id === folderId)?.name : undefined;
-  const title = `Run “${folderName ?? collection.name}”`;
+  const title = t('runnerTitle', folderName ?? collection.name);
 
   const start = async (list: RunItem[]) => {
     controller.current = new AbortController();
@@ -82,20 +83,20 @@ export function RunnerDialog({ collectionId, folderId }: { collectionId: string;
       onClose={close}
       footer={
         <>
-          <span class="bac-muted bac-foot-note">{envName ? `Environment: ${envName}` : 'No environment active'}</span>
+          <span class="bac-muted bac-foot-note">{envName ? t('runnerEnvironment', envName) : t('runnerNoEnvironment')}</span>
           {running ? (
             <button type="button" class="bac-btn bac-btn-danger" onClick={() => controller.current?.abort()}>
-              Stop
+              {t('commonStop')}
             </button>
           ) : (
             <>
               {failed.length > 0 && (
                 <button type="button" class="bac-btn" onClick={() => void start(failed)}>
-                  Re-run {failed.length} failed
+                  {t('runnerRerunFailed', failed.length)}
                 </button>
               )}
               <button type="button" class="bac-btn bac-btn-primary" disabled={!allItems.length} onClick={() => void start(allItems)}>
-                {summary ? 'Run again' : `Run ${allItems.length} request${allItems.length === 1 ? '' : 's'}`}
+                {summary ? t('runnerRunAgain') : allItems.length === 1 ? t('runnerRunOne', 1) : t('runnerRunOther', allItems.length)}
               </button>
             </>
           )}
@@ -105,12 +106,12 @@ export function RunnerDialog({ collectionId, folderId }: { collectionId: string;
       <div class="bac-stack">
         <div class="bac-row bac-runner-options">
           <label class="bac-inline-field">
-            <span>Delay between requests</span>
+            <span>{t('runnerDelay')}</span>
             <input class="bac-input bac-runner-delay" type="number" min={0} max={60000} step={100} value={delay} disabled={running} onInput={(e) => setDelay(Math.max(0, Number(e.currentTarget.value) || 0))} />
-            <span>ms</span>
+            <span>{t('runnerDelayUnit')}</span>
           </label>
           <label class="bac-inline-check">
-            <input type="checkbox" checked={stopOnFailure} disabled={running} onChange={(e) => setStopOnFailure(e.currentTarget.checked)} /> Stop at the first failure
+            <input type="checkbox" checked={stopOnFailure} disabled={running} onChange={(e) => setStopOnFailure(e.currentTarget.checked)} /> {t('runnerStopOnFailure')}
           </label>
         </div>
 
@@ -121,29 +122,29 @@ export function RunnerDialog({ collectionId, folderId }: { collectionId: string;
             </div>
             {summary ? (
               <p>
-                <strong class="s-success bac-run-count">{summary.passed} passed</strong> · <strong class={summary.failed ? 's-server-error bac-run-count' : 'bac-run-count'}>{summary.failed} failed</strong>
-                {summary.skipped > 0 && ` · ${summary.skipped} skipped`} · {formatTime(summary.finishedAt - summary.startedAt)}
-                {summary.aborted && ' · stopped'}
+                <strong class="s-success bac-run-count">{t('testsCountPassed', summary.passed)}</strong> · <strong class={summary.failed ? 's-server-error bac-run-count' : 'bac-run-count'}>{t('testsCountFailed', summary.failed)}</strong>
+                {summary.skipped > 0 && ` · ${t('runnerSkipped', summary.skipped)}`} · {formatTime(summary.finishedAt - summary.startedAt)}
+                {summary.aborted && ` · ${t('runnerStopped')}`}
               </p>
             ) : (
               <p>
-                Running {Math.min(done + 1, items.length)} of {items.length}…
+                {t('runnerRunning', Math.min(done + 1, items.length), items.length)}
               </p>
             )}
           </div>
         )}
 
         {!allItems.length ? (
-          <p class="bac-muted">There are no requests to run here yet.</p>
+          <p class="bac-muted">{t('runnerEmpty')}</p>
         ) : (
           <table class="bac-table bac-runner-table">
             <thead>
               <tr>
-                <th scope="col">Result</th>
-                <th scope="col">Request</th>
-                <th scope="col">Status</th>
-                <th scope="col">Time</th>
-                <th scope="col">Tests</th>
+                <th scope="col">{t('runnerColResult')}</th>
+                <th scope="col">{t('runnerColRequest')}</th>
+                <th scope="col">{t('runnerColStatus')}</th>
+                <th scope="col">{t('runnerColTime')}</th>
+                <th scope="col">{t('runnerColTests')}</th>
               </tr>
             </thead>
             <tbody>
@@ -156,7 +157,7 @@ export function RunnerDialog({ collectionId, folderId }: { collectionId: string;
                   <>
                     <tr key={item.id} class={r ? (r.skipped ? 'is-skipped' : r.passed ? 'is-pass' : 'is-fail') : running && i === done ? 'is-running' : ''}>
                       <td>
-                        <span class="bac-run-badge">{!r ? (running && i === done ? 'Running' : 'Pending') : r.skipped ? 'Skipped' : r.passed ? 'Pass' : 'Fail'}</span>
+                        <span class="bac-run-badge">{!r ? (running && i === done ? t('runnerBadgeRunning') : t('runnerBadgePending')) : r.skipped ? t('runnerBadgeSkipped') : r.passed ? t('runnerBadgePass') : t('runnerBadgeFail')}</span>
                       </td>
                       <td>
                         {expandable ? (
@@ -173,7 +174,7 @@ export function RunnerDialog({ collectionId, folderId }: { collectionId: string;
                       </td>
                       <td class="bac-mono">{r && !r.skipped ? (r.status ? <span class={`s-${statusColor(r.status)} bac-status-text`}>{statusLabel(r.status, '')}</span> : '—') : ''}</td>
                       <td class="bac-mono">{r && !r.skipped && r.time ? formatTime(r.time) : ''}</td>
-                      <td class="bac-mono">{r && !r.skipped && tests.length ? `${passedTests}/${tests.length}` : r && !r.skipped ? 'none' : ''}</td>
+                      <td class="bac-mono">{r && !r.skipped && tests.length ? `${passedTests}/${tests.length}` : r && !r.skipped ? t('runnerNoTests') : ''}</td>
                     </tr>
                     {expandable && open[item.id] && (
                       <tr key={`${item.id}-detail`} class="bac-run-detail">

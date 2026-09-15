@@ -1,6 +1,7 @@
 /** Response body classification, decoding and inspection helpers. */
 
 import type { ApiResponse } from './request';
+import { t } from './i18n';
 
 export type BodyKind = 'json' | 'html' | 'xml' | 'text' | 'image' | 'binary' | 'empty';
 
@@ -188,12 +189,9 @@ export interface FetchFailure {
 /** Explain a fetch() rejection in words a person can act on. */
 export function describeFetchError(error: unknown, ctx: { cancelled?: boolean; timedOut?: boolean; timeoutMs?: number; url: string }): FetchFailure {
   if (ctx.timedOut) {
-    return {
-      title: 'Request timed out',
-      detail: `No response arrived within ${Math.round((ctx.timeoutMs || 0) / 1000)} s. The server may be slow or unreachable; raise the timeout in Settings if this endpoint is expected to be slow.`,
-    };
+    return { title: t('errorTimedOutTitle'), detail: t('errorTimedOutDetail', Math.round((ctx.timeoutMs || 0) / 1000)) };
   }
-  if (ctx.cancelled) return { title: 'Request cancelled', detail: 'You cancelled the request before a response arrived.' };
+  if (ctx.cancelled) return { title: t('errorCancelledTitle'), detail: t('errorCancelledDetail') };
   const message = error instanceof Error ? error.message : String(error);
   if (/Failed to fetch|NetworkError|Load failed|network/i.test(message)) {
     let host = ctx.url;
@@ -202,10 +200,7 @@ export function describeFetchError(error: unknown, ctx: { cancelled?: boolean; t
     } catch {
       // keep url
     }
-    return {
-      title: 'Could not connect',
-      detail: `No response from ${host}. Check the address, that the server is running, and your network or VPN. A DNS failure, a refused connection and an invalid TLS certificate all fail this way in the browser.`,
-    };
+    return { title: t('errorCouldNotConnectTitle'), detail: t('errorCouldNotConnectDetail', host) };
   }
-  return { title: 'Request failed', detail: message };
+  return { title: t('errorRequestFailedTitle'), detail: message };
 }
