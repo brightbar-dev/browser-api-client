@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.3.2...browser-api-client-v0.4.0) (2026-09-15)
+
+
+### Features
+
+* make every feature free — remove ExtensionPay and all Pro gating ([#14](https://github.com/brightbar-dev/browser-api-client/issues/14)) ([4a624ce](https://github.com/brightbar-dev/browser-api-client/commit/4a624cebc6b4d44d7f046691039507faff42140b))
+
 ## [0.3.2](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.3.1...browser-api-client-v0.3.2) (2026-09-15)
 
 
