@@ -22,7 +22,8 @@ export type DialogState =
   | { type: 'save'; tabId: string }
   | { type: 'environment'; envId: string }
   | { type: 'import' }
-  | { type: 'code'; tabId: string };
+  | { type: 'code'; tabId: string }
+  | { type: 'runner'; collectionId: string; folderId: string | null };
 
 export interface AppState {
   ready: boolean;

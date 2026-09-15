@@ -36,13 +36,13 @@ function useShortcuts() {
       } else if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's') {
         e.preventDefault();
         if (!getState().dialog) requestSave(activeTabId);
-      } else if (e.key === 'Escape' && getState().runs[activeTabId]?.state === 'sending') {
+      } else if (e.key === 'Escape' && !getState().dialog && ['sending', 'streaming'].includes(getState().runs[activeTabId]?.state ?? '')) {
         cancelSend(activeTabId);
       }
     };
     // Leaving the page kills in-flight requests, so ask first.
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (Object.values(getState().runs).some((r) => r.state === 'sending')) e.preventDefault();
+      if (Object.values(getState().runs).some((r) => r.state === 'sending' || r.state === 'streaming')) e.preventDefault();
     };
     window.addEventListener('keydown', onKey);
     window.addEventListener('beforeunload', onBeforeUnload);

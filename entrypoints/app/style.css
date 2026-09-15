@@ -1802,3 +1802,314 @@ kbd {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   font-size: var(--fs-sm);
 }
+
+/* ---------- PR 3: tests, OAuth 2, GraphQL, events, runner ---------- */
+
+.bac-toggle-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+.bac-toggle-row input {
+  margin-top: 2px;
+}
+
+.bac-inline-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+}
+
+.bac-tests-editor {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.bac-rule-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.bac-rule-head h3 {
+  margin: 0;
+  font-size: var(--fs-md);
+}
+
+.bac-rules {
+  display: grid;
+  row-gap: 4px;
+}
+
+.bac-rules-tests {
+  grid-template-columns: 24px minmax(130px, 1fr) minmax(140px, 1.4fr) minmax(130px, 1fr) minmax(120px, 1.2fr) 32px;
+}
+
+.bac-rules-extract {
+  grid-template-columns: 24px minmax(180px, 1.4fr) 40px minmax(130px, 1fr) minmax(160px, 1.6fr) 32px;
+}
+
+.bac-rule {
+  display: contents;
+}
+
+.bac-rule > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding-right: var(--space-1);
+}
+
+.bac-rule.is-disabled .bac-input,
+.bac-rule.is-disabled .bac-select {
+  opacity: 0.55;
+}
+
+.bac-var-name .bac-input {
+  flex: 1;
+}
+
+.bac-oauth {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.bac-field-note {
+  margin: -6px 0 0 122px;
+}
+
+.bac-copyline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.bac-copyline code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bac-token-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+}
+
+.bac-token-box p {
+  margin: 0;
+}
+
+.bac-graphql {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-2);
+  flex: 1;
+  min-height: 160px;
+}
+
+.bac-test-pill {
+  padding: 1px var(--space-2);
+  border: 1px solid;
+  border-radius: 10px;
+  background: none;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bac-test-pill.is-pass {
+  color: var(--s-success);
+}
+
+.bac-test-pill.is-fail {
+  color: var(--s-server-error);
+}
+
+.bac-subtab-badge.is-fail {
+  background: color-mix(in srgb, var(--s-server-error) 18%, transparent);
+  color: var(--s-server-error);
+}
+
+.bac-results {
+  padding: var(--space-3);
+}
+
+.bac-results section + section {
+  margin-top: var(--space-4);
+}
+
+.bac-results-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-md);
+}
+
+.bac-test-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bac-test-list li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.bac-test-icon {
+  flex: none;
+  width: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.bac-test-list .is-pass .bac-test-icon {
+  color: var(--s-success);
+}
+
+.bac-test-list .is-fail .bac-test-icon {
+  color: var(--s-server-error);
+}
+
+.bac-test-label {
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+}
+
+.bac-test-msg {
+  display: block;
+  color: var(--s-server-error);
+  font-size: var(--fs-sm);
+}
+
+.bac-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--s-success);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--s-success) 60%, transparent);
+  animation: bac-pulse 1.4s ease-out infinite;
+}
+
+@keyframes bac-pulse {
+  to {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bac-live-dot {
+    animation: none;
+  }
+}
+
+.bac-events-table td:first-child,
+.bac-runner-table td:first-child {
+  width: auto;
+  color: inherit;
+}
+
+.bac-events-table td:nth-child(2),
+.bac-events-table td:nth-child(3),
+.bac-events-table td:nth-child(4) {
+  white-space: nowrap;
+}
+
+.bac-runner-options {
+  justify-content: space-between;
+}
+
+.bac-inline-field .bac-runner-delay {
+  width: 90px;
+}
+
+.bac-run-summary p {
+  margin: var(--space-2) 0 0;
+}
+
+.bac-run-count.s-success,
+.bac-run-count.s-server-error {
+  color: var(--s);
+}
+
+.bac-progress {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--bg-muted);
+}
+
+.bac-progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.2s;
+}
+
+.bac-run-badge {
+  display: inline-block;
+  min-width: 58px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-align: center;
+}
+
+.bac-runner-table tr.is-pass .bac-run-badge {
+  background: color-mix(in srgb, var(--s-success) 16%, transparent);
+  color: var(--s-success);
+}
+
+.bac-runner-table tr.is-fail .bac-run-badge {
+  background: color-mix(in srgb, var(--s-server-error) 16%, transparent);
+  color: var(--s-server-error);
+}
+
+.bac-runner-table tr.is-running .bac-run-badge {
+  color: var(--accent);
+}
+
+.bac-run-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  text-align: left;
+}
+
+.bac-status-text {
+  color: var(--s);
+  font-weight: 700;
+}
+
+.bac-run-detail td {
+  border-bottom-style: dashed;
+  background: var(--bg-subtle);
+}
+
+.bac-run-error {
+  margin: 0 0 4px;
+  color: var(--s-server-error);
+}

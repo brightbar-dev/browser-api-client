@@ -11,9 +11,12 @@ import { VarField } from './VarField';
 import { cancelSend, sendTab } from '../send';
 import { COMMON_HEADERS, KeyValueEditor } from './KeyValueEditor';
 import { BodyEditor } from './BodyEditor';
+import { TestsEditor } from './TestsEditor';
+import { OAuth2Editor } from './OAuthEditor';
+import { newOAuth2Config } from '@/utils/oauth2';
 import { IconEye, IconEyeOff } from './icons';
 
-type Section = 'params' | 'headers' | 'auth' | 'body';
+type Section = 'params' | 'headers' | 'auth' | 'body' | 'tests';
 const sectionMemory = new Map<string, Section>();
 
 const AUTH_LABELS: Record<AuthConfig['type'], string> = {
@@ -21,6 +24,7 @@ const AUTH_LABELS: Record<AuthConfig['type'], string> = {
   bearer: 'Bearer token',
   basic: 'Basic auth',
   'api-key': 'API key',
+  oauth2: 'OAuth 2.0',
 };
 
 const BODY_LABELS: Record<ApiRequest['bodyType'], string> = {
@@ -40,7 +44,7 @@ export const SAVE_SHORTCUT = isMac ? '⌘S' : 'Ctrl+S';
 export function RequestEditor({ tabId }: { tabId: string }) {
   const request = useApp((s) => s.workspace.tabs.find((t) => t.id === tabId)?.request);
   const source = useApp((s) => s.workspace.tabs.find((t) => t.id === tabId)?.source);
-  const sending = useApp((s) => s.runs[tabId]?.state === 'sending');
+  const sending = useApp((s) => s.runs[tabId]?.state === 'sending' || s.runs[tabId]?.state === 'streaming');
   const env = useApp((s) => s.environments.find((e) => e.id === s.activeEnvId));
   const collections = useApp((s) => s.collections);
   const unresolved = useMemo(() => (request ? resolveRequest(request, env?.variables ?? []).unresolved : []), [request, env]);
@@ -63,6 +67,14 @@ export function RequestEditor({ tabId }: { tabId: string }) {
     { id: 'headers', label: 'Headers', badge: headerCount ? String(headerCount) : undefined },
     { id: 'auth', label: 'Auth', badge: request.auth.type !== 'none' ? AUTH_LABELS[request.auth.type] : undefined },
     { id: 'body', label: 'Body', badge: request.bodyType !== 'none' ? BODY_LABELS[request.bodyType] : undefined },
+    {
+      id: 'tests',
+      label: 'Tests',
+      badge: (() => {
+        const n = (request.assertions ?? []).filter((a) => a.enabled).length + (request.extractions ?? []).filter((x) => x.enabled).length;
+        return n ? String(n) : undefined;
+      })(),
+    },
   ];
 
   const home = source ? collections.find((c) => c.id === source.collectionId) : undefined;
@@ -193,6 +205,15 @@ export function RequestEditor({ tabId }: { tabId: string }) {
           />
         )}
         {section === 'headers' && (
+          <label class="bac-toggle-row">
+            <input type="checkbox" checked={!!request.sendCookies} onChange={(e) => update((r) => ({ ...r, sendCookies: e.currentTarget.checked || undefined }))} />
+            <span>
+              <strong>Send this site’s cookies</strong>
+              <span class="bac-muted"> — attach the cookies this browser already holds for the host, such as a signed-in session. Off by default.</span>
+            </span>
+          </label>
+        )}
+        {section === 'headers' && (
           <KeyValueEditor
             label="Request headers"
             rows={request.headers}
@@ -203,6 +224,7 @@ export function RequestEditor({ tabId }: { tabId: string }) {
         )}
         {section === 'auth' && <AuthEditor auth={request.auth} onChange={(auth) => update((r) => ({ ...r, auth }))} />}
         {section === 'body' && <BodyEditor tabId={tabId} request={request} update={update} />}
+        {section === 'tests' && <TestsEditor request={request} update={update} />}
       </div>
     </section>
   );
@@ -235,7 +257,14 @@ function AuthEditor({ auth, onChange }: { auth: AuthConfig; onChange: (a: AuthCo
     <div class="bac-form">
       <label class="bac-field">
         <span class="bac-field-label">Type</span>
-        <select class="bac-select" value={auth.type} onChange={(e) => set({ type: e.currentTarget.value as AuthConfig['type'] })}>
+        <select
+          class="bac-select"
+          value={auth.type}
+          onChange={(e) => {
+            const type = e.currentTarget.value as AuthConfig['type'];
+            set(type === 'oauth2' ? { type, oauth2: auth.oauth2 ?? newOAuth2Config() } : { type });
+          }}
+        >
           {Object.entries(AUTH_LABELS).map(([id, label]) => (
             <option key={id} value={id}>
               {label}
@@ -289,7 +318,8 @@ function AuthEditor({ auth, onChange }: { auth: AuthConfig; onChange: (a: AuthCo
           </fieldset>
         </>
       )}
-      {auth.type !== 'none' && <p class="bac-muted">Credentials are stored only in this browser.</p>}
+      {auth.type === 'oauth2' && <OAuth2Editor config={auth.oauth2 ?? newOAuth2Config()} onChange={(oauth2) => set({ oauth2 })} />}
+      {auth.type !== 'none' && <p class="bac-muted">Credentials and tokens are stored only in this browser.</p>}
     </div>
   );
 }

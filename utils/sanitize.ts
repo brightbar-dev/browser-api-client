@@ -9,10 +9,15 @@ import { HTTP_METHODS, generateId } from './request';
 import type { Environment, EnvVariable } from './environment';
 import type { Collection, CollectionFolder } from './collections';
 import type { HistoryEntry } from './history';
+import type { Assertion, AssertionOp, AssertionSource, Extraction } from './assertions';
+import type { OAuth2Config } from './oauth2';
 
 const MAX_ROWS = 500;
 const BODY_TYPES: BodyType[] = ['none', 'json', 'form', 'multipart', 'text', 'binary', 'graphql'];
-const AUTH_TYPES: AuthConfig['type'][] = ['none', 'bearer', 'basic', 'api-key'];
+const AUTH_TYPES: AuthConfig['type'][] = ['none', 'bearer', 'basic', 'api-key', 'oauth2'];
+const ASSERTION_SOURCES: AssertionSource[] = ['status', 'header', 'jsonpath', 'body', 'time'];
+const ASSERTION_OPS: AssertionOp[] = ['equals', 'not-equals', 'exists', 'not-exists', 'contains', 'not-contains', 'lt', 'lte', 'gt', 'gte', 'matches', 'type-is'];
+const EXTRACTION_SOURCES: Extraction['source'][] = ['jsonpath', 'header', 'status', 'body'];
 
 type Obj = Record<string, unknown>;
 
@@ -78,7 +83,59 @@ function sanitizeAuth(v: unknown): AuthConfig {
     if (value !== undefined) auth[key] = value;
   }
   if (v.apiKeyIn === 'query' || v.apiKeyIn === 'header') auth.apiKeyIn = v.apiKeyIn;
+  const oauth2 = sanitizeOAuth2(v.oauth2);
+  if (oauth2) auth.oauth2 = oauth2;
   return auth;
+}
+
+function sanitizeOAuth2(v: unknown): OAuth2Config | undefined {
+  if (!isObj(v)) return undefined;
+  const cfg: OAuth2Config = {
+    grant: v.grant === 'authorization_code' ? 'authorization_code' : 'client_credentials',
+    authUrl: str(v.authUrl),
+    tokenUrl: str(v.tokenUrl),
+    clientId: str(v.clientId),
+    clientSecret: str(v.clientSecret),
+    scope: str(v.scope),
+    usePkce: typeof v.usePkce === 'boolean' ? v.usePkce : true,
+    clientAuth: v.clientAuth === 'body' ? 'body' : 'header',
+  };
+  const audience = optStr(v.audience);
+  if (audience) cfg.audience = audience;
+  const extra = optStr(v.extraAuthParams);
+  if (extra) cfg.extraAuthParams = extra;
+  return cfg;
+}
+
+export function sanitizeAssertions(v: unknown): Assertion[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .slice(0, MAX_ROWS)
+    .filter(isObj)
+    .filter(row => ASSERTION_SOURCES.includes(row.source as AssertionSource) && ASSERTION_OPS.includes(row.op as AssertionOp))
+    .map(row => ({
+      id: id(row.id),
+      enabled: typeof row.enabled === 'boolean' ? row.enabled : true,
+      source: row.source as AssertionSource,
+      path: str(row.path),
+      op: row.op as AssertionOp,
+      expected: str(row.expected),
+    }));
+}
+
+export function sanitizeExtractions(v: unknown): Extraction[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .slice(0, MAX_ROWS)
+    .filter(isObj)
+    .filter(row => EXTRACTION_SOURCES.includes(row.source as Extraction['source']))
+    .map(row => ({
+      id: id(row.id),
+      enabled: typeof row.enabled === 'boolean' ? row.enabled : true,
+      source: row.source as Extraction['source'],
+      path: str(row.path),
+      variable: str(row.variable),
+    }));
 }
 
 export function sanitizeRequest(v: unknown): ApiRequest | null {
@@ -103,6 +160,9 @@ export function sanitizeRequest(v: unknown): ApiRequest | null {
   if (binaryFile) req.binaryFile = binaryFile;
   const graphqlVariables = optStr(v.graphqlVariables);
   if (graphqlVariables !== undefined) req.graphqlVariables = graphqlVariables;
+  if (Array.isArray(v.assertions)) req.assertions = sanitizeAssertions(v.assertions);
+  if (Array.isArray(v.extractions)) req.extractions = sanitizeExtractions(v.extractions);
+  if (v.sendCookies === true) req.sendCookies = true;
   return req;
 }
 

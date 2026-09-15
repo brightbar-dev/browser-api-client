@@ -8,6 +8,7 @@ import { detectImportKind, runImport, type ImportKind } from '@/utils/import-det
 import { closeDialog, getState, openRequest, setActiveEnv, setLayout, showToast, useApp } from '../store';
 import { commitCollections, commitEnvironments, createCollection, saveTabToCollection, updateEnvironment } from '../library';
 import { Dialog } from './Dialog';
+import { RunnerDialog } from './Runner';
 import { IconClose, IconCopy, IconEye, IconEyeOff } from './icons';
 
 const NO_VARS: EnvVariable[] = [];
@@ -24,6 +25,8 @@ export function Dialogs() {
       return <ImportDialog />;
     case 'code':
       return <CodeDialog tabId={dialog.tabId} />;
+    case 'runner':
+      return <RunnerDialog collectionId={dialog.collectionId} folderId={dialog.folderId} />;
   }
 }
 

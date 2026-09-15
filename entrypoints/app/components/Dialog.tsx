@@ -13,6 +13,8 @@ interface DialogProps {
 /** A modal on the native <dialog>: focus is trapped, Escape closes, the page behind is inert. */
 export function Dialog({ title, onClose, children, footer, wide }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const titleId = useRef(`bac-dialog-${Math.random().toString(36).slice(2, 8)}`).current;
 
   useEffect(() => {
@@ -21,14 +23,14 @@ export function Dialog({ title, onClose, children, footer, wide }: DialogProps) 
     if (!dialog.open) dialog.showModal();
     const onCancel = (e: Event) => {
       e.preventDefault();
-      onClose();
+      onCloseRef.current();
     };
     dialog.addEventListener('cancel', onCancel);
     return () => {
       dialog.removeEventListener('cancel', onCancel);
       if (dialog.open) dialog.close();
     };
-  }, [onClose]);
+  }, []);
 
   return (
     <dialog
