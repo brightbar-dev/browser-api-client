@@ -1,8 +1,9 @@
 import { browser } from 'wxt/browser';
-import { BACKUP_KEYS, clampMaxHistory, createBackup, describeImport, mergeBackup, parseBackup, type BackupData } from '@/utils/backup';
+import { BACKUP_KEYS, clampMaxHistory, clampRequestTimeout, createBackup, describeImport, mergeBackup, parseBackup, type BackupData } from '@/utils/backup';
 
 const themeSelect = document.getElementById('theme') as HTMLSelectElement;
 const maxHistoryInput = document.getElementById('max-history') as HTMLInputElement;
+const timeoutInput = document.getElementById('request-timeout') as HTMLInputElement;
 const clearHistoryBtn = document.getElementById('clear-history')!;
 const exportDataBtn = document.getElementById('export-data')!;
 const importDataBtn = document.getElementById('import-data')!;
@@ -21,7 +22,8 @@ function showStatus(message: string, isError = false) {
 
 async function init() {
   document.getElementById('version')!.textContent = `v${browser.runtime.getManifest().version}`;
-  const settings = await browser.storage.local.get(['theme', 'maxHistory']);
+  const settings = await browser.storage.local.get(['theme', 'maxHistory', 'requestTimeout']);
+  timeoutInput.value = String(clampRequestTimeout(settings.requestTimeout ?? 0));
   themeSelect.value = typeof settings.theme === 'string' ? settings.theme : 'auto';
   maxHistoryInput.value = String(clampMaxHistory(settings.maxHistory ?? 100));
   applyTheme(themeSelect.value);
@@ -40,6 +42,12 @@ maxHistoryInput.addEventListener('change', async () => {
   const update: Record<string, unknown> = { maxHistory };
   if (Array.isArray(history) && history.length > maxHistory) update.history = history.slice(0, maxHistory);
   await browser.storage.local.set(update);
+});
+
+timeoutInput.addEventListener('change', () => {
+  const requestTimeout = clampRequestTimeout(timeoutInput.value);
+  timeoutInput.value = String(requestTimeout);
+  browser.storage.local.set({ requestTimeout });
 });
 
 clearHistoryBtn.addEventListener('click', async () => {
@@ -80,6 +88,7 @@ importFileInput.addEventListener('change', async () => {
     applyTheme(parsed.data.theme);
   }
   if (parsed.data.maxHistory !== undefined) maxHistoryInput.value = String(parsed.data.maxHistory);
+  if (parsed.data.requestTimeout !== undefined) timeoutInput.value = String(parsed.data.requestTimeout);
   showStatus(describeImport(parsed.data, parsed.ignoredKeys, parsed.dropped));
 });
 

@@ -48,6 +48,7 @@ function err(text: string): string {
 const storage = (): Record<string, unknown> => ({
   theme: 'dark',
   maxHistory: 200,
+    requestTimeout: 30,
   environments: [env('e1')],
   activeEnvId: 'e1',
   collections: [collection('c1')],
@@ -89,6 +90,7 @@ describe('createBackup', () => {
     expect(b.data).toEqual({
       theme: 'dark',
       maxHistory: 200,
+      requestTimeout: 30,
       environments: [env('e1')],
       activeEnvId: 'e1',
       collections: [collection('c1')],
@@ -170,6 +172,7 @@ describe('parseBackup', () => {
     expect(r.data).toEqual({
       theme: 'dark',
       maxHistory: 200,
+      requestTimeout: 30,
       environments: [env('e1')],
       activeEnvId: 'e1',
       collections: [collection('c1')],

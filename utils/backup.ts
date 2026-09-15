@@ -14,11 +14,13 @@ export const BACKUP_VERSION = 2;
 export type Theme = 'auto' | 'light' | 'dark';
 
 /** The storage keys a backup may carry. Anything else is ignored on import. */
-export const BACKUP_KEYS = ['theme', 'maxHistory', 'environments', 'activeEnvId', 'collections', 'history'] as const;
+export const BACKUP_KEYS = ['theme', 'maxHistory', 'requestTimeout', 'environments', 'activeEnvId', 'collections', 'history'] as const;
 
 export interface BackupData {
   theme?: Theme;
   maxHistory?: number;
+  /** Seconds, 0 = no limit. */
+  requestTimeout?: number;
   environments?: Environment[];
   activeEnvId?: string | null;
   collections?: Collection[];
@@ -35,6 +37,12 @@ export interface Backup {
 export const MIN_HISTORY = 10;
 export const MAX_HISTORY = 1000;
 
+export function clampRequestTimeout(n: unknown): number {
+  const v = typeof n === 'number' ? n : parseInt(String(n), 10);
+  if (!Number.isFinite(v)) return 0;
+  return Math.max(0, Math.min(600, Math.round(v)));
+}
+
 export function clampMaxHistory(n: unknown): number {
   const v = typeof n === 'number' ? n : parseInt(String(n), 10);
   if (!Number.isFinite(v)) return 100;
@@ -46,6 +54,7 @@ function pickData(source: Record<string, unknown>): { data: BackupData; dropped:
   let dropped = 0;
   if (source.theme === 'auto' || source.theme === 'light' || source.theme === 'dark') data.theme = source.theme;
   if (source.maxHistory !== undefined) data.maxHistory = clampMaxHistory(source.maxHistory);
+  if (source.requestTimeout !== undefined) data.requestTimeout = clampRequestTimeout(source.requestTimeout);
   if (source.environments !== undefined) {
     const r = sanitizeList(source.environments, sanitizeEnvironment);
     data.environments = r.items;
@@ -133,6 +142,7 @@ export function mergeBackup(current: BackupData, incoming: BackupData): BackupDa
   const out: BackupData = {};
   if (incoming.theme) out.theme = incoming.theme;
   if (incoming.maxHistory !== undefined) out.maxHistory = incoming.maxHistory;
+  if (incoming.requestTimeout !== undefined) out.requestTimeout = incoming.requestTimeout;
   if (incoming.environments) out.environments = mergeById(current.environments, incoming.environments);
   if (incoming.collections) out.collections = mergeById(current.collections, incoming.collections);
   if (incoming.history) {
@@ -150,7 +160,7 @@ export function describeImport(data: BackupData, ignoredKeys: string[], dropped:
   if (data.collections) parts.push(`${data.collections.length} collection${data.collections.length === 1 ? '' : 's'}`);
   if (data.environments) parts.push(`${data.environments.length} environment${data.environments.length === 1 ? '' : 's'}`);
   if (data.history) parts.push(`${data.history.length} history entr${data.history.length === 1 ? 'y' : 'ies'}`);
-  if (data.theme || data.maxHistory !== undefined) parts.push('settings');
+  if (data.theme || data.maxHistory !== undefined || data.requestTimeout !== undefined) parts.push('settings');
   let msg = `Imported ${parts.join(', ') || 'nothing'}.`;
   if (dropped) msg += ` Skipped ${dropped} malformed record${dropped === 1 ? '' : 's'}.`;
   if (ignoredKeys.length) msg += ` Ignored unknown keys: ${ignoredKeys.join(', ')}.`;

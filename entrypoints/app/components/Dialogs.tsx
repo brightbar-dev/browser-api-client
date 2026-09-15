@@ -27,6 +27,8 @@ export function Dialogs() {
       return <CodeDialog tabId={dialog.tabId} />;
     case 'runner':
       return <RunnerDialog collectionId={dialog.collectionId} folderId={dialog.folderId} />;
+    case 'shortcuts':
+      return <ShortcutsDialog />;
   }
 }
 
@@ -434,6 +436,53 @@ function CodeDialog({ tabId }: { tabId: string }) {
           </pre>
         </div>
       </div>
+    </Dialog>
+  );
+}
+
+// --- keyboard shortcuts ---
+
+const mac = /Mac|iPhone|iPad/.test(navigator.platform);
+const MOD = mac ? '⌘' : 'Ctrl';
+const ALT = mac ? '⌥' : 'Alt';
+
+const SHORTCUTS: Array<[string, string[]]> = [
+  ['Send the request', [`${MOD} Enter`]],
+  ['Save to a collection', [`${MOD} S`]],
+  ['New request tab', [`${ALT} T`]],
+  ['Close the tab', [`${ALT} W`]],
+  ['Focus the URL', [`${ALT} L`]],
+  ['Cancel a request or stop a stream', ['Esc']],
+  ['Next / previous tab (on the tab strip)', ['→', '←']],
+  ['Next / previous search match', ['Enter', 'Shift Enter']],
+  ['Rename in the collection tree', ['F2']],
+  ['Move a request, folder or collection', [`${ALT} ↑`, `${ALT} ↓`]],
+  ['Show this list', ['?']],
+];
+
+function ShortcutsDialog() {
+  return (
+    <Dialog title="Keyboard shortcuts" onClose={closeDialog}>
+      <table class="bac-shortcuts">
+        <tbody>
+          {SHORTCUTS.map(([label, keys]) => (
+            <tr key={label}>
+              <th scope="row">{label}</th>
+              <td>
+                {keys.map((k, i) => (
+                  <span key={k}>
+                    {i > 0 && ' / '}
+                    <kbd>{k}</kbd>
+                  </span>
+                ))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="bac-muted bac-small">
+        Browsers reserve {MOD} T, {MOD} W and {MOD} L for their own tabs and address bar, so the app uses {ALT} instead.
+      </p>
     </Dialog>
   );
 }

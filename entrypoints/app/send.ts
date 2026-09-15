@@ -11,12 +11,14 @@ import type { EnvVariable } from '@/utils/environment';
 import { encodeUrlencoded, resolveRequest, type ResolveResult } from '@/utils/resolve';
 import { impliedScheme, withDefaultScheme } from '@/utils/url';
 import { classifyBody, decodeText, describeFetchError, isTextualKind, parseContentType, toHistoryResponse } from '@/utils/response';
+import { describeNetError } from '@/utils/net-errors';
 import type { FetchFailure } from '@/utils/response';
 import { applyExtractions, describeAssertion, evaluateAssertions, runExtractions } from '@/utils/assertions';
 import type { ExtractionResult, ResponseSnapshot } from '@/utils/assertions';
 import { createSseParser, isEventStream, type SseEvent } from '@/utils/sse';
 import { idbGet, idbPut } from '@/utils/idb';
-import { activeVariables, findTab, getState, setRun, updateRequest } from './store';
+import { activeVariables, findTab, getState, markWelcomed, setRun, updateRequest } from './store';
+import { beginTrace, endTrace } from './network';
 import { updateEnvironment } from './library';
 import { interpolateOAuth, tokenForSend } from './oauth';
 import type { ResponseData, TestResult } from './types';
@@ -25,6 +27,12 @@ import type { ResponseData, TestResult } from './types';
 const MAX_STORED_RESPONSE = 10 * 1024 * 1024;
 
 const controllers = new Map<string, AbortController>();
+
+class RequestTimeoutError extends Error {
+  constructor(public timeoutMs: number) {
+    super(`No response within ${timeoutMs} ms`);
+  }
+}
 
 class MissingFileError extends Error {
   constructor(public fileName: string) {
@@ -87,17 +95,30 @@ export interface ExecuteOptions {
   sendCookies: boolean;
   /** Called as Server-Sent Events arrive (throttled); without it event streams are read to the end. */
   onEvents?: (response: ResponseData) => void;
+  /** Abandon the request after this many milliseconds (0 or undefined: no limit). */
+  timeoutMs?: number;
 }
 
 /** Perform one resolved request and read its whole response. */
 export async function executeResolved(resolved: ResolvedRequest, opts: ExecuteOptions): Promise<ResponseData> {
+  const timeout = opts.timeoutMs ? AbortSignal.timeout(opts.timeoutMs) : undefined;
+  const signal = timeout ? AbortSignal.any([opts.signal, timeout]) : opts.signal;
+  try {
+    return await executeWithSignal(resolved, opts, signal);
+  } catch (e) {
+    if (timeout?.aborted && !opts.signal.aborted) throw new RequestTimeoutError(opts.timeoutMs!);
+    throw e;
+  }
+}
+
+async function executeWithSignal(resolved: ResolvedRequest, opts: ExecuteOptions, signal: AbortSignal): Promise<ResponseData> {
   const t0 = performance.now();
   const body = await encodeBody(resolved.body);
   const res = await fetch(resolved.url, {
     method: resolved.method,
     headers: resolved.headers,
     body,
-    signal: opts.signal,
+    signal,
     // The browser's cookies for the site are attached only when the user asks.
     credentials: opts.sendCookies ? 'include' : 'omit',
     cache: 'no-store',
@@ -158,7 +179,7 @@ export async function executeResolved(resolved: ResolvedRequest, opts: ExecuteOp
       parser.push(decoder.decode());
       parser.end();
     } catch (e) {
-      if (!opts.signal.aborted) throw e;
+      if (!signal.aborted) throw e;
       stopped = true;
     }
     return { ...build(concat(chunks, size), performance.now() - t0, Date.now()), kind: 'text', events, streamStopped: stopped };
@@ -191,12 +212,25 @@ export function runTests(request: ApiRequest, response: ResponseData): { tests: 
   return { tests, extracted, extractNote: applyExtracted(extracted) };
 }
 
-function failureOf(err: unknown, cancelled: boolean, url: string): FetchFailure {
+function failureOf(err: unknown, cancelled: boolean, url: string, netError?: string): FetchFailure {
+  if (err instanceof RequestTimeoutError) {
+    return describeFetchError(err, { timedOut: true, timeoutMs: err.timeoutMs, url });
+  }
   if (err instanceof MissingFileError) {
     return { title: 'A file needs to be chosen again', detail: `The contents of "${err.fileName}" are no longer stored. Choose the file again on the Body tab.` };
   }
   if (err instanceof TypeError && /header/i.test(err.message)) {
     return { title: 'A header can’t be sent', detail: `${err.message}. Header values must be single-line Latin-1 text.` };
+  }
+  if (!cancelled && netError && !/ERR_ABORTED$/.test(netError)) {
+    let host = '';
+    try {
+      host = new URL(url).host;
+    } catch {
+      // keep empty
+    }
+    const info = describeNetError(netError, host);
+    return { title: info.title, detail: info.detail };
   }
   return describeFetchError(err, { cancelled, url });
 }
@@ -209,6 +243,7 @@ export async function sendTab(tabId: string): Promise<void> {
     updateRequest(tabId, (r) => ({ ...r, url: withDefaultScheme(r.url) }));
   }
   const request = findTab(tabId)!.request;
+  markWelcomed();
   const previous = getState().runs[tabId]?.response;
   const controller = new AbortController();
   controllers.set(tabId, controller);
@@ -236,15 +271,19 @@ export async function sendTab(tabId: string): Promise<void> {
   }
   setRun(tabId, { state: 'sending', startedAt, warnings, response: previous });
   const t0 = performance.now();
+  const trace = beginTrace(resolved.method, resolved.url);
 
   try {
-    const response = await executeResolved(resolved, {
+    const executed = await executeResolved(resolved, {
       signal: controller.signal,
       sendCookies: !!request.sendCookies,
+      timeoutMs: getState().requestTimeout * 1000,
       onEvents: (partial) => {
         if (findTab(tabId)) setRun(tabId, { state: 'streaming', startedAt, warnings, response: partial });
       },
     });
+    const network = await endTrace(trace);
+    const response: typeof executed = { ...executed, redirects: network.hops, cookies: network.cookies };
     if (findTab(tabId)) {
       const results = runTests(request, response);
       setRun(tabId, { state: 'done', response, warnings, ...results });
@@ -253,7 +292,8 @@ export async function sendTab(tabId: string): Promise<void> {
     recordHistory(request, toHistoryResponse({ ...response }), startedAt);
   } catch (err) {
     const cancelled = controller.signal.aborted;
-    const failure = failureOf(err, cancelled, resolved.url);
+    const network = await endTrace(trace);
+    const failure = failureOf(err, cancelled, resolved.url, network.errorCode);
     if (findTab(tabId)) setRun(tabId, { state: 'error', error: failure, warnings, response: previous });
     if (!cancelled) {
       recordHistory(
