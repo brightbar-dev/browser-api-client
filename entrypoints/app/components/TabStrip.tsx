@@ -4,7 +4,7 @@ import { activateTab, closeTab, moveTab, newTab, useApp } from '../store';
 import { cancelSend } from '../send';
 import { IconClose, IconPlus } from './icons';
 
-function requestClose(tab: WorkspaceTab) {
+export function requestClose(tab: WorkspaceTab) {
   if (isTabDirty(tab) && !window.confirm(`Close “${tabTitle(tab)}”? Its unsaved changes will be discarded.`)) return;
   closeTab(tab.id, cancelSend);
 }

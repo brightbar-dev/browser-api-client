@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'preact/hooks';
 import { browser } from 'wxt/browser';
-import { getState, openDialog, setActiveEnv, setLayout, useApp } from '../store';
+import { getState, newTab, openDialog, setActiveEnv, setLayout, useApp } from '../store';
+import { requestClose } from './TabStrip';
 import { createEnvironment, requestSave } from '../library';
 import { Dialogs, Toast } from './Dialogs';
 import { cancelSend, sendTab } from '../send';
@@ -26,17 +27,56 @@ function useTheme() {
   }, [theme]);
 }
 
+function focusUrl() {
+  requestAnimationFrame(() => {
+    const input = document.querySelector<HTMLInputElement>('input[aria-label="Request URL"]');
+    input?.focus();
+    input?.select();
+  });
+}
+
+function isTyping(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  return !!el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName));
+}
+
 function useShortcuts() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const { activeTabId } = getState().workspace;
+      const mod = e.metaKey || e.ctrlKey;
+      // Browsers keep Cmd/Ctrl+T, W and L for themselves; Alt works everywhere.
+      const appKey = (mod || e.altKey) && !e.shiftKey && !(mod && e.altKey);
+      if (getState().dialog) return;
+      if (appKey && e.code === 'KeyT') {
+        e.preventDefault();
+        newTab();
+        focusUrl();
+        return;
+      }
+      if (appKey && e.code === 'KeyW') {
+        e.preventDefault();
+        const tab = getState().workspace.tabs.find((t) => t.id === activeTabId);
+        if (tab) requestClose(tab);
+        return;
+      }
+      if (appKey && e.code === 'KeyL') {
+        e.preventDefault();
+        focusUrl();
+        return;
+      }
+      if (e.key === '?' && !mod && !e.altKey && !isTyping(e.target)) {
+        e.preventDefault();
+        openDialog({ type: 'shortcuts' });
+        return;
+      }
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         void sendTab(activeTabId);
       } else if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        if (!getState().dialog) requestSave(activeTabId);
-      } else if (e.key === 'Escape' && !getState().dialog && ['sending', 'streaming'].includes(getState().runs[activeTabId]?.state ?? '')) {
+        requestSave(activeTabId);
+      } else if (e.key === 'Escape' && ['sending', 'streaming'].includes(getState().runs[activeTabId]?.state ?? '')) {
         cancelSend(activeTabId);
       }
     };
@@ -102,6 +142,9 @@ function Header() {
       </button>
       <button type="button" class="bac-btn bac-btn-ghost" onClick={() => openDialog({ type: 'import' })}>
         Import
+      </button>
+      <button type="button" class="bac-icon-btn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)" onClick={() => openDialog({ type: 'shortcuts' })}>
+        <span aria-hidden="true" class="bac-kbd-icon">?</span>
       </button>
       <button type="button" class="bac-btn bac-btn-ghost" onClick={() => browser.runtime.openOptionsPage()}>
         <IconSettings /> Settings

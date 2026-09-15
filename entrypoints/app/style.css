@@ -22,7 +22,7 @@
   --border-strong: #c3c9d1;
   --text: #1b1f24;
   --text-muted: #57606a;
-  --accent: #047857;
+  --accent: #036349;
   --accent-contrast: #ffffff;
   --accent-soft: #d1fae5;
   --focus: #2563eb;
@@ -43,9 +43,9 @@
   --m-head: #475569;
   --m-options: #0e7490;
 
-  --s-success: #047857;
+  --s-success: #036349;
   --s-redirect: #1d4ed8;
-  --s-client-error: #b45309;
+  --s-client-error: #93460a;
   --s-server-error: #b91c1c;
   --s-info: #475569;
 
@@ -2112,4 +2112,72 @@ kbd {
 .bac-run-error {
   margin: 0 0 4px;
   color: var(--s-server-error);
+}
+
+/* ---------- PR 4: polish ---------- */
+
+.bac-kbd-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.bac-welcome {
+  max-width: 560px;
+  text-align: left;
+}
+
+.bac-welcome-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+}
+
+.bac-redirects {
+  padding: var(--space-3) var(--space-3) 0;
+}
+
+.bac-hops {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 var(--space-3);
+  padding-left: 22px;
+}
+
+.bac-hops li::marker {
+  color: var(--text-muted);
+}
+
+.bac-badge {
+  background: none;
+  cursor: pointer;
+}
+
+.bac-cookies-table td:first-child {
+  width: auto;
+}
+
+.bac-shortcuts {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bac-shortcuts th,
+.bac-shortcuts td {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-weight: normal;
+}
+
+.bac-shortcuts td {
+  text-align: right;
+  white-space: nowrap;
 }

@@ -1,6 +1,7 @@
 import type { BodyKind, FetchFailure } from '@/utils/response';
 import type { AssertionResult, ExtractionResult } from '@/utils/assertions';
 import type { SseEvent } from '@/utils/sse';
+import type { RedirectHop } from './network';
 
 /** A response as the app holds it: full bytes, decoded text when textual. */
 export interface ResponseData {
@@ -26,6 +27,10 @@ export interface ResponseData {
   events?: SseEvent[];
   /** The user stopped the event stream before the server ended it. */
   streamStopped?: boolean;
+  /** Redirect hops the browser followed, from webRequest. */
+  redirects?: RedirectHop[];
+  /** Set-Cookie headers from webRequest (fetch hides them); undefined when not observable. */
+  cookies?: Array<{ url: string; header: string }>;
 }
 
 export type TestResult = AssertionResult & { label: string };

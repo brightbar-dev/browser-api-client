@@ -11,7 +11,7 @@ export default defineConfig({
     name: '__MSG_appName__',
     description: '__MSG_appDescription__',
     default_locale: 'en',
-    permissions: ['storage', 'identity'],
+    permissions: ['storage', 'identity', 'webRequest'],
     host_permissions: ['<all_urls>'],
     action: {
       default_title: '__MSG_appName__',

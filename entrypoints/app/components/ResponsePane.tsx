@@ -4,7 +4,8 @@ import { formatSize, formatTime, prettyJson, statusColor } from '@/utils/request
 import { downloadFileName, findMatches, hexDump, type BodyKind } from '@/utils/response';
 import { statusLabel } from '@/utils/http-status';
 import { tokenizeJson } from '@/utils/json-highlight';
-import { useApp } from '../store';
+import { parseSetCookie } from '@/utils/set-cookie';
+import { openDialog, useApp } from '../store';
 import { cancelSend } from '../send';
 import type { ResponseData, TabRun } from '../types';
 import { JsonTree } from './JsonTree';
@@ -71,6 +72,30 @@ export function ResponsePane({ tabId }: { tabId: string }) {
 }
 
 function EmptyResponse() {
+  const welcomed = useApp((s) => s.welcomed);
+  if (!welcomed) {
+    return (
+      <div class="bac-empty bac-welcome">
+        <p class="bac-empty-title">Welcome to Browser API Client</p>
+        <ul class="bac-welcome-list">
+          <li>
+            The tab above is a sample request to <strong>httpbin.org</strong>, a public echo service. Nothing is sent until you press <kbd>Send</kbd> or <kbd>{SEND_SHORTCUT}</kbd>.
+          </li>
+          <li>No account, no sync, no tracking — your requests, tokens and collections stay in this browser.</li>
+          <li>
+            Already have requests? Use <strong>Import</strong> for a cURL command, an OpenAPI spec, a Postman collection or a HAR file.
+          </li>
+          <li>
+            Press{' '}
+            <button type="button" class="bac-link-btn" onClick={() => openDialog({ type: 'shortcuts' })}>
+              <kbd>?</kbd> for keyboard shortcuts
+            </button>
+            .
+          </li>
+        </ul>
+      </div>
+    );
+  }
   return (
     <div class="bac-empty">
       <p class="bac-empty-title">No response yet</p>
@@ -98,7 +123,7 @@ function SendingBar({ startedAt, onCancel }: { startedAt: number; onCancel: () =
   );
 }
 
-type ResTab = 'events' | 'body' | 'headers' | 'tests';
+type ResTab = 'events' | 'body' | 'headers' | 'cookies' | 'tests';
 const resTabMemory = new Map<string, ResTab>();
 
 function ResponseView({ tabId, run, response, stale }: { tabId: string; run: TabRun; response: ResponseData; stale: boolean }) {
@@ -106,7 +131,8 @@ function ResponseView({ tabId, run, response, stale }: { tabId: string; run: Tab
   const tests = run.tests ?? [];
   const extracted = run.extracted ?? [];
   const hasTests = tests.length > 0 || extracted.length > 0;
-  const available: ResTab[] = [...(hasEvents ? (['events'] as const) : []), 'body', 'headers', ...(hasTests ? (['tests'] as const) : [])];
+  const hasCookies = (response.cookies?.length ?? 0) > 0;
+  const available: ResTab[] = [...(hasEvents ? (['events'] as const) : []), 'body', 'headers', ...(hasCookies ? (['cookies'] as const) : []), ...(hasTests ? (['tests'] as const) : [])];
   const [chosen, setChosen] = useState<ResTab>(() => resTabMemory.get(tabId) ?? (hasEvents ? 'events' : 'body'));
   const tab: ResTab = available.includes(chosen) ? chosen : (available[0] ?? 'body');
   const setTab = (t: ResTab) => {
@@ -116,10 +142,11 @@ function ResponseView({ tabId, run, response, stale }: { tabId: string; run: Tab
   const color = statusColor(response.status);
   const download = Math.max(0, response.time - response.ttfb);
   const passed = tests.filter((t) => t.pass).length;
-  const labels: Record<ResTab, string> = { events: 'Events', body: 'Body', headers: 'Headers', tests: 'Tests' };
+  const labels: Record<ResTab, string> = { events: 'Events', body: 'Body', headers: 'Headers', cookies: 'Cookies', tests: 'Tests' };
   const badges: Partial<Record<ResTab, string>> = {
     events: String(response.events?.length ?? 0),
     headers: String(response.headers.length),
+    cookies: String(response.cookies?.length ?? 0),
     tests: tests.length ? `${passed}/${tests.length}` : extracted.length ? String(extracted.length) : undefined,
   };
 
@@ -132,9 +159,9 @@ function ResponseView({ tabId, run, response, stale }: { tabId: string; run: Tab
         </span>
         <span class="bac-metric">{formatSize(response.size)}</span>
         {response.redirected && (
-          <span class="bac-badge" title={`Redirects were followed. Final URL: ${response.url}`}>
-            Redirected → {shortUrl(response.url)}
-          </span>
+          <button type="button" class="bac-badge" title={`Redirects were followed. Final URL: ${response.url}`} onClick={() => setTab('headers')}>
+            {response.redirects?.length ? `${response.redirects.length} redirect${response.redirects.length === 1 ? '' : 's'}` : 'Redirected'} → {shortUrl(response.url)}
+          </button>
         )}
         {tests.length > 0 && (
           <button type="button" class={`bac-test-pill${passed === tests.length ? ' is-pass' : ' is-fail'}`} onClick={() => setTab('tests')}>
@@ -163,6 +190,7 @@ function ResponseView({ tabId, run, response, stale }: { tabId: string; run: Tab
       <div class="bac-response-panel" role="tabpanel" id="bac-res-panel" aria-labelledby={`bac-res-tab-${tab}`}>
         {tab === 'body' && <BodyViewer key={`${response.receivedAt}`} tabId={tabId} response={response} />}
         {tab === 'headers' && <HeadersTable response={response} />}
+        {tab === 'cookies' && <CookiesView response={response} />}
         {tab === 'tests' && <TestsView run={run} />}
         {tab === 'events' && <EventsView response={response} live={run.state === 'streaming'} />}
       </div>
@@ -273,8 +301,25 @@ function shortUrl(url: string): string {
 }
 
 function HeadersTable({ response }: { response: ResponseData }) {
+  const hops = response.redirects ?? [];
+  const cookieHeaders = (response.cookies ?? []).filter((c) => c.url === response.url);
   return (
     <div class="bac-scroll">
+      {hops.length > 0 && (
+        <section class="bac-redirects" aria-label="Redirect chain">
+          <h3 class="bac-results-title">Redirect chain</h3>
+          <ol class="bac-hops">
+            {hops.map((hop, i) => (
+              <li key={i}>
+                <span class={`bac-status-text s-${statusColor(hop.status)}`}>{hop.status}</span> <span class="bac-mono bac-break">{hop.url}</span>
+              </li>
+            ))}
+            <li>
+              <span class={`bac-status-text s-${statusColor(response.status)}`}>{response.status}</span> <span class="bac-mono bac-break">{response.url}</span>
+            </li>
+          </ol>
+        </section>
+      )}
       <table class="bac-table">
         <thead>
           <tr>
@@ -289,9 +334,48 @@ function HeadersTable({ response }: { response: ResponseData }) {
               <td class="bac-mono bac-break">{value}</td>
             </tr>
           ))}
+          {cookieHeaders.map((c, i) => (
+            <tr key={`c${i}`}>
+              <td class="bac-mono">set-cookie</td>
+              <td class="bac-mono bac-break">{c.header}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
-      <p class="bac-muted bac-pad">Browsers hide Set-Cookie response headers from extensions, so they are not listed here.</p>
+      {response.cookies === undefined && <p class="bac-muted bac-pad">Set-Cookie headers can’t be shown in this browser, so they are not listed here.</p>}
+    </div>
+  );
+}
+
+function CookiesView({ response }: { response: ResponseData }) {
+  const cookies = (response.cookies ?? []).map((c) => ({ ...parseSetCookie(c.header), from: c.url }));
+  return (
+    <div class="bac-scroll">
+      <table class="bac-table bac-cookies-table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Value</th>
+            <th scope="col">Domain / Path</th>
+            <th scope="col">Expires</th>
+            <th scope="col">Flags</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cookies.map((c, i) => (
+            <tr key={i} title={`Set by ${c.from}`}>
+              <td class="bac-mono">{c.name}</td>
+              <td class="bac-mono bac-break">{c.value}</td>
+              <td class="bac-mono">
+                {c.domain ?? '(this host)'} {c.path ?? '/'}
+              </td>
+              <td class="bac-mono">{c.maxAge ? `in ${c.maxAge} s` : (c.expires ?? 'session')}</td>
+              <td class="bac-small">{[c.httpOnly && 'HttpOnly', c.secure && 'Secure', c.sameSite && `SameSite=${c.sameSite}`, c.partitioned && 'Partitioned'].filter(Boolean).join(' · ') || '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="bac-muted bac-pad">These cookies came with the response. They are not added to your browser unless the request was sent with “Send this site’s cookies”.</p>
     </div>
   );
 }

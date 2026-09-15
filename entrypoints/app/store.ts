@@ -16,6 +16,7 @@ import { sanitizeCollection, sanitizeEnvironment, sanitizeHistoryEntry, sanitize
 import { clampMaxHistory, type Theme } from '@/utils/backup';
 import { idbDelete, idbGet } from '@/utils/idb';
 import { DEFAULT_LAYOUT, type Layout, type ResponseData, type TabRun } from './types';
+import { startNetworkObserver } from './network';
 
 export type DialogState =
   | null
@@ -23,7 +24,8 @@ export type DialogState =
   | { type: 'environment'; envId: string }
   | { type: 'import' }
   | { type: 'code'; tabId: string }
-  | { type: 'runner'; collectionId: string; folderId: string | null };
+  | { type: 'runner'; collectionId: string; folderId: string | null }
+  | { type: 'shortcuts' };
 
 export interface AppState {
   ready: boolean;
@@ -38,6 +40,10 @@ export interface AppState {
   history: HistoryEntry[];
   theme: Theme;
   maxHistory: number;
+  /** Seconds before a request is abandoned; 0 means no limit. */
+  requestTimeout: number;
+  /** False only on a first run, until the first send. */
+  welcomed: boolean;
   layout: Layout;
 }
 
@@ -54,6 +60,8 @@ let state: AppState = {
   history: [],
   theme: 'auto',
   maxHistory: 100,
+  requestTimeout: 0,
+  welcomed: true,
   layout: DEFAULT_LAYOUT,
 };
 
@@ -128,11 +136,32 @@ function readTheme(v: unknown): Theme {
   return v === 'light' || v === 'dark' ? v : 'auto';
 }
 
+function readTimeout(v: unknown): number {
+  const n = typeof v === 'number' ? v : Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.min(600, Math.round(n))) : 0;
+}
+
+/** The first-run tab: a real request the user can send, which nothing sends for them. */
+function sampleWorkspace(): Workspace {
+  const ws = wsOps.newWorkspace();
+  const tab = ws.tabs[0]!;
+  tab.request = {
+    ...tab.request,
+    name: 'Try it: GET with a query parameter',
+    url: 'https://httpbin.org/get?hello=world',
+    params: [{ key: 'hello', value: 'world', enabled: true }],
+    headers: [{ key: 'Accept', value: 'application/json', enabled: true }],
+  };
+  return ws;
+}
+
 export async function loadApp(): Promise<void> {
   const stored = await browser.storage.local.get([
-    'workspace', 'environments', 'activeEnvId', 'collections', 'history', 'theme', 'maxHistory', 'layout',
+    'workspace', 'environments', 'activeEnvId', 'collections', 'history', 'theme', 'maxHistory', 'layout', 'requestTimeout', 'welcomed',
   ]);
-  const workspace = wsOps.restoreWorkspace(stored.workspace);
+  const firstRun = stored.workspace === undefined && stored.welcomed !== true;
+  const workspace = firstRun ? sampleWorkspace() : wsOps.restoreWorkspace(stored.workspace);
+  void startNetworkObserver();
   setState((s) => ({
     ...s,
     ready: true,
@@ -144,6 +173,8 @@ export async function loadApp(): Promise<void> {
     history: sanitizeList(stored.history, sanitizeHistoryEntry).items,
     theme: readTheme(stored.theme),
     maxHistory: clampMaxHistory(stored.maxHistory ?? 100),
+    requestTimeout: readTimeout(stored.requestTimeout),
+    welcomed: !firstRun,
     layout: sanitizeLayout(stored.layout),
   }));
 
@@ -166,6 +197,7 @@ export async function loadApp(): Promise<void> {
       if (changes.activeEnvId) next = { ...next, activeEnvId: typeof changes.activeEnvId.newValue === 'string' ? changes.activeEnvId.newValue : null };
       if (changes.theme) next = { ...next, theme: readTheme(changes.theme.newValue) };
       if (changes.maxHistory) next = { ...next, maxHistory: clampMaxHistory(changes.maxHistory.newValue ?? 100) };
+      if (changes.requestTimeout) next = { ...next, requestTimeout: readTimeout(changes.requestTimeout.newValue) };
       return next;
     });
   });
@@ -272,4 +304,10 @@ export function showToast(message: string): void {
   const id = ++toastSeq;
   setState((s) => ({ ...s, toast: { id, message } }));
   setTimeout(() => setState((s) => (s.toast?.id === id ? { ...s, toast: null } : s)), 4000);
+}
+
+export function markWelcomed(): void {
+  if (state.welcomed) return;
+  setState((s) => ({ ...s, welcomed: true }));
+  void browser.storage.local.set({ welcomed: true });
 }
