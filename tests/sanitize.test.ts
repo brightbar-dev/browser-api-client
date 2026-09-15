@@ -165,7 +165,7 @@ describe('sanitizeRequest', () => {
 
   it('sanitizes auth', () => {
     expect(sanitizeRequest({ auth: null })!.auth).toEqual({ type: 'none' });
-    expect(sanitizeRequest({ auth: { type: 'oauth2', token: 't' } })!.auth).toEqual({ type: 'none', token: 't' });
+    expect(sanitizeRequest({ auth: { type: 'digest', token: 't' } })!.auth).toEqual({ type: 'none', token: 't' });
     expect(sanitizeRequest({ auth: { type: 'basic', username: 'u', password: 123 } })!.auth).toEqual({ type: 'basic', username: 'u' });
     expect(sanitizeRequest({ auth: { type: 'api-key', apiKeyIn: 'cookie' } })!.auth).toEqual({ type: 'api-key' });
     expect(sanitizeRequest({ auth: { type: 'api-key', apiKeyIn: 'header' } })!.auth).toEqual({ type: 'api-key', apiKeyIn: 'header' });

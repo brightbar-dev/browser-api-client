@@ -16,6 +16,7 @@ const MODES: Array<{ id: BodyType; label: string }> = [
   { id: 'multipart', label: 'Multipart form' },
   { id: 'text', label: 'Raw' },
   { id: 'binary', label: 'File' },
+  { id: 'graphql', label: 'GraphQL' },
 ];
 
 interface BodyEditorProps {
@@ -101,6 +102,33 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
         />
       )}
 
+      {mode === 'graphql' && (
+        <div class="bac-graphql">
+          <div class="bac-code-editor">
+            <div class="bac-editor-toolbar">
+              <span class="bac-small bac-strong">Query</span>
+              <span class="bac-muted bac-small">Sent as a JSON POST: {'{ "query", "variables" }'}</span>
+            </div>
+            <VarField
+              multiline
+              class="bac-code-input"
+              aria-label="GraphQL query"
+              spellcheck={false}
+              placeholder={'query User($id: ID!) {\n  user(id: $id) {\n    id\n    name\n  }\n}'}
+              value={request.body}
+              onValue={(body) => update((r) => ({ ...r, body }))}
+            />
+          </div>
+          <JsonBody
+            label="GraphQL variables"
+            title="Variables"
+            body={request.graphqlVariables ?? ''}
+            variables={env?.variables ?? []}
+            onChange={(graphqlVariables) => update((r) => ({ ...r, graphqlVariables }))}
+          />
+        </div>
+      )}
+
       {mode === 'binary' && (
         <div class="bac-form">
           <p class="bac-muted">The file’s bytes are sent as the body, with its type as Content-Type unless you set one.</p>
@@ -111,7 +139,19 @@ export function BodyEditor({ tabId, request, update }: BodyEditorProps) {
   );
 }
 
-function JsonBody({ body, variables, onChange }: { body: string; variables: Array<{ key: string; value: string; enabled: boolean }>; onChange: (b: string) => void }) {
+function JsonBody({
+  body,
+  variables,
+  onChange,
+  label = 'JSON body',
+  title,
+}: {
+  body: string;
+  variables: Array<{ key: string; value: string; enabled: boolean }>;
+  onChange: (b: string) => void;
+  label?: string;
+  title?: string;
+}) {
   const status = useMemo(() => {
     if (!body.trim()) return null;
     try {
@@ -133,6 +173,7 @@ function JsonBody({ body, variables, onChange }: { body: string; variables: Arra
   return (
     <div class="bac-code-editor">
       <div class="bac-editor-toolbar">
+        {title && <span class="bac-small bac-strong">{title}</span>}
         <span class={`bac-validity${status ? (status.ok ? ' is-ok' : ' is-bad') : ''}`} role="status" aria-live="polite">
           {status?.message ?? ''}
         </span>
@@ -150,9 +191,9 @@ function JsonBody({ body, variables, onChange }: { body: string; variables: Arra
       <VarField
         multiline
         class="bac-code-input"
-        aria-label="JSON body"
+        aria-label={label}
         spellcheck={false}
-        placeholder={'{\n  "name": "Ada Lovelace"\n}'}
+        placeholder={title ? '{\n  "id": "2"\n}' : '{\n  "name": "Ada Lovelace"\n}'}
         value={body}
         onValue={onChange}
       />

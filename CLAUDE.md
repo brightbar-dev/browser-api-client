@@ -7,7 +7,7 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 
 ## Architecture
 - **entrypoints/background.ts** — Service worker. The toolbar button opens `app.html` in a tab, or focuses the one already open (Chrome: `runtime.getContexts`; Firefox: the app page answers a `focusApp` message). Serializes history writes and owns the history, environment and collection storage messages.
-- **entrypoints/app/** — The workspace, a full-tab Preact app. `library.ts` holds collection/environment actions (save to collection, move across collections, environment CRUD); `components/Dialogs.tsx` has the save, environment editor, import and code-snippet dialogs; `components/VarField.tsx` colours `{{variables}}` (defined vs undefined) in any input or textarea. `store.ts` holds state and persists the open tabs' drafts to `storage.local` (debounced, flushed on pagehide); `send.ts` executes requests from the page itself (extension pages bypass CORS for `<all_urls>`), with `AbortController` cancel and `credentials: 'omit'`; `components/` has the sidebar (History grouped by day with method/status filters; Collections tree with one level of folders, drag and Alt+Arrow reorder, rename, duplicate, Postman export; Environments with active switch, duplicate, export), request tab strip, request editor (URL ⇄ params sync, headers, auth, body modes) and response viewer (pretty/tree/raw JSON, sandboxed HTML preview, image preview, hex view, search, download).
+- **entrypoints/app/** — The workspace, a full-tab Preact app. `library.ts` holds collection/environment actions (save to collection, move across collections, environment CRUD); `components/Dialogs.tsx` has the save, environment editor, import and code-snippet dialogs; `components/VarField.tsx` colours `{{variables}}` (defined vs undefined) in any input or textarea. `store.ts` holds state and persists the open tabs' drafts to `storage.local` (debounced, flushed on pagehide); `send.ts` executes requests from the page itself (extension pages bypass CORS for `<all_urls>`), with `AbortController` cancel, `credentials: 'omit'` unless the request opts into the site's cookies, live Server-Sent Events, and tests/variable extraction after each response; `oauth.ts` fetches OAuth 2.0 tokens (client credentials from the page; authorization code + PKCE through `identity.launchWebAuthFlow`) and keeps them in `storage.local` `oauthTokens`, never in requests, exports or backups; `components/Runner.tsx` runs a collection or folder in order; `components/` has the sidebar (History grouped by day with method/status filters; Collections tree with one level of folders, drag and Alt+Arrow reorder, rename, duplicate, Postman export; Environments with active switch, duplicate, export), request tab strip, request editor (URL ⇄ params sync, headers, auth, body modes) and response viewer (pretty/tree/raw JSON, sandboxed HTML preview, image preview, hex view, search, download).
 - **entrypoints/options/** — Settings page (theme, history limit, backup export/import through `utils/backup.ts`).
 - **utils/request.ts** — Request model (body modes: none, JSON, x-www-form-urlencoded, multipart, raw text, binary file, GraphQL), resolved-request types, formatting.
 - **utils/url.ts** — Raw-text URL ⇄ query params sync, scheme defaulting (`http://` for local hosts, `https://` otherwise).
@@ -22,6 +22,11 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - **utils/openapi-import.ts** — OpenAPI 3 / Swagger 2 JSON to a collection (folders by tag, example bodies from schemas) plus an environment of variables.
 - **utils/har-import.ts** — HAR 1.2 entries to requests.
 - **utils/import-detect.ts** — Detect what pasted text is and run the matching importer.
+- **utils/jsonpath.ts** — A safe JSONPath subset (`$`, `.key`, `['key']`, `[n]`, `[-n]`, `[*]`, `..key`), no filters or scripts.
+- **utils/assertions.ts** — Test rules (status, header, JSON path, body, time) and "set variable from response" rules; evaluated without eval.
+- **utils/sse.ts** — WHATWG-conformant incremental `text/event-stream` parser.
+- **utils/oauth2.ts** — OAuth 2.0 client credentials and authorization code + PKCE: URLs, token requests, token parsing, expiry.
+- **utils/runner.ts** — Collection runner orchestration with an injected sender: order, abort, stop on failure, re-run failed.
 - **utils/history.ts** — Request history sorting, grouping by day, filtering (query, method, status bucket), truncation.
 - **utils/collections.ts** — Collections with one level of folders: upsert/move/duplicate/remove requests anywhere, folder operations, tree search.
 - **utils/import-export.ts** — Postman v2.1 collection (nested folders, every body mode) and environment import/export, native export.
@@ -30,7 +35,10 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - The UI is a full browser tab, never a popup, so nothing is lost when focus leaves it. Every edit to an open request is saved as a draft and restored on reload; a page with an in-flight request asks before unloading.
 - Requests run in the app page with `fetch()`: host permission `<all_urls>` bypasses CORS; the browser's cookies are never attached (`credentials: 'omit'`).
 - Environment variables use `{{variable}}` mustache syntax, interpolated at send time
-- Auth support: Bearer Token, Basic Auth, API Key (header or query)
+- Auth support: Bearer Token, Basic Auth, API Key (header or query), OAuth 2.0 (client credentials; authorization code with PKCE — needs the `identity` permission, which adds no install warning)
+- Tests and chaining: per-request assertion rules and "set variable from response" rules (JSONPath/header/status/body → active environment); no scripts
+- GraphQL body mode (query + variables, sent as JSON POST); Server-Sent Events shown live as they arrive
+- "Send this site's cookies" is a per-request toggle (`credentials: 'include'`), off by default; no `cookies` permission
 - Files chosen for multipart/binary bodies are stored in IndexedDB so drafts with files survive a reload
 - History is written by the background (serialized) up to the user's max-entries setting; response bodies over 64 KB are cut in history
 - Import: Postman v2.1 collections and environments, cURL (dialog or paste into the URL bar), OpenAPI 3 / Swagger 2 JSON, HAR. Export: collections to Postman v2.1, environments to Postman, code snippets in 8 languages, native backup from Settings

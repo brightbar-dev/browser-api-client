@@ -1,5 +1,8 @@
 /** HTTP request model, building and formatting utilities. */
 
+import type { Assertion, Extraction } from './assertions';
+import type { OAuth2Config } from './oauth2';
+
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
 export const HTTP_METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
@@ -54,10 +57,16 @@ export interface ApiRequest {
   /** JSON source of GraphQL variables, for `graphql` bodies. */
   graphqlVariables?: string;
   auth: AuthConfig;
+  /** Checks run on every response ("Tests"). */
+  assertions?: Assertion[];
+  /** Response values copied into the active environment after each send. */
+  extractions?: Extraction[];
+  /** Attach the browser's cookies for the target site. Off unless the user turns it on. */
+  sendCookies?: boolean;
 }
 
 export interface AuthConfig {
-  type: 'none' | 'bearer' | 'basic' | 'api-key';
+  type: 'none' | 'bearer' | 'basic' | 'api-key' | 'oauth2';
   token?: string;
   username?: string;
   password?: string;
@@ -65,6 +74,7 @@ export interface AuthConfig {
   headerValue?: string;
   /** Where an API key goes. Defaults to header. */
   apiKeyIn?: 'header' | 'query';
+  oauth2?: OAuth2Config;
 }
 
 /** Stored response summary (history entries). */

@@ -1,4 +1,6 @@
 import type { BodyKind, FetchFailure } from '@/utils/response';
+import type { AssertionResult, ExtractionResult } from '@/utils/assertions';
+import type { SseEvent } from '@/utils/sse';
 
 /** A response as the app holds it: full bytes, decoded text when textual. */
 export interface ResponseData {
@@ -20,14 +22,24 @@ export interface ResponseData {
   receivedAt: number;
   method: string;
   requestUrl: string;
+  /** Server-Sent Events, when the response was text/event-stream. */
+  events?: SseEvent[];
+  /** The user stopped the event stream before the server ended it. */
+  streamStopped?: boolean;
 }
 
+export type TestResult = AssertionResult & { label: string };
+
 export interface TabRun {
-  state: 'idle' | 'sending' | 'done' | 'error';
+  state: 'idle' | 'sending' | 'streaming' | 'done' | 'error';
   response?: ResponseData;
   error?: FetchFailure;
   startedAt?: number;
   warnings: string[];
+  tests?: TestResult[];
+  extracted?: ExtractionResult[];
+  /** Where extracted values went, or why they didn't. */
+  extractNote?: string;
 }
 
 export type SidebarPanel = 'history' | 'collections' | 'environments';

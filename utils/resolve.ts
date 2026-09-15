@@ -64,7 +64,12 @@ export interface ResolveResult {
   error?: string;
 }
 
-export function resolveRequest(req: ApiRequest, variables: EnvVariable[]): ResolveResult {
+export interface ResolveOptions {
+  /** Access token for OAuth 2.0 auth, fetched by the caller. */
+  oauthToken?: { accessToken: string; tokenType?: string };
+}
+
+export function resolveRequest(req: ApiRequest, variables: EnvVariable[], opts: ResolveOptions = {}): ResolveResult {
   const warnings: string[] = [];
   const used = new Set<string>();
   const v = (text: string): string => {
@@ -114,6 +119,10 @@ export function resolveRequest(req: ApiRequest, variables: EnvVariable[]): Resol
     authorizationApplied = true;
   } else if (auth.type === 'basic' && (auth.username || auth.password)) {
     headers = setHeader(headers, 'Authorization', `Basic ${base64Utf8(`${v(auth.username || '')}:${v(auth.password || '')}`)}`);
+    authorizationApplied = true;
+  } else if (auth.type === 'oauth2' && opts.oauthToken?.accessToken) {
+    const tokenType = opts.oauthToken.tokenType && !/^bearer$/i.test(opts.oauthToken.tokenType) ? opts.oauthToken.tokenType : 'Bearer';
+    headers = setHeader(headers, 'Authorization', `${tokenType} ${opts.oauthToken.accessToken}`);
     authorizationApplied = true;
   } else if (auth.type === 'api-key' && auth.apiKeyIn !== 'query' && auth.headerName && auth.headerValue) {
     const name = v(auth.headerName).trim();

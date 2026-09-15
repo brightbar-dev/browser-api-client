@@ -6,7 +6,7 @@ import { statusLabel } from '@/utils/http-status';
 import { tokenizeJson } from '@/utils/json-highlight';
 import { useApp } from '../store';
 import { cancelSend } from '../send';
-import type { ResponseData } from '../types';
+import type { ResponseData, TabRun } from '../types';
 import { JsonTree } from './JsonTree';
 import { SEND_SHORTCUT } from './RequestEditor';
 import { IconChevronDown, IconChevronUp, IconCopy, IconDownload, IconSearch } from './icons';
@@ -40,9 +40,18 @@ export function ResponsePane({ tabId }: { tabId: string }) {
   const run = useApp((s) => s.runs[tabId]);
 
   return (
-    <section class="bac-response" aria-label="Response" aria-busy={run?.state === 'sending'}>
+    <section class="bac-response" aria-label="Response" aria-busy={run?.state === 'sending' || run?.state === 'streaming'}>
       {!run && <EmptyResponse />}
       {run?.state === 'sending' && <SendingBar startedAt={run.startedAt ?? Date.now()} onCancel={() => cancelSend(tabId)} />}
+      {run?.state === 'streaming' && (
+        <div class="bac-sending" role="status">
+          <span class="bac-live-dot" aria-hidden="true" />
+          <span>Receiving events… {run.response?.events?.length ?? 0} so far</span>
+          <button type="button" class="bac-btn bac-btn-small" onClick={() => cancelSend(tabId)}>
+            Stop
+          </button>
+        </div>
+      )}
       {run && run.warnings.length > 0 && (
         <ul class="bac-notice bac-notice-warn bac-warnings" aria-label="Warnings">
           {run.warnings.map((w) => (
@@ -56,7 +65,7 @@ export function ResponsePane({ tabId }: { tabId: string }) {
           <p>{run.error.detail}</p>
         </div>
       )}
-      {run?.response && run.state !== 'error' && <ResponseView tabId={tabId} response={run.response} stale={run.state === 'sending'} />}
+      {run?.response && run.state !== 'error' && <ResponseView tabId={tabId} run={run} response={run.response} stale={run.state === 'sending'} />}
     </section>
   );
 }
@@ -89,10 +98,30 @@ function SendingBar({ startedAt, onCancel }: { startedAt: number; onCancel: () =
   );
 }
 
-function ResponseView({ tabId, response, stale }: { tabId: string; response: ResponseData; stale: boolean }) {
-  const [tab, setTab] = useState<'body' | 'headers'>('body');
+type ResTab = 'events' | 'body' | 'headers' | 'tests';
+const resTabMemory = new Map<string, ResTab>();
+
+function ResponseView({ tabId, run, response, stale }: { tabId: string; run: TabRun; response: ResponseData; stale: boolean }) {
+  const hasEvents = response.events !== undefined;
+  const tests = run.tests ?? [];
+  const extracted = run.extracted ?? [];
+  const hasTests = tests.length > 0 || extracted.length > 0;
+  const available: ResTab[] = [...(hasEvents ? (['events'] as const) : []), 'body', 'headers', ...(hasTests ? (['tests'] as const) : [])];
+  const [chosen, setChosen] = useState<ResTab>(() => resTabMemory.get(tabId) ?? (hasEvents ? 'events' : 'body'));
+  const tab: ResTab = available.includes(chosen) ? chosen : (available[0] ?? 'body');
+  const setTab = (t: ResTab) => {
+    resTabMemory.set(tabId, t);
+    setChosen(t);
+  };
   const color = statusColor(response.status);
   const download = Math.max(0, response.time - response.ttfb);
+  const passed = tests.filter((t) => t.pass).length;
+  const labels: Record<ResTab, string> = { events: 'Events', body: 'Body', headers: 'Headers', tests: 'Tests' };
+  const badges: Partial<Record<ResTab, string>> = {
+    events: String(response.events?.length ?? 0),
+    headers: String(response.headers.length),
+    tests: tests.length ? `${passed}/${tests.length}` : extracted.length ? String(extracted.length) : undefined,
+  };
 
   return (
     <div class={`bac-response-view${stale ? ' is-stale' : ''}`}>
@@ -107,9 +136,14 @@ function ResponseView({ tabId, response, stale }: { tabId: string; response: Res
             Redirected → {shortUrl(response.url)}
           </span>
         )}
+        {tests.length > 0 && (
+          <button type="button" class={`bac-test-pill${passed === tests.length ? ' is-pass' : ' is-fail'}`} onClick={() => setTab('tests')}>
+            {passed === tests.length ? `✓ ${passed} passed` : `✗ ${tests.length - passed} failed`}
+          </button>
+        )}
         <div class="bac-spacer" />
         <div role="tablist" aria-label="Response parts" class="bac-subtabs bac-subtabs-inline">
-          {(['body', 'headers'] as const).map((t) => (
+          {available.map((t) => (
             <button
               key={t}
               type="button"
@@ -120,15 +154,111 @@ function ResponseView({ tabId, response, stale }: { tabId: string; response: Res
               class={`bac-subtab${tab === t ? ' is-active' : ''}`}
               onClick={() => setTab(t)}
             >
-              {t === 'body' ? 'Body' : 'Headers'}
-              {t === 'headers' && <span class="bac-subtab-badge">{response.headers.length}</span>}
+              {labels[t]}
+              {t !== 'body' && badges[t] && <span class={`bac-subtab-badge${t === 'tests' && passed < tests.length ? ' is-fail' : ''}`}>{badges[t]}</span>}
             </button>
           ))}
         </div>
       </div>
       <div class="bac-response-panel" role="tabpanel" id="bac-res-panel" aria-labelledby={`bac-res-tab-${tab}`}>
-        {tab === 'body' ? <BodyViewer key={`${response.receivedAt}`} tabId={tabId} response={response} /> : <HeadersTable response={response} />}
+        {tab === 'body' && <BodyViewer key={`${response.receivedAt}`} tabId={tabId} response={response} />}
+        {tab === 'headers' && <HeadersTable response={response} />}
+        {tab === 'tests' && <TestsView run={run} />}
+        {tab === 'events' && <EventsView response={response} live={run.state === 'streaming'} />}
       </div>
+    </div>
+  );
+}
+
+function TestsView({ run }: { run: TabRun }) {
+  const tests = run.tests ?? [];
+  const extracted = run.extracted ?? [];
+  const passed = tests.filter((t) => t.pass).length;
+  return (
+    <div class="bac-scroll bac-results">
+      {tests.length > 0 && (
+        <section>
+          <h3 class="bac-results-title">{passed === tests.length ? `All ${tests.length} tests passed` : `${tests.length - passed} of ${tests.length} tests failed`}</h3>
+          <ul class="bac-test-list">
+            {tests.map((t) => (
+              <li key={t.id} class={t.pass ? 'is-pass' : 'is-fail'}>
+                <span class="bac-test-icon" aria-hidden="true">
+                  {t.pass ? '✓' : '✗'}
+                </span>
+                <span>
+                  <span class="bac-visually-hidden">{t.pass ? 'Passed: ' : 'Failed: '}</span>
+                  <span class="bac-test-label">{t.label}</span>
+                  {!t.pass && <span class="bac-test-msg">{t.message}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {extracted.length > 0 && (
+        <section>
+          <h3 class="bac-results-title">Variables from this response</h3>
+          <ul class="bac-test-list">
+            {extracted.map((x) => (
+              <li key={x.id} class={x.ok ? 'is-pass' : 'is-fail'}>
+                <span class="bac-test-icon" aria-hidden="true">
+                  {x.ok ? '✓' : '✗'}
+                </span>
+                <span>
+                  <code>{`{{${x.variable}}}`}</code>{' '}
+                  {x.ok ? (
+                    <>
+                      = <code class="bac-break">{x.value.length > 120 ? `${x.value.slice(0, 120)}…` : x.value}</code>
+                    </>
+                  ) : (
+                    <span class="bac-test-msg">{x.message}</span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+          {run.extractNote && <p class="bac-muted bac-small">{run.extractNote}</p>}
+        </section>
+      )}
+    </div>
+  );
+}
+
+function EventsView({ response, live }: { response: ResponseData; live: boolean }) {
+  const events = response.events ?? [];
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (live && ref.current) ref.current.scrollTop = ref.current.scrollHeight;
+  }, [events.length, live]);
+  if (!events.length) {
+    return <p class="bac-muted bac-pad">{live ? 'Connected. Waiting for the first event…' : 'The stream ended without sending any events.'}</p>;
+  }
+  const first = events[0]!.receivedAt;
+  return (
+    <div class="bac-scroll" ref={ref}>
+      <table class="bac-table bac-events-table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Arrived</th>
+            <th scope="col">Event</th>
+            <th scope="col">ID</th>
+            <th scope="col">Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          {events.map((e, i) => (
+            <tr key={i}>
+              <td class="bac-mono">{i + 1}</td>
+              <td class="bac-mono">+{formatTime(e.receivedAt - first)}</td>
+              <td class="bac-mono">{e.event}</td>
+              <td class="bac-mono">{e.id}</td>
+              <td class="bac-mono bac-break">{e.data}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {!live && <p class="bac-muted bac-pad">{response.streamStopped ? `You stopped the stream after ${events.length} events.` : `The server closed the stream after ${events.length} events.`}</p>}
     </div>
   );
 }

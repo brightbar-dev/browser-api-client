@@ -29,7 +29,7 @@ export function TabStrip() {
         {tabs.map((tab, index) => {
           const active = tab.id === activeId;
           const title = tabTitle(tab);
-          const sending = runs[tab.id]?.state === 'sending';
+          const sending = runs[tab.id]?.state === 'sending' || runs[tab.id]?.state === 'streaming';
           const dirty = isTabDirty(tab);
           return (
             <div

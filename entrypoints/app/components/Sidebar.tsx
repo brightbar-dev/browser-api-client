@@ -119,7 +119,7 @@ function RenameInput({ value, label, onDone }: { value: string; label: string; o
 // --- history ---
 
 const STATUS_FILTERS: Array<{ id: StatusFilter; label: string }> = [
-  { id: 'all', label: 'Any status' },
+  { id: 'all', label: 'Status' },
   { id: '2xx', label: '2xx' },
   { id: '3xx', label: '3xx' },
   { id: '4xx', label: '4xx' },
@@ -147,7 +147,7 @@ function HistoryPanel() {
         <input type="search" class="bac-input" placeholder="Search URL or name" aria-label="Search history" value={query} onInput={(e) => setQuery(e.currentTarget.value)} />
         <div class="bac-row">
           <select class="bac-select" aria-label="Filter by method" value={method} onChange={(e) => setMethod(e.currentTarget.value)}>
-            <option value="all">Any method</option>
+            <option value="all">Method</option>
             {HTTP_METHODS.map((m) => (
               <option key={m} value={m}>
                 {m}
@@ -392,6 +392,7 @@ function CollectionsPanel() {
                 <Menu
                   label={`Actions for ${c.name}`}
                   items={[
+                    { label: 'Run collection', onSelect: () => openDialog({ type: 'runner', collectionId: c.id, folderId: null }) },
                     { label: 'Rename', onSelect: () => setRenaming(key) },
                     {
                       label: 'New folder',
@@ -463,6 +464,7 @@ function CollectionsPanel() {
                           <Menu
                             label={`Actions for folder ${f.name}`}
                             items={[
+                              { label: 'Run folder', onSelect: () => openDialog({ type: 'runner', collectionId: c.id, folderId: f.id }) },
                               { label: 'Rename', onSelect: () => setRenaming(fkey) },
                               { label: 'Duplicate', onSelect: () => updateCollection(c.id, (x) => col.duplicateFolder(x, f.id)) },
                               ...(fi > 0 ? [{ label: 'Move up', onSelect: () => moveFolder(-1) }] : []),
