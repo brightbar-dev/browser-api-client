@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.3.1...browser-api-client-v0.3.2) (2026-09-15)
+
+
+### Bug Fixes
+
+* drop the retired Tailwind CSS Lookup from the cross-promotion links ([#12](https://github.com/brightbar-dev/browser-api-client/issues/12)) ([b0e30ef](https://github.com/brightbar-dev/browser-api-client/commit/b0e30ef5411c6d622b93919b3cad693699db5fec))
+
 ## [0.3.1](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.3.0...browser-api-client-v0.3.1) (2026-09-15)
 
 
