@@ -19,6 +19,7 @@ import {
   parseAuthorizationRedirect,
   parseTokenResponse,
 } from '@/utils/oauth2';
+import { t } from '@/utils/i18n';
 
 type IdentityApi = {
   launchWebAuthFlow: (details: { url: string; interactive: boolean }) => Promise<string | undefined>;
@@ -80,19 +81,19 @@ export async function clearToken(cfg: OAuth2Config): Promise<void> {
 }
 
 async function postToken(cfg: OAuth2Config, grant: TokenGrant): Promise<OAuth2Token> {
-  if (!cfg.tokenUrl) throw new Error('Enter the token URL.');
+  if (!cfg.tokenUrl) throw new Error(t('oauthErrorNoTokenUrl'));
   const req = buildTokenRequest(cfg, grant);
   let res: Response;
   try {
     res = await fetch(req.url, { method: 'POST', headers: req.headers, body: req.body, credentials: 'omit', cache: 'no-store' });
   } catch {
-    throw new Error(`Could not reach the token URL ${req.url}.`);
+    throw new Error(t('oauthErrorUnreachable', req.url));
   }
   const text = await res.text();
   try {
     return parseTokenResponse(text, Date.now());
   } catch (e) {
-    throw new Error(res.ok ? (e as Error).message : `The token endpoint answered ${res.status}: ${(e as Error).message}`);
+    throw new Error(res.ok ? (e as Error).message : t('oauthErrorEndpointStatus', res.status, (e as Error).message));
   }
 }
 
@@ -101,7 +102,7 @@ export async function requestToken(cfg: OAuth2Config): Promise<OAuth2Token> {
   if (cfg.grant === 'client_credentials') return postToken(cfg, { type: 'client_credentials' });
 
   const api = identity();
-  if (!api) throw new Error('This browser does not offer the identity API needed for the authorization-code flow.');
+  if (!api) throw new Error(t('oauthErrorNoIdentity'));
   const redirect = api.getRedirectURL();
   const verifier = cfg.usePkce ? generateCodeVerifier() : undefined;
   const challenge = verifier ? await codeChallengeS256(verifier) : undefined;
@@ -111,9 +112,9 @@ export async function requestToken(cfg: OAuth2Config): Promise<OAuth2Token> {
   try {
     redirected = await api.launchWebAuthFlow({ url: authUrl, interactive: true });
   } catch (e) {
-    throw new Error(`Sign-in did not finish: ${(e as Error).message}`);
+    throw new Error(t('oauthErrorSignInUnfinished', (e as Error).message));
   }
-  if (!redirected) throw new Error('The sign-in window closed before it finished.');
+  if (!redirected) throw new Error(t('oauthErrorSignInClosed'));
   const { code } = parseAuthorizationRedirect(redirected, state);
   return postToken(cfg, { type: 'authorization_code', code, redirectUri: redirect, codeVerifier: verifier });
 }
@@ -141,5 +142,5 @@ export async function tokenForSend(cfg: OAuth2Config): Promise<OAuth2Token> {
     await saveToken(cfg, token);
     return token;
   }
-  throw new Error(stored ? 'The access token has expired. Get a new one on the Auth tab.' : 'No access token yet. Use “Get new access token” on the Auth tab.');
+  throw new Error(stored ? t('oauthErrorTokenExpired') : t('oauthErrorNoToken', t('oauthGetToken')));
 }

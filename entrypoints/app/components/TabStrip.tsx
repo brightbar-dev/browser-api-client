@@ -3,9 +3,10 @@ import { isTabDirty, tabTitle, type WorkspaceTab } from '@/utils/workspace';
 import { activateTab, closeTab, moveTab, newTab, useApp } from '../store';
 import { cancelSend } from '../send';
 import { IconClose, IconPlus } from './icons';
+import { t } from '@/utils/i18n';
 
 export function requestClose(tab: WorkspaceTab) {
-  if (isTabDirty(tab) && !window.confirm(`Close “${tabTitle(tab)}”? Its unsaved changes will be discarded.`)) return;
+  if (isTabDirty(tab) && !window.confirm(t('tabCloseConfirm', tabTitle(tab)))) return;
   closeTab(tab.id, cancelSend);
 }
 
@@ -25,7 +26,7 @@ export function TabStrip() {
 
   return (
     <div class="bac-tabstrip">
-      <div role="tablist" aria-label="Open requests" class="bac-tabstrip-list" ref={listRef}>
+      <div role="tablist" aria-label={t('tabsLabel')} class="bac-tabstrip-list" ref={listRef}>
         {tabs.map((tab, index) => {
           const active = tab.id === activeId;
           const title = tabTitle(tab);
@@ -73,17 +74,17 @@ export function TabStrip() {
                 <span class={`bac-method-tag m-${tab.request.method.toLowerCase()}`}>{tab.request.method}</span>
                 <span class="bac-reqtab-title">{title}</span>
                 {sending ? (
-                  <span class="bac-spinner" role="img" aria-label="Sending" />
+                  <span class="bac-spinner" role="img" aria-label={t('tabSending')} />
                 ) : dirty ? (
-                  <span class="bac-dirty-dot" role="img" aria-label="Unsaved changes" title="Unsaved changes" />
+                  <span class="bac-dirty-dot" role="img" aria-label={t('tabUnsaved')} title={t('tabUnsaved')} />
                 ) : null}
               </button>
               <button
                 type="button"
                 class="bac-reqtab-close"
                 tabIndex={-1}
-                aria-label={`Close ${title}`}
-                title="Close tab"
+                aria-label={t('tabCloseNamed', title)}
+                title={t('tabClose')}
                 onClick={() => requestClose(tab)}
               >
                 <IconClose />
@@ -92,7 +93,7 @@ export function TabStrip() {
           );
         })}
       </div>
-      <button type="button" class="bac-icon-btn bac-newtab" aria-label="New request tab" title="New request tab" onClick={newTab}>
+      <button type="button" class="bac-icon-btn bac-newtab" aria-label={t('tabNew')} title={t('tabNew')} onClick={newTab}>
         <IconPlus />
       </button>
     </div>

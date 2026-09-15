@@ -22,6 +22,7 @@ import { beginTrace, endTrace } from './network';
 import { updateEnvironment } from './library';
 import { interpolateOAuth, tokenForSend } from './oauth';
 import type { ResponseData, TestResult } from './types';
+import { t } from '@/utils/i18n';
 
 /** Responses bigger than this are shown but not kept for the next reload. */
 const MAX_STORED_RESPONSE = 10 * 1024 * 1024;
@@ -30,13 +31,13 @@ const controllers = new Map<string, AbortController>();
 
 class RequestTimeoutError extends Error {
   constructor(public timeoutMs: number) {
-    super(`No response within ${timeoutMs} ms`);
+    super(t('errorTimeoutMessage', timeoutMs));
   }
 }
 
 class MissingFileError extends Error {
   constructor(public fileName: string) {
-    super(`File "${fileName}" is no longer available`);
+    super(t('errorFileMissingMessage', fileName));
   }
 }
 
@@ -198,9 +199,9 @@ export function applyExtracted(results: ExtractionResult[]): string | undefined 
   if (!results.some((r) => r.ok)) return undefined;
   const s = getState();
   const env = s.environments.find((e) => e.id === s.activeEnvId);
-  if (!env) return 'No environment is active, so these values were not saved. Pick or create one in the header.';
+  if (!env) return t('extractNoEnvNote');
   updateEnvironment(env.id, (e) => ({ ...e, variables: applyExtractions(e.variables, results) }));
-  return `Saved to “${env.name}”.`;
+  return t('extractSavedNote', env.name);
 }
 
 export function runTests(request: ApiRequest, response: ResponseData): { tests: TestResult[]; extracted: ExtractionResult[]; extractNote?: string } {
@@ -217,10 +218,10 @@ function failureOf(err: unknown, cancelled: boolean, url: string, netError?: str
     return describeFetchError(err, { timedOut: true, timeoutMs: err.timeoutMs, url });
   }
   if (err instanceof MissingFileError) {
-    return { title: 'A file needs to be chosen again', detail: `The contents of "${err.fileName}" are no longer stored. Choose the file again on the Body tab.` };
+    return { title: t('errorFileMissingTitle'), detail: t('errorFileMissingDetail', err.fileName) };
   }
   if (err instanceof TypeError && /header/i.test(err.message)) {
-    return { title: 'A header can’t be sent', detail: `${err.message}. Header values must be single-line Latin-1 text.` };
+    return { title: t('errorHeaderTitle'), detail: t('errorHeaderDetail', err.message) };
   }
   if (!cancelled && netError && !/ERR_ABORTED$/.test(netError)) {
     let host = '';
@@ -255,13 +256,13 @@ export async function sendTab(tabId: string): Promise<void> {
     prepared = await prepareRequest(request, activeVariables());
   } catch (e) {
     controllers.delete(tabId);
-    setRun(tabId, { state: 'error', error: { title: 'Couldn’t get an OAuth 2.0 access token', detail: (e as Error).message }, warnings: [], response: previous });
+    setRun(tabId, { state: 'error', error: { title: t('errorOAuthTitle'), detail: (e as Error).message }, warnings: [], response: previous });
     return;
   }
   const { request: resolved, warnings, error } = prepared;
   if (error) {
     controllers.delete(tabId);
-    setRun(tabId, { state: 'error', error: { title: 'This request can’t be sent yet', detail: error }, warnings, response: previous });
+    setRun(tabId, { state: 'error', error: { title: t('errorCannotSendTitle'), detail: error }, warnings, response: previous });
     return;
   }
   if (controller.signal.aborted) {

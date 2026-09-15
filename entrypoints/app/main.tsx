@@ -2,6 +2,7 @@ import { render } from 'preact';
 import { browser } from 'wxt/browser';
 import { App } from './components/App';
 import { loadApp } from './store';
+import { t } from '@/utils/i18n';
 
 // Firefox has no runtime.getContexts, so the toolbar button asks an open app page to focus itself.
 browser.runtime.onMessage.addListener((msg: { action?: string }) => {
@@ -15,9 +16,10 @@ browser.runtime.onMessage.addListener((msg: { action?: string }) => {
   })();
 });
 
+document.title = t('appName');
 render(<App />, document.getElementById('root')!);
 
 loadApp().catch((err) => {
   console.error('Could not load the workspace:', err);
-  document.getElementById('root')!.textContent = `Browser API Client could not load its saved data: ${(err as Error).message}`;
+  document.getElementById('root')!.textContent = t('appLoadFailed', (err as Error).message);
 });

@@ -1,5 +1,18 @@
 import { browser } from 'wxt/browser';
 import { BACKUP_KEYS, clampMaxHistory, clampRequestTimeout, createBackup, describeImport, mergeBackup, parseBackup, type BackupData } from '@/utils/backup';
+import { t, tParts } from '@/utils/i18n';
+
+/**
+ * Fill each [data-i18n] element from messages.json. The English in the HTML stays as the
+ * no-script fallback; an element's child elements fill its message's placeholders in order.
+ */
+function localizePage() {
+  for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
+    el.replaceChildren(...tParts<Element>(el.dataset.i18n!, ...Array.from(el.children)));
+  }
+}
+
+localizePage();
 
 const themeSelect = document.getElementById('theme') as HTMLSelectElement;
 const maxHistoryInput = document.getElementById('max-history') as HTMLInputElement;
@@ -51,9 +64,9 @@ timeoutInput.addEventListener('change', () => {
 });
 
 clearHistoryBtn.addEventListener('click', async () => {
-  if (confirm('Clear all request history?')) {
+  if (confirm(t('historyClearConfirm'))) {
     await browser.runtime.sendMessage({ action: 'clearHistory' });
-    showStatus('History cleared.');
+    showStatus(t('optionsHistoryCleared'));
   }
 });
 
@@ -67,7 +80,7 @@ exportDataBtn.addEventListener('click', async () => {
   a.download = `browser-api-client-backup-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 30_000);
-  showStatus('Backup exported.');
+  showStatus(t('optionsBackupExported'));
 });
 
 importDataBtn.addEventListener('click', () => importFileInput.click());

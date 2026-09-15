@@ -3,35 +3,36 @@ import type { Assertion, AssertionOp, AssertionSource, Extraction } from '@/util
 import { isValidVariableName, newAssertion, newExtraction, opsForSource } from '@/utils/assertions';
 import { useApp } from '../store';
 import { IconClose, IconPlus } from './icons';
+import { t } from '@/utils/i18n';
 
 const SOURCE_LABELS: Record<AssertionSource, string> = {
-  status: 'Status code',
-  header: 'Header',
-  jsonpath: 'JSON body path',
-  body: 'Body text',
-  time: 'Response time (ms)',
+  status: t('testsSourceStatus'),
+  header: t('testsSourceHeader'),
+  jsonpath: t('testsSourceJsonPath'),
+  body: t('testsSourceBody'),
+  time: t('testsSourceTime'),
 };
 
 const OP_LABELS: Record<AssertionOp, string> = {
-  equals: 'equals',
-  'not-equals': 'does not equal',
-  exists: 'exists',
-  'not-exists': 'does not exist',
-  contains: 'contains',
-  'not-contains': 'does not contain',
-  lt: 'is less than',
-  lte: 'is at most',
-  gt: 'is greater than',
-  gte: 'is at least',
-  matches: 'matches regex',
-  'type-is': 'is of type',
+  equals: t('testsOpEquals'),
+  'not-equals': t('testsOpNotEquals'),
+  exists: t('testsOpExists'),
+  'not-exists': t('testsOpNotExists'),
+  contains: t('testsOpContains'),
+  'not-contains': t('testsOpNotContains'),
+  lt: t('testsOpLt'),
+  lte: t('testsOpLte'),
+  gt: t('testsOpGt'),
+  gte: t('testsOpGte'),
+  matches: t('testsOpMatches'),
+  'type-is': t('testsOpTypeIs'),
 };
 
 const EXTRACT_LABELS: Record<Extraction['source'], string> = {
-  jsonpath: 'JSON body path',
-  header: 'Header',
-  status: 'Status code',
-  body: 'Whole body',
+  jsonpath: t('testsSourceJsonPath'),
+  header: t('testsSourceHeader'),
+  status: t('testsSourceStatus'),
+  body: t('testsSourceWholeBody'),
 };
 
 const needsPath = (source: string) => source === 'header' || source === 'jsonpath';
@@ -55,33 +56,33 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
     <div class="bac-tests-editor">
       <section class="bac-rule-section" aria-labelledby="bac-tests-title">
         <header class="bac-rule-head">
-          <h3 id="bac-tests-title">Tests</h3>
-          <span class="bac-muted bac-small">Checked on every response. Each row is a rule — no scripts to write.</span>
+          <h3 id="bac-tests-title">{t('testsTitle')}</h3>
+          <span class="bac-muted bac-small">{t('testsHint')}</span>
           <div class="bac-spacer" />
           <button type="button" class="bac-btn bac-btn-small" onClick={() => setAssertions([...assertions, newAssertion(assertions.length ? 'jsonpath' : 'status')])}>
-            <IconPlus /> Add test
+            <IconPlus /> {t('testsAdd')}
           </button>
         </header>
         {assertions.length === 0 ? (
           <p class="bac-muted bac-small">
-            No tests yet.{' '}
+            {t('testsEmpty')}{' '}
             <button type="button" class="bac-link-btn" onClick={() => setAssertions([{ ...newAssertion('status'), op: 'equals', expected: '200' }])}>
-              Add “status code equals 200”
+              {t('testsAddStatus200')}
             </button>
           </p>
         ) : (
-          <div class="bac-rules bac-rules-tests" role="table" aria-label="Tests">
+          <div class="bac-rules bac-rules-tests" role="table" aria-label={t('testsTitle')}>
             {assertions.map((a, i) => {
               const ops = opsForSource(a.source);
               return (
                 <div key={a.id} role="row" class={`bac-rule${a.enabled ? '' : ' is-disabled'}`}>
                   <span role="cell">
-                    <input type="checkbox" checked={a.enabled} aria-label={`Run test ${i + 1}`} onChange={(e) => patchAssertion(i, { enabled: e.currentTarget.checked })} />
+                    <input type="checkbox" checked={a.enabled} aria-label={t('testsRunN', i + 1)} onChange={(e) => patchAssertion(i, { enabled: e.currentTarget.checked })} />
                   </span>
                   <span role="cell">
                     <select
                       class="bac-select"
-                      aria-label={`What test ${i + 1} checks`}
+                      aria-label={t('testsSourceN', i + 1)}
                       value={a.source}
                       onChange={(e) => {
                         const source = e.currentTarget.value as AssertionSource;
@@ -100,7 +101,7 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
                     {needsPath(a.source) ? (
                       <input
                         class="bac-input bac-mono"
-                        aria-label={a.source === 'header' ? `Header name for test ${i + 1}` : `JSON path for test ${i + 1}`}
+                        aria-label={a.source === 'header' ? t('testsHeaderNameN', i + 1) : t('testsJsonPathN', i + 1)}
                         placeholder={a.source === 'header' ? 'Content-Type' : '$.data[0].id'}
                         value={a.path}
                         spellcheck={false}
@@ -111,7 +112,7 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
                     )}
                   </span>
                   <span role="cell">
-                    <select class="bac-select" aria-label={`Condition for test ${i + 1}`} value={a.op} onChange={(e) => patchAssertion(i, { op: e.currentTarget.value as AssertionOp })}>
+                    <select class="bac-select" aria-label={t('testsConditionN', i + 1)} value={a.op} onChange={(e) => patchAssertion(i, { op: e.currentTarget.value as AssertionOp })}>
                       {ops.map((op) => (
                         <option key={op} value={op}>
                           {OP_LABELS[op]}
@@ -123,7 +124,7 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
                     {needsExpected(a.op) ? (
                       <input
                         class="bac-input bac-mono"
-                        aria-label={`Expected value for test ${i + 1}`}
+                        aria-label={t('testsExpectedN', i + 1)}
                         placeholder={a.op === 'type-is' ? 'string, number, array…' : a.op === 'matches' ? '^ok$' : '200'}
                         value={a.expected}
                         spellcheck={false}
@@ -134,7 +135,7 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
                     )}
                   </span>
                   <span role="cell">
-                    <button type="button" class="bac-icon-btn" aria-label={`Remove test ${i + 1}`} onClick={() => setAssertions(assertions.filter((_, j) => j !== i))}>
+                    <button type="button" class="bac-icon-btn" aria-label={t('testsRemoveN', i + 1)} onClick={() => setAssertions(assertions.filter((_, j) => j !== i))}>
                       <IconClose />
                     </button>
                   </span>
@@ -147,33 +148,33 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
 
       <section class="bac-rule-section" aria-labelledby="bac-extract-title">
         <header class="bac-rule-head">
-          <h3 id="bac-extract-title">Set variables from the response</h3>
+          <h3 id="bac-extract-title">{t('extractTitle')}</h3>
           <span class="bac-muted bac-small">
-            {envName ? `Saved into “${envName}” after each response, so the next request can use {{name}}.` : 'Activate an environment to save these values.'}
+            {envName ? t('extractHintEnv', envName, '{{name}}') : t('extractHintNoEnv')}
           </span>
           <div class="bac-spacer" />
           <button type="button" class="bac-btn bac-btn-small" onClick={() => setExtractions([...extractions, newExtraction()])}>
-            <IconPlus /> Add variable
+            <IconPlus /> {t('extractAdd')}
           </button>
         </header>
         {extractions.length === 0 ? (
-          <p class="bac-muted bac-small">Chain requests without scripts: take a token or an id from this response and use it in the next one.</p>
+          <p class="bac-muted bac-small">{t('extractEmpty')}</p>
         ) : (
-          <div class="bac-rules bac-rules-extract" role="table" aria-label="Variables from the response">
+          <div class="bac-rules bac-rules-extract" role="table" aria-label={t('extractTableLabel')}>
             {extractions.map((x, i) => {
               const invalid = x.variable !== '' && !isValidVariableName(x.variable);
               return (
                 <div key={x.id} role="row" class={`bac-rule${x.enabled ? '' : ' is-disabled'}`}>
                   <span role="cell">
-                    <input type="checkbox" checked={x.enabled} aria-label={`Use variable rule ${i + 1}`} onChange={(e) => patchExtraction(i, { enabled: e.currentTarget.checked })} />
+                    <input type="checkbox" checked={x.enabled} aria-label={t('extractUseN', i + 1)} onChange={(e) => patchExtraction(i, { enabled: e.currentTarget.checked })} />
                   </span>
                   <span role="cell" class="bac-var-name">
                     <span class="bac-muted bac-mono">{'{{'}</span>
                     <input
                       class="bac-input bac-mono"
-                      aria-label={`Variable name for rule ${i + 1}`}
+                      aria-label={t('extractVariableNameN', i + 1)}
                       aria-invalid={invalid || undefined}
-                      title={invalid ? 'Names start with a letter or _ and use letters, digits, _ . or -' : undefined}
+                      title={invalid ? t('varNameRule') : undefined}
                       placeholder="accessToken"
                       value={x.variable}
                       spellcheck={false}
@@ -182,10 +183,10 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
                     <span class="bac-muted bac-mono">{'}}'}</span>
                   </span>
                   <span role="cell" class="bac-muted bac-small">
-                    from
+                    {t('extractFrom')}
                   </span>
                   <span role="cell">
-                    <select class="bac-select" aria-label={`Source for variable rule ${i + 1}`} value={x.source} onChange={(e) => patchExtraction(i, { source: e.currentTarget.value as Extraction['source'] })}>
+                    <select class="bac-select" aria-label={t('extractSourceN', i + 1)} value={x.source} onChange={(e) => patchExtraction(i, { source: e.currentTarget.value as Extraction['source'] })}>
                       {Object.entries(EXTRACT_LABELS).map(([id, label]) => (
                         <option key={id} value={id}>
                           {label}
@@ -197,7 +198,7 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
                     {needsPath(x.source) ? (
                       <input
                         class="bac-input bac-mono"
-                        aria-label={x.source === 'header' ? `Header name for variable rule ${i + 1}` : `JSON path for variable rule ${i + 1}`}
+                        aria-label={x.source === 'header' ? t('extractHeaderNameN', i + 1) : t('extractJsonPathN', i + 1)}
                         placeholder={x.source === 'header' ? 'X-Request-Id' : '$.access_token'}
                         value={x.path}
                         spellcheck={false}
@@ -208,7 +209,7 @@ export function TestsEditor({ request, update }: TestsEditorProps) {
                     )}
                   </span>
                   <span role="cell">
-                    <button type="button" class="bac-icon-btn" aria-label={`Remove variable rule ${i + 1}`} onClick={() => setExtractions(extractions.filter((_, j) => j !== i))}>
+                    <button type="button" class="bac-icon-btn" aria-label={t('extractRemoveN', i + 1)} onClick={() => setExtractions(extractions.filter((_, j) => j !== i))}>
                       <IconClose />
                     </button>
                   </span>

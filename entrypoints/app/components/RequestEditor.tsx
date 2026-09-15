@@ -15,25 +15,26 @@ import { TestsEditor } from './TestsEditor';
 import { OAuth2Editor } from './OAuthEditor';
 import { newOAuth2Config } from '@/utils/oauth2';
 import { IconEye, IconEyeOff } from './icons';
+import { t, tParts } from '@/utils/i18n';
 
 type Section = 'params' | 'headers' | 'auth' | 'body' | 'tests';
 const sectionMemory = new Map<string, Section>();
 
 const AUTH_LABELS: Record<AuthConfig['type'], string> = {
-  none: 'No auth',
-  bearer: 'Bearer token',
-  basic: 'Basic auth',
-  'api-key': 'API key',
+  none: t('authNone'),
+  bearer: t('authBearer'),
+  basic: t('authBasic'),
+  'api-key': t('authApiKey'),
   oauth2: 'OAuth 2.0',
 };
 
 const BODY_LABELS: Record<ApiRequest['bodyType'], string> = {
-  none: 'None',
+  none: t('bodyModeNone'),
   json: 'JSON',
-  form: 'URL-encoded',
-  multipart: 'Multipart',
-  text: 'Raw',
-  binary: 'File',
+  form: t('bodyBadgeUrlencoded'),
+  multipart: t('bodyBadgeMultipart'),
+  text: t('bodyModeRaw'),
+  binary: t('bodyFile'),
   graphql: 'GraphQL',
 };
 
@@ -63,13 +64,13 @@ export function RequestEditor({ tabId }: { tabId: string }) {
   const headerCount = request.headers.filter((h) => h.enabled && h.key).length;
 
   const sections: Array<{ id: Section; label: string; badge?: string }> = [
-    { id: 'params', label: 'Params', badge: paramCount ? String(paramCount) : undefined },
-    { id: 'headers', label: 'Headers', badge: headerCount ? String(headerCount) : undefined },
-    { id: 'auth', label: 'Auth', badge: request.auth.type !== 'none' ? AUTH_LABELS[request.auth.type] : undefined },
-    { id: 'body', label: 'Body', badge: request.bodyType !== 'none' ? BODY_LABELS[request.bodyType] : undefined },
+    { id: 'params', label: t('requestTabParams'), badge: paramCount ? String(paramCount) : undefined },
+    { id: 'headers', label: t('requestTabHeaders'), badge: headerCount ? String(headerCount) : undefined },
+    { id: 'auth', label: t('requestTabAuth'), badge: request.auth.type !== 'none' ? AUTH_LABELS[request.auth.type] : undefined },
+    { id: 'body', label: t('requestTabBody'), badge: request.bodyType !== 'none' ? BODY_LABELS[request.bodyType] : undefined },
     {
       id: 'tests',
-      label: 'Tests',
+      label: t('requestTabTests'),
       badge: (() => {
         const n = (request.assertions ?? []).filter((a) => a.enabled).length + (request.extractions ?? []).filter((x) => x.enabled).length;
         return n ? String(n) : undefined;
@@ -88,25 +89,25 @@ export function RequestEditor({ tabId }: { tabId: string }) {
     try {
       const { value, warnings } = parseCurl(text);
       update((r) => ({ ...value, id: r.id, name: r.name && r.name !== 'New Request' ? r.name : value.name }));
-      showToast(warnings.length ? `Imported the cURL command. ${warnings[0]}` : 'Imported the cURL command');
+      showToast(warnings.length ? t('requestCurlImportedWarning', warnings[0]!) : t('requestCurlImported'));
     } catch (err) {
       showToast((err as Error).message);
     }
   };
 
   return (
-    <section class="bac-request" aria-label="Request">
+    <section class="bac-request" aria-label={t('requestSectionLabel')}>
       <div class="bac-reqhead">
         {home && (
-          <span class="bac-breadcrumb" title="Saved in">
+          <span class="bac-breadcrumb" title={t('requestSavedIn')}>
             {home.name}
             {folderName ? ` / ${folderName}` : ''} /
           </span>
         )}
         <input
           class="bac-name-input"
-          aria-label="Request name"
-          placeholder="Untitled request"
+          aria-label={t('requestNameLabel')}
+          placeholder={t('requestUntitled')}
           value={request.name === 'New Request' ? '' : request.name}
           onInput={(e) => {
             const name = e.currentTarget.value;
@@ -114,11 +115,11 @@ export function RequestEditor({ tabId }: { tabId: string }) {
           }}
         />
         <div class="bac-spacer" />
-        <button type="button" class="bac-btn bac-btn-small bac-btn-ghost" onClick={() => openDialog({ type: 'code', tabId })} title="Generate code for this request">
-          {'</>'} Code
+        <button type="button" class="bac-btn bac-btn-small bac-btn-ghost" onClick={() => openDialog({ type: 'code', tabId })} title={t('requestCodeTitle')}>
+          {'</>'} {t('requestCode')}
         </button>
-        <button type="button" class="bac-btn bac-btn-small" onClick={() => requestSave(tabId)} title={`Save (${SAVE_SHORTCUT})`}>
-          {source && home ? 'Save' : 'Save…'}
+        <button type="button" class="bac-btn bac-btn-small" onClick={() => requestSave(tabId)} title={t('requestSaveTitle', SAVE_SHORTCUT)}>
+          {source && home ? t('commonSave') : t('requestSaveEllipsis')}
         </button>
       </div>
       <form
@@ -130,7 +131,7 @@ export function RequestEditor({ tabId }: { tabId: string }) {
       >
         <select
           class={`bac-method-select m-${request.method.toLowerCase()}`}
-          aria-label="HTTP method"
+          aria-label={t('requestMethodLabel')}
           value={request.method}
           onChange={(e) => update((r) => ({ ...r, method: e.currentTarget.value as HttpMethod }))}
         >
@@ -142,8 +143,8 @@ export function RequestEditor({ tabId }: { tabId: string }) {
         </select>
         <VarField
           class="bac-url-input bac-mono"
-          aria-label="Request URL"
-          placeholder="https://api.example.com/users?page=1 — or paste a cURL command"
+          aria-label={t('requestUrlLabel')}
+          placeholder={t('requestUrlPlaceholder', 'https://api.example.com/users?page=1')}
           spellcheck={false}
           autocomplete="off"
           value={request.url}
@@ -151,23 +152,23 @@ export function RequestEditor({ tabId }: { tabId: string }) {
           onValue={(url) => update((r) => ({ ...r, url, params: paramsFromUrl(url, r.params) }))}
         />
         {sending ? (
-          <button key="cancel" type="button" class="bac-btn bac-btn-danger bac-send" onClick={() => cancelSend(tabId)} title="Cancel (Esc)">
-            Cancel
+          <button key="cancel" type="button" class="bac-btn bac-btn-danger bac-send" onClick={() => cancelSend(tabId)} title={t('requestCancelTitle')}>
+            {t('commonCancel')}
           </button>
         ) : (
-          <button key="send" type="submit" class="bac-btn bac-btn-primary bac-send" title={`Send (${SEND_SHORTCUT})`}>
-            Send
+          <button key="send" type="submit" class="bac-btn bac-btn-primary bac-send" title={t('requestSendTitle', SEND_SHORTCUT)}>
+            {t('requestSend')}
           </button>
         )}
       </form>
       {scheme && (
         <p class="bac-url-hint" role="note">
-          No scheme typed — this request will be sent over <strong>{scheme}://</strong>
+          {tParts('requestNoScheme', <strong>{scheme}://</strong>)}
         </p>
       )}
       {unresolved.length > 0 && (
         <p class="bac-url-hint is-warn" role="note">
-          {env ? `Not defined in “${env.name}”: ` : 'No environment is active, so these stay as typed: '}
+          {env ? t('requestUndefinedInEnv', env.name) : t('requestUndefinedNoEnv')}{' '}
           {unresolved.map((name, i) => (
             <span key={name}>
               {i > 0 && ', '}
@@ -177,7 +178,7 @@ export function RequestEditor({ tabId }: { tabId: string }) {
         </p>
       )}
 
-      <div role="tablist" aria-label="Request parts" class="bac-subtabs">
+      <div role="tablist" aria-label={t('requestPartsLabel')} class="bac-subtabs">
         {sections.map((s) => (
           <button
             key={s.id}
@@ -198,9 +199,9 @@ export function RequestEditor({ tabId }: { tabId: string }) {
       <div class="bac-request-panel" role="tabpanel" id="bac-req-panel" aria-labelledby={`bac-req-tab-${section}`}>
         {section === 'params' && (
           <KeyValueEditor
-            label="Query parameters"
+            label={t('requestParamsLabel')}
             rows={request.params}
-            keyPlaceholder="Parameter"
+            keyKind="parameter"
             onChange={(params) => update((r) => ({ ...r, params, url: urlWithParams(r.url, params) }))}
           />
         )}
@@ -208,16 +209,16 @@ export function RequestEditor({ tabId }: { tabId: string }) {
           <label class="bac-toggle-row">
             <input type="checkbox" checked={!!request.sendCookies} onChange={(e) => update((r) => ({ ...r, sendCookies: e.currentTarget.checked || undefined }))} />
             <span>
-              <strong>Send this site’s cookies</strong>
-              <span class="bac-muted"> — attach the cookies this browser already holds for the host, such as a signed-in session. Off by default.</span>
+              <strong>{t('requestSendCookies')}</strong>
+              <span class="bac-muted"> {t('requestSendCookiesHint')}</span>
             </span>
           </label>
         )}
         {section === 'headers' && (
           <KeyValueEditor
-            label="Request headers"
+            label={t('requestHeadersLabel')}
             rows={request.headers}
-            keyPlaceholder="Header"
+            keyKind="header"
             keySuggestions={COMMON_HEADERS}
             onChange={(headers) => update((r) => ({ ...r, headers }))}
           />
@@ -244,7 +245,7 @@ function SecretInput({ value, onInput, label, placeholder }: { value: string; on
         autocomplete="off"
         onInput={(e) => onInput(e.currentTarget.value)}
       />
-      <button type="button" class="bac-icon-btn" aria-label={shown ? `Hide ${label}` : `Show ${label}`} aria-pressed={shown} onClick={() => setShown(!shown)}>
+      <button type="button" class="bac-icon-btn" aria-label={shown ? t('commonHideNamed', label) : t('commonShowNamed', label)} aria-pressed={shown} onClick={() => setShown(!shown)}>
         {shown ? <IconEyeOff /> : <IconEye />}
       </button>
     </span>
@@ -256,7 +257,7 @@ function AuthEditor({ auth, onChange }: { auth: AuthConfig; onChange: (a: AuthCo
   return (
     <div class="bac-form">
       <label class="bac-field">
-        <span class="bac-field-label">Type</span>
+        <span class="bac-field-label">{t('authType')}</span>
         <select
           class="bac-select"
           value={auth.type}
@@ -273,24 +274,24 @@ function AuthEditor({ auth, onChange }: { auth: AuthConfig; onChange: (a: AuthCo
         </select>
       </label>
 
-      {auth.type === 'none' && <p class="bac-muted">This request sends no credentials. Pick a type to add them; {'{{variables}}'} work in every field.</p>}
+      {auth.type === 'none' && <p class="bac-muted">{t('authNoneHint', '{{variables}}')}</p>}
 
       {auth.type === 'bearer' && (
         <label class="bac-field">
-          <span class="bac-field-label">Token</span>
-          <SecretInput label="Token" value={auth.token || ''} placeholder="{{accessToken}}" onInput={(token) => set({ token })} />
+          <span class="bac-field-label">{t('authToken')}</span>
+          <SecretInput label={t('authToken')} value={auth.token || ''} placeholder="{{accessToken}}" onInput={(token) => set({ token })} />
         </label>
       )}
 
       {auth.type === 'basic' && (
         <>
           <label class="bac-field">
-            <span class="bac-field-label">Username</span>
+            <span class="bac-field-label">{t('authUsername')}</span>
             <input class="bac-input bac-mono" value={auth.username || ''} spellcheck={false} autocomplete="off" onInput={(e) => set({ username: e.currentTarget.value })} />
           </label>
           <label class="bac-field">
-            <span class="bac-field-label">Password</span>
-            <SecretInput label="Password" value={auth.password || ''} onInput={(password) => set({ password })} />
+            <span class="bac-field-label">{t('authPassword')}</span>
+            <SecretInput label={t('authPassword')} value={auth.password || ''} onInput={(password) => set({ password })} />
           </label>
         </>
       )}
@@ -298,20 +299,20 @@ function AuthEditor({ auth, onChange }: { auth: AuthConfig; onChange: (a: AuthCo
       {auth.type === 'api-key' && (
         <>
           <label class="bac-field">
-            <span class="bac-field-label">Key</span>
+            <span class="bac-field-label">{t('authKey')}</span>
             <input class="bac-input bac-mono" value={auth.headerName || ''} placeholder="X-API-Key" spellcheck={false} autocomplete="off" onInput={(e) => set({ headerName: e.currentTarget.value })} />
           </label>
           <label class="bac-field">
-            <span class="bac-field-label">Value</span>
-            <SecretInput label="API key value" value={auth.headerValue || ''} onInput={(headerValue) => set({ headerValue })} />
+            <span class="bac-field-label">{t('commonValue')}</span>
+            <SecretInput label={t('authApiKeyValue')} value={auth.headerValue || ''} onInput={(headerValue) => set({ headerValue })} />
           </label>
           <fieldset class="bac-field bac-fieldset">
-            <legend class="bac-field-label">Send in</legend>
+            <legend class="bac-field-label">{t('authSendIn')}</legend>
             <div class="bac-segmented">
               {(['header', 'query'] as const).map((where) => (
                 <label key={where} class={`bac-seg${(auth.apiKeyIn ?? 'header') === where ? ' is-on' : ''}`}>
                   <input type="radio" name="bac-apikey-in" checked={(auth.apiKeyIn ?? 'header') === where} onChange={() => set({ apiKeyIn: where })} />
-                  {where === 'header' ? 'Header' : 'Query string'}
+                  {where === 'header' ? t('authInHeader') : t('authInQuery')}
                 </label>
               ))}
             </div>
@@ -319,7 +320,7 @@ function AuthEditor({ auth, onChange }: { auth: AuthConfig; onChange: (a: AuthCo
         </>
       )}
       {auth.type === 'oauth2' && <OAuth2Editor config={auth.oauth2 ?? newOAuth2Config()} onChange={(oauth2) => set({ oauth2 })} />}
-      {auth.type !== 'none' && <p class="bac-muted">Credentials and tokens are stored only in this browser.</p>}
+      {auth.type !== 'none' && <p class="bac-muted">{t('authStoredLocally')}</p>}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { commitCollections, commitEnvironments, createCollection, saveTabToColle
 import { Dialog } from './Dialog';
 import { RunnerDialog } from './Runner';
 import { IconClose, IconCopy, IconEye, IconEyeOff } from './icons';
+import { t, tParts } from '@/utils/i18n';
 
 const NO_VARS: EnvVariable[] = [];
 
@@ -50,7 +51,7 @@ export function Toast() {
 function suggestName(request: ApiRequest): string {
   if (request.name && request.name !== 'New Request') return request.name;
   const path = request.url.replace(/^[a-z][a-z0-9+.-]*:\/\/[^/]*/i, '').split(/[?#]/)[0] || request.url;
-  return `${request.method} ${path || 'request'}`.trim();
+  return `${request.method} ${path || t('saveSuggestedNameFallback')}`.trim();
 }
 
 function SaveDialog({ tabId }: { tabId: string }) {
@@ -58,43 +59,43 @@ function SaveDialog({ tabId }: { tabId: string }) {
   const collections = useApp((s) => s.collections);
   const [name, setName] = useState(() => (tab ? suggestName(tab.request) : ''));
   const [collectionId, setCollectionId] = useState(() => tab?.source?.collectionId ?? collections[0]?.id ?? '__new');
-  const [newCollectionName, setNewCollectionName] = useState('My API');
+  const [newCollectionName, setNewCollectionName] = useState(() => t('saveDefaultCollectionName'));
   const [folderId, setFolderId] = useState('');
   if (!tab) return null;
   const collection = collections.find((c) => c.id === collectionId);
 
   const save = (e: Event) => {
     e.preventDefault();
-    const target = collectionId === '__new' ? createCollection(newCollectionName.trim() || 'My API') : collection;
+    const target = collectionId === '__new' ? createCollection(newCollectionName.trim() || t('saveDefaultCollectionName')) : collection;
     if (!target) return;
-    saveTabToCollection(tabId, { collectionId: target.id, folderId: folderId || null, name: name.trim() || 'Untitled request' });
+    saveTabToCollection(tabId, { collectionId: target.id, folderId: folderId || null, name: name.trim() || t('requestUntitled') });
     closeDialog();
     setLayout({ sidebarOpen: true, sidebarPanel: 'collections' });
-    showToast(`Saved to “${target.name}”`);
+    showToast(t('saveSavedTo', target.name));
   };
 
   return (
     <Dialog
-      title="Save request"
+      title={t('saveTitle')}
       onClose={closeDialog}
       footer={
         <>
           <button type="button" class="bac-btn" onClick={closeDialog}>
-            Cancel
+            {t('commonCancel')}
           </button>
           <button type="submit" form="bac-save-form" class="bac-btn bac-btn-primary">
-            Save
+            {t('commonSave')}
           </button>
         </>
       }
     >
       <form id="bac-save-form" class="bac-stack" onSubmit={save}>
         <label class="bac-stack-field">
-          <span>Request name</span>
+          <span>{t('requestNameLabel')}</span>
           <input class="bac-input" value={name} autoFocus onInput={(e) => setName(e.currentTarget.value)} />
         </label>
         <label class="bac-stack-field">
-          <span>Collection</span>
+          <span>{t('saveCollection')}</span>
           <select
             class="bac-select"
             value={collectionId}
@@ -108,20 +109,20 @@ function SaveDialog({ tabId }: { tabId: string }) {
                 {c.name}
               </option>
             ))}
-            <option value="__new">New collection…</option>
+            <option value="__new">{t('saveNewCollectionOption')}</option>
           </select>
         </label>
         {collectionId === '__new' && (
           <label class="bac-stack-field">
-            <span>New collection name</span>
+            <span>{t('saveNewCollectionName')}</span>
             <input class="bac-input" value={newCollectionName} onInput={(e) => setNewCollectionName(e.currentTarget.value)} />
           </label>
         )}
         {collection && (collection.folders?.length ?? 0) > 0 && (
           <label class="bac-stack-field">
-            <span>Folder</span>
+            <span>{t('saveFolder')}</span>
             <select class="bac-select" value={folderId} onChange={(e) => setFolderId(e.currentTarget.value)}>
-              <option value="">No folder</option>
+              <option value="">{t('saveNoFolder')}</option>
               {collection.folders!.map((f) => (
                 <option key={f.id} value={f.id}>
                   {f.name}
@@ -146,31 +147,31 @@ function EnvironmentDialog({ envId }: { envId: string }) {
   return (
     <Dialog
       wide
-      title="Environment"
+      title={t('envDialogTitle')}
       onClose={closeDialog}
       footer={
         <>
           {activeEnvId === envId ? (
-            <span class="bac-muted bac-foot-note">Active environment</span>
+            <span class="bac-muted bac-foot-note">{t('envDialogActive')}</span>
           ) : (
             <button type="button" class="bac-btn" onClick={() => setActiveEnv(envId)}>
-              Use this environment
+              {t('envUse')}
             </button>
           )}
           <button type="button" class="bac-btn bac-btn-primary" onClick={closeDialog}>
-            Done
+            {t('commonDone')}
           </button>
         </>
       }
     >
       <div class="bac-stack">
         <label class="bac-stack-field">
-          <span>Name</span>
+          <span>{t('commonName')}</span>
           <input class="bac-input" value={env.name} onInput={(e) => updateEnvironment(envId, (x) => ({ ...x, name: e.currentTarget.value }), true)} />
         </label>
         <VariablesTable variables={env.variables} onChange={setVariables} />
         <p class="bac-muted bac-small">
-          Use a variable as <code>{'{{name}}'}</code> in the URL, params, headers, auth or body. Secret values are masked on screen. Everything stays in this browser.
+          {tParts('envDialogHint', <code>{'{{name}}'}</code>)}
         </p>
       </div>
     </Dialog>
@@ -184,35 +185,35 @@ function VariablesTable({ variables, onChange }: { variables: EnvVariable[]; onC
     else onChange(variables.map((v, i) => (i === index ? { ...v, ...patch } : v)));
   };
   return (
-    <div class="bac-kv bac-kv-vars" role="table" aria-label="Variables">
+    <div class="bac-kv bac-kv-vars" role="table" aria-label={t('envVariablesLabel')}>
       <div class="bac-kv-row bac-kv-head" role="row">
         <span role="columnheader">
-          <span class="bac-visually-hidden">Enabled</span>
+          <span class="bac-visually-hidden">{t('commonEnabled')}</span>
         </span>
-        <span role="columnheader">Variable</span>
-        <span role="columnheader">Value</span>
-        <span role="columnheader">Secret</span>
+        <span role="columnheader">{t('envVariableColumn')}</span>
+        <span role="columnheader">{t('commonValue')}</span>
+        <span role="columnheader">{t('envSecretColumn')}</span>
         <span role="columnheader">
-          <span class="bac-visually-hidden">Remove</span>
+          <span class="bac-visually-hidden">{t('commonRemove')}</span>
         </span>
       </div>
       {[...variables, null].map((v, i) => {
-        const name = v?.key || `variable ${i + 1}`;
+        const name = v?.key || t('envVariableN', i + 1);
         const invalid = !!v?.key && !VARIABLE_NAME_RE.test(v.key);
         const masked = !!v?.secret && !revealed[i];
         return (
           <div key={i} role="row" class={`bac-kv-row${v && !v.enabled ? ' is-disabled' : ''}${v ? '' : ' is-new'}`}>
             <span role="cell" class="bac-kv-check">
-              {v && <input type="checkbox" checked={v.enabled} aria-label={`Enable ${name}`} onChange={(e) => setRow(i, { enabled: e.currentTarget.checked })} />}
+              {v && <input type="checkbox" checked={v.enabled} aria-label={t('envEnableNamed', name)} onChange={(e) => setRow(i, { enabled: e.currentTarget.checked })} />}
             </span>
             <span role="cell">
               <input
                 class="bac-input bac-mono"
                 value={v?.key ?? ''}
-                placeholder={v ? '' : 'Add variable'}
-                aria-label={v ? `Name of ${name}` : 'New variable name'}
+                placeholder={v ? '' : t('envAddVariable')}
+                aria-label={v ? t('kvNameOf', name) : t('envNewVariableName')}
                 aria-invalid={invalid || undefined}
-                title={invalid ? 'Names start with a letter or _ and use letters, digits, _ . or -' : undefined}
+                title={invalid ? t('varNameRule') : undefined}
                 spellcheck={false}
                 autocomplete="off"
                 onInput={(e) => setRow(i, { key: e.currentTarget.value })}
@@ -223,23 +224,23 @@ function VariablesTable({ variables, onChange }: { variables: EnvVariable[]; onC
                 class="bac-input bac-mono"
                 type={masked ? 'password' : 'text'}
                 value={v?.value ?? ''}
-                aria-label={v ? `Value of ${name}` : 'New variable value'}
+                aria-label={v ? t('kvValueOf', name) : t('envNewVariableValue')}
                 spellcheck={false}
                 autocomplete="off"
                 onInput={(e) => setRow(i, { value: e.currentTarget.value })}
               />
               {v?.secret && (
-                <button type="button" class="bac-icon-btn" aria-label={masked ? `Show ${name}` : `Hide ${name}`} aria-pressed={!masked} onClick={() => setRevealed({ ...revealed, [i]: !revealed[i] })}>
+                <button type="button" class="bac-icon-btn" aria-label={masked ? t('commonShowNamed', name) : t('commonHideNamed', name)} aria-pressed={!masked} onClick={() => setRevealed({ ...revealed, [i]: !revealed[i] })}>
                   {masked ? <IconEye /> : <IconEyeOff />}
                 </button>
               )}
             </span>
             <span role="cell" class="bac-kv-check">
-              {v && <input type="checkbox" checked={!!v.secret} aria-label={`Treat ${name} as secret`} onChange={(e) => setRow(i, { secret: e.currentTarget.checked })} />}
+              {v && <input type="checkbox" checked={!!v.secret} aria-label={t('envTreatSecret', name)} onChange={(e) => setRow(i, { secret: e.currentTarget.checked })} />}
             </span>
             <span role="cell" class="bac-kv-del">
               {v && (
-                <button type="button" class="bac-icon-btn" aria-label={`Remove ${name}`} onClick={() => onChange(variables.filter((_, j) => j !== i))}>
+                <button type="button" class="bac-icon-btn" aria-label={t('commonRemoveNamed', name)} onClick={() => onChange(variables.filter((_, j) => j !== i))}>
                   <IconClose />
                 </button>
               )}
@@ -254,13 +255,13 @@ function VariablesTable({ variables, onChange }: { variables: EnvVariable[]; onC
 // --- import ---
 
 const KIND_LABELS: Record<ImportKind, string> = {
-  curl: 'cURL command',
-  openapi: 'OpenAPI / Swagger specification',
-  'postman-collection': 'Postman collection',
-  'postman-environment': 'Postman environment',
-  har: 'HAR file',
-  backup: 'Browser API Client backup',
-  unknown: 'Not recognised yet',
+  curl: t('importKindCurl'),
+  openapi: t('importKindOpenapi'),
+  'postman-collection': t('importKindPostmanCollection'),
+  'postman-environment': t('importKindPostmanEnvironment'),
+  har: t('importKindHar'),
+  backup: t('importKindBackup'),
+  unknown: t('importKindUnknown'),
 };
 
 function ImportDialog() {
@@ -294,20 +295,20 @@ function ImportDialog() {
   return (
     <Dialog
       wide
-      title="Import"
+      title={t('importTitle')}
       onClose={closeDialog}
       footer={
         result ? (
           <button type="button" class="bac-btn bac-btn-primary" onClick={closeDialog}>
-            Done
+            {t('commonDone')}
           </button>
         ) : (
           <>
             <button type="button" class="bac-btn" onClick={closeDialog}>
-              Cancel
+              {t('commonCancel')}
             </button>
             <button type="button" class="bac-btn bac-btn-primary" disabled={!kind || kind === 'unknown' || kind === 'backup'} onClick={doImport}>
-              Import
+              {t('importButton')}
             </button>
           </>
         )
@@ -317,7 +318,7 @@ function ImportDialog() {
         <div class="bac-stack">
           <p>{result.summary}</p>
           <div class="bac-notice bac-notice-warn">
-            <p class="bac-notice-title">Check these before you send:</p>
+            <p class="bac-notice-title">{t('importWarningsTitle')}</p>
             <ul>
               {result.warnings.map((w, i) => (
                 <li key={i}>{w}</li>
@@ -327,10 +328,10 @@ function ImportDialog() {
         </div>
       ) : (
         <div class="bac-stack">
-          <p class="bac-muted bac-small">Paste a cURL command, an OpenAPI 3 or Swagger 2 JSON spec, a Postman v2.1 collection or environment, or a HAR file — or choose a file.</p>
+          <p class="bac-muted bac-small">{t('importHint')}</p>
           <textarea
             class="bac-code-input bac-import-text"
-            aria-label="Text to import"
+            aria-label={t('importTextLabel')}
             spellcheck={false}
             placeholder={"curl -X POST 'https://api.example.com/users' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"name\":\"Ada\"}'"}
             value={text}
@@ -341,7 +342,7 @@ function ImportDialog() {
           />
           <div class="bac-row">
             <button type="button" class="bac-btn bac-btn-small" onClick={() => fileRef.current?.click()}>
-              Choose file…
+              {t('commonChooseFile')}
             </button>
             <input
               ref={fileRef}
@@ -357,7 +358,7 @@ function ImportDialog() {
             />
             {kind && (
               <span class={`bac-detected${kind === 'unknown' || kind === 'backup' ? ' is-bad' : ''}`}>
-                {kind === 'backup' ? 'Browser API Client backup — import it from Settings' : `Detected: ${KIND_LABELS[kind]}`}
+                {kind === 'backup' ? t('importBackupHint') : t('importDetected', KIND_LABELS[kind])}
               </span>
             )}
           </div>
@@ -389,9 +390,9 @@ function CodeDialog({ tabId }: { tabId: string }) {
   const hasSecrets = variables.some((v) => v.secret && v.enabled);
 
   return (
-    <Dialog wide title="Code snippet" onClose={closeDialog}>
+    <Dialog wide title={t('codeTitle')} onClose={closeDialog}>
       <div class="bac-codegen">
-        <div role="tablist" aria-label="Language" aria-orientation="vertical" class="bac-codegen-targets">
+        <div role="tablist" aria-label={t('codeLanguageLabel')} aria-orientation="vertical" class="bac-codegen-targets">
           {CODEGEN_TARGETS.map((t) => (
             <button
               key={t.id}
@@ -417,7 +418,7 @@ function CodeDialog({ tabId }: { tabId: string }) {
         <div class="bac-codegen-output" role="tabpanel">
           <div class="bac-editor-toolbar">
             <span class="bac-muted bac-small">
-              {hasSecrets ? 'Variables are filled in from the active environment, including secret values.' : 'Variables are filled in from the active environment.'}
+              {hasSecrets ? t('codeVarsFilledSecrets') : t('codeVarsFilled')}
             </span>
             <div class="bac-spacer" />
             <button
@@ -425,10 +426,10 @@ function CodeDialog({ tabId }: { tabId: string }) {
               class="bac-btn bac-btn-small"
               onClick={() => {
                 void navigator.clipboard.writeText(code);
-                showToast('Copied');
+                showToast(t('commonCopied'));
               }}
             >
-              <IconCopy /> Copy
+              <IconCopy /> {t('commonCopy')}
             </button>
           </div>
           <pre class="bac-code bac-codegen-code" tabIndex={0}>
@@ -447,22 +448,22 @@ const MOD = mac ? '⌘' : 'Ctrl';
 const ALT = mac ? '⌥' : 'Alt';
 
 const SHORTCUTS: Array<[string, string[]]> = [
-  ['Send the request', [`${MOD} Enter`]],
-  ['Save to a collection', [`${MOD} S`]],
-  ['New request tab', [`${ALT} T`]],
-  ['Close the tab', [`${ALT} W`]],
-  ['Focus the URL', [`${ALT} L`]],
-  ['Cancel a request or stop a stream', ['Esc']],
-  ['Next / previous tab (on the tab strip)', ['→', '←']],
-  ['Next / previous search match', ['Enter', 'Shift Enter']],
-  ['Rename in the collection tree', ['F2']],
-  ['Move a request, folder or collection', [`${ALT} ↑`, `${ALT} ↓`]],
-  ['Show this list', ['?']],
+  [t('shortcutSend'), [`${MOD} Enter`]],
+  [t('shortcutSave'), [`${MOD} S`]],
+  [t('shortcutNewTab'), [`${ALT} T`]],
+  [t('shortcutCloseTab'), [`${ALT} W`]],
+  [t('shortcutFocusUrl'), [`${ALT} L`]],
+  [t('shortcutCancel'), ['Esc']],
+  [t('shortcutNextTab'), ['→', '←']],
+  [t('shortcutNextMatch'), ['Enter', 'Shift Enter']],
+  [t('shortcutRename'), ['F2']],
+  [t('shortcutMove'), [`${ALT} ↑`, `${ALT} ↓`]],
+  [t('shortcutShowList'), ['?']],
 ];
 
 function ShortcutsDialog() {
   return (
-    <Dialog title="Keyboard shortcuts" onClose={closeDialog}>
+    <Dialog title={t('shortcutsTitle')} onClose={closeDialog}>
       <table class="bac-shortcuts">
         <tbody>
           {SHORTCUTS.map(([label, keys]) => (
@@ -481,7 +482,7 @@ function ShortcutsDialog() {
         </tbody>
       </table>
       <p class="bac-muted bac-small">
-        Browsers reserve {MOD} T, {MOD} W and {MOD} L for their own tabs and address bar, so the app uses {ALT} instead.
+        {t('shortcutsBrowserNote', MOD, ALT)}
       </p>
     </Dialog>
   );

@@ -4,5 +4,2676 @@
   },
   "appDescription": {
     "message": "REST client and API tester in a full browser tab: a Postman alternative with collections, OAuth 2.0 and tests. No account."
+  },
+  "appLoadFailed": {
+    "message": "Browser API Client could not load its saved data: $ERROR$",
+    "description": "App page: replaces the whole page when saved data cannot be loaded",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "sampleRequestName": {
+    "message": "Try it: GET with a query parameter",
+    "description": "Name of the sample request in the first tab on a first run"
+  },
+  "headerHideSidebar": {
+    "message": "Hide sidebar",
+    "description": "Header: sidebar toggle button label while the sidebar is open"
+  },
+  "headerShowSidebar": {
+    "message": "Show sidebar",
+    "description": "Header: sidebar toggle button label while the sidebar is closed"
+  },
+  "headerEnvironment": {
+    "message": "Environment",
+    "description": "Header: label before the active environment picker"
+  },
+  "headerNoEnvironment": {
+    "message": "No environment",
+    "description": "Header: environment picker option for using no environment"
+  },
+  "headerEditEnvLabel": {
+    "message": "Edit the active environment",
+    "description": "Header: accessible label of the pencil button when an environment is active"
+  },
+  "headerCreateEnvLabel": {
+    "message": "Create an environment",
+    "description": "Header: accessible label of the pencil button when no environment is active"
+  },
+  "headerEditEnvTitle": {
+    "message": "Edit environment",
+    "description": "Header: tooltip of the pencil button when an environment is active"
+  },
+  "headerShortcutsTooltip": {
+    "message": "Keyboard shortcuts (?)",
+    "description": "Header: tooltip of the keyboard shortcuts button; ? is the key that opens the list"
+  },
+  "headerSettings": {
+    "message": "Settings",
+    "description": "Header: button that opens the settings page"
+  },
+  "benchResizeLabel": {
+    "message": "Resize request and response",
+    "description": "Accessible label of the divider between the request editor and the response"
+  },
+  "commonCancel": {
+    "message": "Cancel",
+    "description": "Button: cancel a dialog or an in-flight request"
+  },
+  "commonSave": {
+    "message": "Save",
+    "description": "Button: save"
+  },
+  "commonDone": {
+    "message": "Done",
+    "description": "Button: close a finished dialog"
+  },
+  "commonClear": {
+    "message": "Clear",
+    "description": "Button: clear history or a stored token"
+  },
+  "commonStop": {
+    "message": "Stop",
+    "description": "Button: stop a stream or a collection run"
+  },
+  "commonCopy": {
+    "message": "Copy",
+    "description": "Button: copy text to the clipboard"
+  },
+  "commonCopied": {
+    "message": "Copied",
+    "description": "Toast after copying a code snippet"
+  },
+  "commonName": {
+    "message": "Name",
+    "description": "Column or field heading: name"
+  },
+  "commonValue": {
+    "message": "Value",
+    "description": "Column or field heading: value"
+  },
+  "commonEnabled": {
+    "message": "Enabled",
+    "description": "Screen-reader heading of a table’s on/off checkbox column"
+  },
+  "commonRemove": {
+    "message": "Remove",
+    "description": "Screen-reader heading of a table’s remove column; tooltip of a remove button"
+  },
+  "commonRemoveNamed": {
+    "message": "Remove $NAME$",
+    "description": "Accessible label of a remove button for one row or file",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "commonShowNamed": {
+    "message": "Show $NAME$",
+    "description": "Accessible label of the button that reveals a masked secret",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "commonHideNamed": {
+    "message": "Hide $NAME$",
+    "description": "Accessible label of the button that masks a revealed secret",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "commonChooseFile": {
+    "message": "Choose file…",
+    "description": "Button that opens a file picker"
+  },
+  "commonActionsFor": {
+    "message": "Actions for $NAME$",
+    "description": "Sidebar: accessible label of the “more actions” menu for a request, collection or environment",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "commonOpen": {
+    "message": "Open",
+    "description": "Sidebar menu item: open a saved request"
+  },
+  "commonEdit": {
+    "message": "Edit",
+    "description": "Sidebar menu item: edit an environment"
+  },
+  "commonRename": {
+    "message": "Rename",
+    "description": "Sidebar menu item: rename"
+  },
+  "commonDuplicate": {
+    "message": "Duplicate",
+    "description": "Sidebar menu item: duplicate"
+  },
+  "commonMoveUp": {
+    "message": "Move up",
+    "description": "Sidebar menu item: move one place up"
+  },
+  "commonMoveDown": {
+    "message": "Move down",
+    "description": "Sidebar menu item: move one place down"
+  },
+  "commonDelete": {
+    "message": "Delete",
+    "description": "Menu item or tooltip: delete"
+  },
+  "commonMs": {
+    "message": "$COUNT$ ms",
+    "description": "A duration in milliseconds",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "dialogClose": {
+    "message": "Close",
+    "description": "Accessible label of the × button in every dialog header"
+  },
+  "kvParameter": {
+    "message": "Parameter",
+    "description": "Params tab: key column heading"
+  },
+  "kvAddParameter": {
+    "message": "Add parameter",
+    "description": "Params tab: placeholder of the blank row’s key field"
+  },
+  "kvNewParameter": {
+    "message": "New parameter",
+    "description": "Params tab: accessible label of the blank row’s key field"
+  },
+  "kvParameterOf": {
+    "message": "Parameter of $NAME$",
+    "description": "Params tab: accessible label of a row’s key field",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "kvHeader": {
+    "message": "Header",
+    "description": "Headers tab: key column heading"
+  },
+  "kvAddHeader": {
+    "message": "Add header",
+    "description": "Headers tab: placeholder of the blank row’s key field"
+  },
+  "kvNewHeader": {
+    "message": "New header",
+    "description": "Headers tab: accessible label of the blank row’s key field"
+  },
+  "kvHeaderOf": {
+    "message": "Header of $NAME$",
+    "description": "Headers tab: accessible label of a row’s key field",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "kvField": {
+    "message": "Field",
+    "description": "Form and multipart bodies: key column heading"
+  },
+  "kvAddField": {
+    "message": "Add field",
+    "description": "Form and multipart bodies: placeholder of the blank row’s key field"
+  },
+  "kvNewField": {
+    "message": "New field",
+    "description": "Form body: accessible label of the blank row’s key field"
+  },
+  "kvFieldOf": {
+    "message": "Field of $NAME$",
+    "description": "Form body: accessible label of a row’s key field",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "kvRowN": {
+    "message": "row $NUMBER$",
+    "description": "Key/value tables: how a row without a key is named in accessible labels",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "kvFieldN": {
+    "message": "field $NUMBER$",
+    "description": "Multipart body: how a field without a name is named in accessible labels",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "kvIncludeNamed": {
+    "message": "Include $NAME$",
+    "description": "Key/value tables: accessible label of a row’s on/off checkbox",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "kvNameOf": {
+    "message": "Name of $NAME$",
+    "description": "Multipart and variable tables: accessible label of a row’s name field",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "kvValueOf": {
+    "message": "Value of $NAME$",
+    "description": "Key/value tables: accessible label of a row’s value field",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "kvNewValue": {
+    "message": "New value",
+    "description": "Key/value tables: accessible label of the blank row’s value field"
+  },
+  "varNameRule": {
+    "message": "Names start with a letter or _ and use letters, digits, _ . or -",
+    "description": "Tooltip on an invalid variable name"
+  },
+  "varUndefinedTitle": {
+    "message": "Not defined in the active environment: $NAMES$",
+    "description": "Tooltip on a field using {{variables}} the active environment does not define",
+    "placeholders": {
+      "names": {
+        "content": "$1"
+      }
+    }
+  },
+  "bodyModeNone": {
+    "message": "None",
+    "description": "Body tab: body type with no body"
+  },
+  "bodyModeForm": {
+    "message": "Form URL-encoded",
+    "description": "Body tab: x-www-form-urlencoded body type"
+  },
+  "bodyModeMultipart": {
+    "message": "Multipart form",
+    "description": "Body tab: multipart/form-data body type"
+  },
+  "bodyModeRaw": {
+    "message": "Raw",
+    "description": "Body tab: raw text body type; also its badge on the tab"
+  },
+  "bodyFile": {
+    "message": "File",
+    "description": "Body tab: file body type and multipart field kind; also the badge on the tab"
+  },
+  "bodyBadgeUrlencoded": {
+    "message": "URL-encoded",
+    "description": "Badge on the Body tab for a form URL-encoded body"
+  },
+  "bodyBadgeMultipart": {
+    "message": "Multipart",
+    "description": "Badge on the Body tab for a multipart body"
+  },
+  "bodyTypeLabel": {
+    "message": "Body type",
+    "description": "Body tab: accessible label of the body type choice"
+  },
+  "bodyMethodNoBody": {
+    "message": "Browsers never send a body with $METHOD$. Change the method to send this body.",
+    "description": "Body tab: warning when the HTTP method cannot carry a body",
+    "placeholders": {
+      "method": {
+        "content": "$1"
+      }
+    }
+  },
+  "bodyNone": {
+    "message": "This request has no body.",
+    "description": "Body tab: shown for the None body type"
+  },
+  "bodyRawLabel": {
+    "message": "Raw body",
+    "description": "Body tab: accessible label of the raw text editor"
+  },
+  "bodyFormFieldsLabel": {
+    "message": "Form fields",
+    "description": "Body tab: accessible label of the form fields table"
+  },
+  "bodyGraphqlQuery": {
+    "message": "Query",
+    "description": "Body tab, GraphQL: heading above the query editor"
+  },
+  "bodyGraphqlHint": {
+    "message": "Sent as a JSON POST: $SHAPE$",
+    "description": "Body tab, GraphQL: explains the request shape; the placeholder is a code fragment",
+    "placeholders": {
+      "shape": {
+        "content": "$1"
+      }
+    }
+  },
+  "bodyGraphqlQueryLabel": {
+    "message": "GraphQL query",
+    "description": "Body tab, GraphQL: accessible label of the query editor"
+  },
+  "bodyGraphqlVariablesLabel": {
+    "message": "GraphQL variables",
+    "description": "Body tab, GraphQL: accessible label of the variables editor"
+  },
+  "bodyGraphqlVariables": {
+    "message": "Variables",
+    "description": "Body tab, GraphQL: heading above the variables editor"
+  },
+  "bodyBinaryHint": {
+    "message": "The file’s bytes are sent as the body, with its type as Content-Type unless you set one.",
+    "description": "Body tab, File: explanation"
+  },
+  "bodyFileLabel": {
+    "message": "Body file",
+    "description": "Body tab, File: accessible label of the file input"
+  },
+  "bodyJsonLabel": {
+    "message": "JSON body",
+    "description": "Body tab, JSON: accessible label of the JSON editor"
+  },
+  "bodyJsonValid": {
+    "message": "Valid JSON",
+    "description": "JSON editor: status when the text parses"
+  },
+  "bodyFormatTitle": {
+    "message": "Pretty-print the JSON",
+    "description": "JSON editor: tooltip of the Format button"
+  },
+  "bodyFormatDisabledTitle": {
+    "message": "Only valid JSON can be formatted",
+    "description": "JSON editor: tooltip of the disabled Format button"
+  },
+  "bodyFormat": {
+    "message": "Format",
+    "description": "JSON editor: button that pretty-prints the JSON"
+  },
+  "bodyMultipartLabel": {
+    "message": "Multipart fields",
+    "description": "Body tab, multipart: accessible label of the fields table"
+  },
+  "bodyMultipartType": {
+    "message": "Type",
+    "description": "Body tab, multipart: heading of the text/file column"
+  },
+  "bodyMultipartNewName": {
+    "message": "New field name",
+    "description": "Body tab, multipart: accessible label of the blank row’s name field"
+  },
+  "bodyMultipartTypeOf": {
+    "message": "Type of $NAME$",
+    "description": "Body tab, multipart: accessible label of a row’s text/file choice",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "bodyMultipartText": {
+    "message": "Text",
+    "description": "Body tab, multipart: field kind holding text"
+  },
+  "bodyMultipartFileFor": {
+    "message": "File for $NAME$",
+    "description": "Body tab, multipart: accessible label of a row’s file input",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "bodyMultipartNewValue": {
+    "message": "New field value",
+    "description": "Body tab, multipart: accessible label of the blank row’s value field"
+  },
+  "bodyNoFile": {
+    "message": "No file chosen",
+    "description": "File picker: shown before a file is chosen"
+  },
+  "bodyReplaceFile": {
+    "message": "Replace…",
+    "description": "File picker: button that picks a different file"
+  },
+  "bodyRemoveFile": {
+    "message": "Remove file",
+    "description": "File picker: tooltip of the remove button"
+  },
+  "saveSuggestedNameFallback": {
+    "message": "request",
+    "description": "Save dialog: suggested name part when the URL has no path (after the HTTP method)"
+  },
+  "saveDefaultCollectionName": {
+    "message": "My API",
+    "description": "Save dialog: default name for a new collection"
+  },
+  "saveSavedTo": {
+    "message": "Saved to “$COLLECTION$”",
+    "description": "Toast after saving a request into a collection",
+    "placeholders": {
+      "collection": {
+        "content": "$1"
+      }
+    }
+  },
+  "saveTitle": {
+    "message": "Save request",
+    "description": "Save dialog title"
+  },
+  "saveCollection": {
+    "message": "Collection",
+    "description": "Save dialog: collection field label"
+  },
+  "saveNewCollectionOption": {
+    "message": "New collection…",
+    "description": "Save dialog: option that creates a collection"
+  },
+  "saveNewCollectionName": {
+    "message": "New collection name",
+    "description": "Save dialog: name field for a new collection"
+  },
+  "saveFolder": {
+    "message": "Folder",
+    "description": "Save dialog: folder field label"
+  },
+  "saveNoFolder": {
+    "message": "No folder",
+    "description": "Save dialog: option to save at the collection’s top level"
+  },
+  "envDialogTitle": {
+    "message": "Environment",
+    "description": "Environment dialog title"
+  },
+  "envDialogActive": {
+    "message": "Active environment",
+    "description": "Environment dialog footer: shown when this environment is active"
+  },
+  "envUse": {
+    "message": "Use this environment",
+    "description": "Button, menu item and tooltip that make an environment active"
+  },
+  "envDialogHint": {
+    "message": "Use a variable as $CODE$ in the URL, params, headers, auth or body. Secret values are masked on screen. Everything stays in this browser.",
+    "description": "Environment dialog: help text; the placeholder is the {{name}} syntax",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "envVariablesLabel": {
+    "message": "Variables",
+    "description": "Environment dialog: accessible label of the variables table"
+  },
+  "envVariableColumn": {
+    "message": "Variable",
+    "description": "Environment dialog: name column heading"
+  },
+  "envSecretColumn": {
+    "message": "Secret",
+    "description": "Environment dialog: heading of the column marking secret values"
+  },
+  "envVariableN": {
+    "message": "variable $NUMBER$",
+    "description": "Environment dialog: how a variable without a name is named in accessible labels",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "envEnableNamed": {
+    "message": "Enable $NAME$",
+    "description": "Environment dialog: accessible label of a variable’s on/off checkbox",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "envAddVariable": {
+    "message": "Add variable",
+    "description": "Environment dialog: placeholder of the blank row’s name field"
+  },
+  "envNewVariableName": {
+    "message": "New variable name",
+    "description": "Environment dialog: accessible label of the blank row’s name field"
+  },
+  "envNewVariableValue": {
+    "message": "New variable value",
+    "description": "Environment dialog: accessible label of the blank row’s value field"
+  },
+  "envTreatSecret": {
+    "message": "Treat $NAME$ as secret",
+    "description": "Environment dialog: accessible label of a variable’s secret checkbox",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "envNew": {
+    "message": "New environment",
+    "description": "Button and tooltip that create an environment"
+  },
+  "envDefaultName": {
+    "message": "New environment",
+    "description": "Name given to a newly created environment"
+  },
+  "envsEmptyTitle": {
+    "message": "No environments yet",
+    "description": "Sidebar, Environments: empty state title"
+  },
+  "envsEmptyHint": {
+    "message": "Environments hold $VARIABLES$ such as a base URL or a token, so one request works against dev, staging and production.",
+    "description": "Sidebar, Environments: empty state text; the placeholder is the {{variables}} syntax",
+    "placeholders": {
+      "variables": {
+        "content": "$1"
+      }
+    }
+  },
+  "envsHint": {
+    "message": "Click one to edit it; the dot marks the active environment.",
+    "description": "Sidebar, Environments: hint above the list"
+  },
+  "envActiveTurnOff": {
+    "message": "$NAME$ is active; turn it off",
+    "description": "Sidebar, Environments: accessible label of the dot of the active environment",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "envUseNamed": {
+    "message": "Use $NAME$",
+    "description": "Sidebar, Environments: accessible label of the dot of an inactive environment",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "envActiveTitle": {
+    "message": "Active — click to turn off",
+    "description": "Sidebar, Environments: tooltip of the dot of the active environment"
+  },
+  "envVariableCountOne": {
+    "message": "$COUNT$ variable",
+    "description": "Sidebar, Environments: variable count when there is exactly one",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "envVariableCountOther": {
+    "message": "$COUNT$ variables",
+    "description": "Sidebar, Environments: variable count for any other number",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "envStopUsing": {
+    "message": "Stop using",
+    "description": "Sidebar, Environments: menu item that deactivates the active environment"
+  },
+  "envExportPostman": {
+    "message": "Export as Postman environment",
+    "description": "Sidebar, Environments: menu item that downloads a Postman environment file"
+  },
+  "envDeleteConfirm": {
+    "message": "Delete the environment “$NAME$”?",
+    "description": "Sidebar, Environments: confirmation before deleting",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "importKindCurl": {
+    "message": "cURL command",
+    "description": "Import dialog: detected input kind"
+  },
+  "importKindOpenapi": {
+    "message": "OpenAPI / Swagger specification",
+    "description": "Import dialog: detected input kind"
+  },
+  "importKindPostmanCollection": {
+    "message": "Postman collection",
+    "description": "Import dialog: detected input kind"
+  },
+  "importKindPostmanEnvironment": {
+    "message": "Postman environment",
+    "description": "Import dialog: detected input kind"
+  },
+  "importKindHar": {
+    "message": "HAR file",
+    "description": "Import dialog: detected input kind"
+  },
+  "importKindBackup": {
+    "message": "Browser API Client backup",
+    "description": "Import dialog: detected input kind"
+  },
+  "importKindUnknown": {
+    "message": "Not recognised yet",
+    "description": "Import dialog: shown when the pasted text is not a known format"
+  },
+  "importTitle": {
+    "message": "Import",
+    "description": "Import dialog title"
+  },
+  "importButton": {
+    "message": "Import",
+    "description": "Button that opens the import dialog or runs the import"
+  },
+  "importWarningsTitle": {
+    "message": "Check these before you send:",
+    "description": "Import dialog: heading above importer warnings"
+  },
+  "importHint": {
+    "message": "Paste a cURL command, an OpenAPI 3 or Swagger 2 JSON spec, a Postman v2.1 collection or environment, or a HAR file — or choose a file.",
+    "description": "Import dialog: instructions"
+  },
+  "importTextLabel": {
+    "message": "Text to import",
+    "description": "Import dialog: accessible label of the text area"
+  },
+  "importBackupHint": {
+    "message": "Browser API Client backup — import it from Settings",
+    "description": "Import dialog: shown when a backup file is pasted"
+  },
+  "importDetected": {
+    "message": "Detected: $KIND$",
+    "description": "Import dialog: the detected input kind",
+    "placeholders": {
+      "kind": {
+        "content": "$1"
+      }
+    }
+  },
+  "codeTitle": {
+    "message": "Code snippet",
+    "description": "Code snippet dialog title"
+  },
+  "codeLanguageLabel": {
+    "message": "Language",
+    "description": "Code snippet dialog: accessible label of the language list"
+  },
+  "codeVarsFilledSecrets": {
+    "message": "Variables are filled in from the active environment, including secret values.",
+    "description": "Code snippet dialog: note when secret variables are included"
+  },
+  "codeVarsFilled": {
+    "message": "Variables are filled in from the active environment.",
+    "description": "Code snippet dialog: note"
+  },
+  "shortcutsTitle": {
+    "message": "Keyboard shortcuts",
+    "description": "Keyboard shortcuts dialog title and button label"
+  },
+  "shortcutSend": {
+    "message": "Send the request",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutSave": {
+    "message": "Save to a collection",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutNewTab": {
+    "message": "New request tab",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutCloseTab": {
+    "message": "Close the tab",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutFocusUrl": {
+    "message": "Focus the URL",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutCancel": {
+    "message": "Cancel a request or stop a stream",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutNextTab": {
+    "message": "Next / previous tab (on the tab strip)",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutNextMatch": {
+    "message": "Next / previous search match",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutRename": {
+    "message": "Rename in the collection tree",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutMove": {
+    "message": "Move a request, folder or collection",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutShowList": {
+    "message": "Show this list",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "shortcutsBrowserNote": {
+    "message": "Browsers reserve $MOD$ T, $MOD$ W and $MOD$ L for their own tabs and address bar, so the app uses $ALT$ instead.",
+    "description": "Keyboard shortcuts dialog: footnote; placeholders are key names such as ⌘/Ctrl and ⌥/Alt",
+    "placeholders": {
+      "mod": {
+        "content": "$1"
+      },
+      "alt": {
+        "content": "$2"
+      }
+    }
+  },
+  "jsonTreeShowMore": {
+    "message": "Show $COUNT$ more of $REMAINING$…",
+    "description": "Response JSON tree: button that reveals more items",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "remaining": {
+        "content": "$2"
+      }
+    }
+  },
+  "jsonTreeLabel": {
+    "message": "JSON tree",
+    "description": "Response JSON tree: accessible label"
+  },
+  "oauthTokenReceived": {
+    "message": "Access token received",
+    "description": "Auth tab, OAuth 2.0: toast after getting a token"
+  },
+  "oauthGrant": {
+    "message": "Grant",
+    "description": "Auth tab, OAuth 2.0: grant type label"
+  },
+  "oauthGrantAuthCode": {
+    "message": "Authorization code",
+    "description": "Auth tab, OAuth 2.0: grant type"
+  },
+  "oauthGrantClientCredentials": {
+    "message": "Client credentials",
+    "description": "Auth tab, OAuth 2.0: grant type"
+  },
+  "oauthAuthUrl": {
+    "message": "Authorization URL",
+    "description": "Auth tab, OAuth 2.0: field label"
+  },
+  "oauthTokenUrl": {
+    "message": "Token URL",
+    "description": "Auth tab, OAuth 2.0: field label"
+  },
+  "oauthClientId": {
+    "message": "Client ID",
+    "description": "Auth tab, OAuth 2.0: field label"
+  },
+  "oauthClientSecret": {
+    "message": "Client secret",
+    "description": "Auth tab, OAuth 2.0: field label"
+  },
+  "oauthOptionalWithPkce": {
+    "message": "Optional with PKCE",
+    "description": "Auth tab, OAuth 2.0: client secret placeholder when PKCE is on"
+  },
+  "oauthScope": {
+    "message": "Scope",
+    "description": "Auth tab, OAuth 2.0: field label"
+  },
+  "oauthAudience": {
+    "message": "Audience",
+    "description": "Auth tab, OAuth 2.0: field label"
+  },
+  "oauthOptional": {
+    "message": "Optional",
+    "description": "Auth tab, OAuth 2.0: placeholder of an optional field"
+  },
+  "oauthClientAuth": {
+    "message": "Client authentication",
+    "description": "Auth tab, OAuth 2.0: label of how client credentials are sent"
+  },
+  "oauthClientAuthHeader": {
+    "message": "Basic auth header",
+    "description": "Auth tab, OAuth 2.0: client authentication option"
+  },
+  "oauthClientAuthBody": {
+    "message": "Client ID and secret in the body",
+    "description": "Auth tab, OAuth 2.0: client authentication option"
+  },
+  "oauthUsePkce": {
+    "message": "Use PKCE (S256) — recommended",
+    "description": "Auth tab, OAuth 2.0: PKCE checkbox label"
+  },
+  "oauthRedirectUrl": {
+    "message": "Redirect URL",
+    "description": "Auth tab, OAuth 2.0: label of the redirect URL to register"
+  },
+  "oauthRedirectUnavailable": {
+    "message": "Unavailable in this browser",
+    "description": "Auth tab, OAuth 2.0: shown instead of a redirect URL"
+  },
+  "oauthCopyRedirect": {
+    "message": "Copy redirect URL",
+    "description": "Auth tab, OAuth 2.0: accessible label of the copy button"
+  },
+  "oauthRedirectCopied": {
+    "message": "Redirect URL copied",
+    "description": "Auth tab, OAuth 2.0: toast after copying"
+  },
+  "oauthRedirectNote": {
+    "message": "Register this redirect URL with your provider. Sign-in opens in a browser window and never shares your cookies with this extension.",
+    "description": "Auth tab, OAuth 2.0: note under the redirect URL"
+  },
+  "oauthNoIdentity": {
+    "message": "This browser doesn’t offer the identity API, so only the client-credentials grant works here.",
+    "description": "Auth tab, OAuth 2.0: warning where browser.identity is missing"
+  },
+  "oauthAccessToken": {
+    "message": "Access token",
+    "description": "Auth tab, OAuth 2.0: accessible label of the token box"
+  },
+  "oauthTokenExpired": {
+    "message": "Access token expired",
+    "description": "Auth tab, OAuth 2.0: token status"
+  },
+  "oauthTokenReady": {
+    "message": "Access token ready",
+    "description": "Auth tab, OAuth 2.0: token status"
+  },
+  "oauthTokenNone": {
+    "message": "No access token yet",
+    "description": "Auth tab, OAuth 2.0: token status"
+  },
+  "oauthCanRefresh": {
+    "message": "can refresh",
+    "description": "Auth tab, OAuth 2.0: token detail when a refresh token is stored"
+  },
+  "oauthTokenHintAuthCode": {
+    "message": "Get one before sending; it is added as Authorization: Bearer.",
+    "description": "Auth tab, OAuth 2.0: hint without a token (authorization code grant)"
+  },
+  "oauthTokenHintClient": {
+    "message": "Fetched automatically on send, or get one now.",
+    "description": "Auth tab, OAuth 2.0: hint without a token (client credentials grant)"
+  },
+  "oauthWaiting": {
+    "message": "Waiting…",
+    "description": "Auth tab, OAuth 2.0: token button while waiting"
+  },
+  "oauthGetToken": {
+    "message": "Get new access token",
+    "description": "Auth tab, OAuth 2.0: button that requests a token"
+  },
+  "oauthErrorNoTokenUrl": {
+    "message": "Enter the token URL.",
+    "description": "OAuth 2.0 error"
+  },
+  "oauthErrorUnreachable": {
+    "message": "Could not reach the token URL $URL$.",
+    "description": "OAuth 2.0 error",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "oauthErrorEndpointStatus": {
+    "message": "The token endpoint answered $STATUS$: $ERROR$",
+    "description": "OAuth 2.0 error: HTTP status and the parse error",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "oauthErrorNoIdentity": {
+    "message": "This browser does not offer the identity API needed for the authorization-code flow.",
+    "description": "OAuth 2.0 error"
+  },
+  "oauthErrorSignInUnfinished": {
+    "message": "Sign-in did not finish: $ERROR$",
+    "description": "OAuth 2.0 error",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "oauthErrorSignInClosed": {
+    "message": "The sign-in window closed before it finished.",
+    "description": "OAuth 2.0 error"
+  },
+  "oauthErrorTokenExpired": {
+    "message": "The access token has expired. Get a new one on the Auth tab.",
+    "description": "OAuth 2.0 error on send"
+  },
+  "oauthErrorNoToken": {
+    "message": "No access token yet. Use “$ACTION$” on the Auth tab.",
+    "description": "OAuth 2.0 error on send; the placeholder is the Get new access token button label",
+    "placeholders": {
+      "action": {
+        "content": "$1"
+      }
+    }
+  },
+  "authNone": {
+    "message": "No auth",
+    "description": "Auth tab: auth type"
+  },
+  "authBearer": {
+    "message": "Bearer token",
+    "description": "Auth tab: auth type"
+  },
+  "authBasic": {
+    "message": "Basic auth",
+    "description": "Auth tab: auth type"
+  },
+  "authApiKey": {
+    "message": "API key",
+    "description": "Auth tab: auth type"
+  },
+  "authType": {
+    "message": "Type",
+    "description": "Auth tab: auth type label"
+  },
+  "authNoneHint": {
+    "message": "This request sends no credentials. Pick a type to add them; $VARIABLES$ work in every field.",
+    "description": "Auth tab: shown for No auth; the placeholder is the {{variables}} syntax",
+    "placeholders": {
+      "variables": {
+        "content": "$1"
+      }
+    }
+  },
+  "authToken": {
+    "message": "Token",
+    "description": "Auth tab, bearer: field label"
+  },
+  "authUsername": {
+    "message": "Username",
+    "description": "Auth tab, basic: field label"
+  },
+  "authPassword": {
+    "message": "Password",
+    "description": "Auth tab, basic: field label"
+  },
+  "authKey": {
+    "message": "Key",
+    "description": "Auth tab, API key: name field label"
+  },
+  "authApiKeyValue": {
+    "message": "API key value",
+    "description": "Auth tab, API key: accessible label of the value field"
+  },
+  "authSendIn": {
+    "message": "Send in",
+    "description": "Auth tab, API key: where the key goes"
+  },
+  "authInHeader": {
+    "message": "Header",
+    "description": "Auth tab, API key: send in a header"
+  },
+  "authInQuery": {
+    "message": "Query string",
+    "description": "Auth tab, API key: send in the query string"
+  },
+  "authStoredLocally": {
+    "message": "Credentials and tokens are stored only in this browser.",
+    "description": "Auth tab: note under any auth type"
+  },
+  "requestTabParams": {
+    "message": "Params",
+    "description": "Request editor tab"
+  },
+  "requestTabHeaders": {
+    "message": "Headers",
+    "description": "Request editor tab"
+  },
+  "requestTabAuth": {
+    "message": "Auth",
+    "description": "Request editor tab"
+  },
+  "requestTabBody": {
+    "message": "Body",
+    "description": "Request editor tab"
+  },
+  "requestTabTests": {
+    "message": "Tests",
+    "description": "Request editor tab"
+  },
+  "requestCurlImportedWarning": {
+    "message": "Imported the cURL command. $WARNING$",
+    "description": "Toast after pasting a cURL command, with the first import warning",
+    "placeholders": {
+      "warning": {
+        "content": "$1"
+      }
+    }
+  },
+  "requestCurlImported": {
+    "message": "Imported the cURL command",
+    "description": "Toast after pasting a cURL command"
+  },
+  "requestSectionLabel": {
+    "message": "Request",
+    "description": "Accessible label of the request editor"
+  },
+  "requestSavedIn": {
+    "message": "Saved in",
+    "description": "Tooltip of the collection breadcrumb above the request name"
+  },
+  "requestNameLabel": {
+    "message": "Request name",
+    "description": "Accessible label of a request name field"
+  },
+  "requestUntitled": {
+    "message": "Untitled request",
+    "description": "Placeholder and fallback name of a request without a name"
+  },
+  "requestCodeTitle": {
+    "message": "Generate code for this request",
+    "description": "Tooltip of the Code button"
+  },
+  "requestCode": {
+    "message": "Code",
+    "description": "Button that opens the code snippet dialog"
+  },
+  "requestSaveTitle": {
+    "message": "Save ($SHORTCUT$)",
+    "description": "Tooltip of the Save button with its shortcut",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1"
+      }
+    }
+  },
+  "requestSaveEllipsis": {
+    "message": "Save…",
+    "description": "Save button when saving needs a destination"
+  },
+  "requestSavedToast": {
+    "message": "Saved",
+    "description": "Toast after saving a request in place"
+  },
+  "requestMethodLabel": {
+    "message": "HTTP method",
+    "description": "Accessible label of the method picker"
+  },
+  "requestUrlLabel": {
+    "message": "Request URL",
+    "description": "Accessible label of the URL field"
+  },
+  "requestUrlPlaceholder": {
+    "message": "$EXAMPLE$ — or paste a cURL command",
+    "description": "Placeholder of the URL field; the placeholder is an example URL",
+    "placeholders": {
+      "example": {
+        "content": "$1"
+      }
+    }
+  },
+  "requestCancelTitle": {
+    "message": "Cancel (Esc)",
+    "description": "Tooltip of the Cancel button while sending"
+  },
+  "requestSendTitle": {
+    "message": "Send ($SHORTCUT$)",
+    "description": "Tooltip of the Send button with its shortcut",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1"
+      }
+    }
+  },
+  "requestSend": {
+    "message": "Send",
+    "description": "Button that sends the request"
+  },
+  "requestNoScheme": {
+    "message": "No scheme typed — this request will be sent over $SCHEME$",
+    "description": "Hint under the URL when it has no http:// or https://",
+    "placeholders": {
+      "scheme": {
+        "content": "$1"
+      }
+    }
+  },
+  "requestUndefinedInEnv": {
+    "message": "Not defined in “$ENV$”:",
+    "description": "Warning under the URL, followed by the undefined variable names",
+    "placeholders": {
+      "env": {
+        "content": "$1"
+      }
+    }
+  },
+  "requestUndefinedNoEnv": {
+    "message": "No environment is active, so these stay as typed:",
+    "description": "Warning under the URL, followed by the variable names"
+  },
+  "requestPartsLabel": {
+    "message": "Request parts",
+    "description": "Accessible label of the request editor tabs"
+  },
+  "requestParamsLabel": {
+    "message": "Query parameters",
+    "description": "Params tab: accessible label of the table"
+  },
+  "requestHeadersLabel": {
+    "message": "Request headers",
+    "description": "Headers tab: accessible label of the table"
+  },
+  "requestSendCookies": {
+    "message": "Send this site’s cookies",
+    "description": "Headers tab: cookie toggle label; also quoted in the Cookies note"
+  },
+  "requestSendCookiesHint": {
+    "message": "— attach the cookies this browser already holds for the host, such as a signed-in session. Off by default.",
+    "description": "Headers tab: explanation after the cookie toggle label"
+  },
+  "responseModePretty": {
+    "message": "Pretty",
+    "description": "Response body view mode"
+  },
+  "responseModeTree": {
+    "message": "Tree",
+    "description": "Response body view mode"
+  },
+  "responseModeRaw": {
+    "message": "Raw",
+    "description": "Response body view mode"
+  },
+  "responseModePreview": {
+    "message": "Preview",
+    "description": "Response body view mode"
+  },
+  "responseModeHex": {
+    "message": "Hex",
+    "description": "Response body view mode"
+  },
+  "responseSectionLabel": {
+    "message": "Response",
+    "description": "Accessible label of the response pane"
+  },
+  "responseReceivingEvents": {
+    "message": "Receiving events… $COUNT$ so far",
+    "description": "Response: live Server-Sent Events status",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseWarningsLabel": {
+    "message": "Warnings",
+    "description": "Response: accessible label of the warnings list"
+  },
+  "responseWelcomeTitle": {
+    "message": "Welcome to Browser API Client",
+    "description": "First run: welcome title"
+  },
+  "responseWelcomeSample": {
+    "message": "The tab above is a sample request to $HOST$, a public echo service. Nothing is sent until you press $SEND$ or $SHORTCUT$.",
+    "description": "First run: placeholders are the host name, the Send button label and the send shortcut",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      },
+      "send": {
+        "content": "$2"
+      },
+      "shortcut": {
+        "content": "$3"
+      }
+    }
+  },
+  "responseWelcomePrivacy": {
+    "message": "No account, no sync, no tracking — your requests, tokens and collections stay in this browser.",
+    "description": "First run: privacy line"
+  },
+  "responseWelcomeImport": {
+    "message": "Already have requests? Use $IMPORT$ for a cURL command, an OpenAPI spec, a Postman collection or a HAR file.",
+    "description": "First run: the placeholder is the Import button label",
+    "placeholders": {
+      "import": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseWelcomeShortcuts": {
+    "message": "Press $SHORTCUTS$.",
+    "description": "First run: the placeholder is a link reading “? for keyboard shortcuts”",
+    "placeholders": {
+      "shortcuts": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseWelcomeShortcutsLink": {
+    "message": "$KEY$ for keyboard shortcuts",
+    "description": "First run: link text; the placeholder is the ? key",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseEmptyTitle": {
+    "message": "No response yet",
+    "description": "Response: empty state title"
+  },
+  "responseEmptyHint": {
+    "message": "Enter a URL and press $SEND$ or $SHORTCUT$. The response appears here with its status, timing, headers and body.",
+    "description": "Response: empty state text; placeholders are the Send button label and the send shortcut",
+    "placeholders": {
+      "send": {
+        "content": "$1"
+      },
+      "shortcut": {
+        "content": "$2"
+      }
+    }
+  },
+  "responseSending": {
+    "message": "Sending… $TIME$",
+    "description": "Response: status while sending, with the elapsed time",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseTabEvents": {
+    "message": "Events",
+    "description": "Response tab"
+  },
+  "responseTabBody": {
+    "message": "Body",
+    "description": "Response tab"
+  },
+  "responseTabHeaders": {
+    "message": "Headers",
+    "description": "Response tab"
+  },
+  "responseTabCookies": {
+    "message": "Cookies",
+    "description": "Response tab"
+  },
+  "responseTabTests": {
+    "message": "Tests",
+    "description": "Response tab"
+  },
+  "responseTimingTitle": {
+    "message": "Waiting for headers $WAITING$ · Downloading body $DOWNLOADING$",
+    "description": "Response: tooltip of the total time",
+    "placeholders": {
+      "waiting": {
+        "content": "$1"
+      },
+      "downloading": {
+        "content": "$2"
+      }
+    }
+  },
+  "responseRedirectedTitle": {
+    "message": "Redirects were followed. Final URL: $URL$",
+    "description": "Response: tooltip of the redirect badge",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseRedirectsOne": {
+    "message": "$COUNT$ redirect",
+    "description": "Response: redirect badge for exactly one redirect",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseRedirectsOther": {
+    "message": "$COUNT$ redirects",
+    "description": "Response: redirect badge for any other number",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseRedirected": {
+    "message": "Redirected",
+    "description": "Response: redirect badge when the hop count is unknown"
+  },
+  "testsCountPassed": {
+    "message": "$COUNT$ passed",
+    "description": "Test results: number of passing tests or requests",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "testsCountFailed": {
+    "message": "$COUNT$ failed",
+    "description": "Test results: number of failing tests or requests",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "responsePartsLabel": {
+    "message": "Response parts",
+    "description": "Accessible label of the response tabs"
+  },
+  "responseAllTestsPassed": {
+    "message": "All $COUNT$ tests passed",
+    "description": "Response, Tests: heading when every test passed",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseSomeTestsFailed": {
+    "message": "$FAILED$ of $TOTAL$ tests failed",
+    "description": "Response, Tests: heading when some tests failed",
+    "placeholders": {
+      "failed": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "responseTestPassed": {
+    "message": "Passed:",
+    "description": "Response, Tests: screen-reader prefix of a passing test"
+  },
+  "responseTestFailed": {
+    "message": "Failed:",
+    "description": "Response, Tests: screen-reader prefix of a failing test"
+  },
+  "responseExtractedTitle": {
+    "message": "Variables from this response",
+    "description": "Response, Tests: heading of extracted variables"
+  },
+  "responseEventsWaiting": {
+    "message": "Connected. Waiting for the first event…",
+    "description": "Response, Events: connected with no events yet"
+  },
+  "responseEventsNone": {
+    "message": "The stream ended without sending any events.",
+    "description": "Response, Events: stream closed with no events"
+  },
+  "responseEventsArrived": {
+    "message": "Arrived",
+    "description": "Response, Events: column heading (time since the first event)"
+  },
+  "responseEventsEvent": {
+    "message": "Event",
+    "description": "Response, Events: column heading (event type)"
+  },
+  "responseEventsId": {
+    "message": "ID",
+    "description": "Response, Events: column heading (event id)"
+  },
+  "responseEventsData": {
+    "message": "Data",
+    "description": "Response, Events: column heading (event data)"
+  },
+  "responseEventsStopped": {
+    "message": "You stopped the stream after $COUNT$ events.",
+    "description": "Response, Events: after the user stopped the stream",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseEventsClosed": {
+    "message": "The server closed the stream after $COUNT$ events.",
+    "description": "Response, Events: after the server closed the stream",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseRedirectChain": {
+    "message": "Redirect chain",
+    "description": "Response, Headers: heading of the redirect hops"
+  },
+  "responseSetCookieUnavailable": {
+    "message": "Set-Cookie headers can’t be shown in this browser, so they are not listed here.",
+    "description": "Response, Headers: note where Set-Cookie cannot be observed"
+  },
+  "responseCookieDomainPath": {
+    "message": "Domain / Path",
+    "description": "Response, Cookies: column heading"
+  },
+  "responseCookieExpires": {
+    "message": "Expires",
+    "description": "Response, Cookies: column heading"
+  },
+  "responseCookieFlags": {
+    "message": "Flags",
+    "description": "Response, Cookies: column heading"
+  },
+  "responseCookieSetBy": {
+    "message": "Set by $URL$",
+    "description": "Response, Cookies: row tooltip naming the URL that set the cookie",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseCookieThisHost": {
+    "message": "(this host)",
+    "description": "Response, Cookies: domain of a host-only cookie"
+  },
+  "responseCookieMaxAge": {
+    "message": "in $SECONDS$ s",
+    "description": "Response, Cookies: expiry given as Max-Age seconds",
+    "placeholders": {
+      "seconds": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseCookieSession": {
+    "message": "session",
+    "description": "Response, Cookies: expiry of a session cookie"
+  },
+  "responseCookiesNote": {
+    "message": "These cookies came with the response. They are not added to your browser unless the request was sent with “$OPTION$”.",
+    "description": "Response, Cookies: note; the placeholder is the Send this site’s cookies option label",
+    "placeholders": {
+      "option": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseNoBody": {
+    "message": "The response has no body.",
+    "description": "Response, Body: empty body"
+  },
+  "responseBodyViewLabel": {
+    "message": "Body view",
+    "description": "Response, Body: accessible label of the view mode choice"
+  },
+  "responseFindPlaceholder": {
+    "message": "Find in body",
+    "description": "Response, Body: search field placeholder"
+  },
+  "responseFindLabel": {
+    "message": "Find in response body",
+    "description": "Response, Body: accessible label of the search field"
+  },
+  "responseMatchCount": {
+    "message": "$CURRENT$ of $TOTAL$",
+    "description": "Response, Body: search match position",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "responseNoMatches": {
+    "message": "No matches",
+    "description": "Response, Body: search found nothing"
+  },
+  "responsePrevMatch": {
+    "message": "Previous match",
+    "description": "Response, Body: accessible label of the previous-match button"
+  },
+  "responseNextMatch": {
+    "message": "Next match",
+    "description": "Response, Body: accessible label of the next-match button"
+  },
+  "responseDownload": {
+    "message": "Download",
+    "description": "Response, Body: button that saves the body as a file"
+  },
+  "responseHtmlPreviewTitle": {
+    "message": "HTML preview (scripts disabled)",
+    "description": "Response, Body: title of the HTML preview frame"
+  },
+  "responseInvalidJson": {
+    "message": "This body isn’t valid JSON: $ERROR$",
+    "description": "Response, Body, Tree: parse error",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseImageAlt": {
+    "message": "Image response from $URL$",
+    "description": "Response, Body: alt text of an image preview",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "responseImageFallbackType": {
+    "message": "image",
+    "description": "Response, Body: shown when an image has no content type"
+  },
+  "responseBinarySummary": {
+    "message": "Binary response · $TYPE$ · $SIZE$. The first $COUNT$ bytes are shown; download it to see the rest.",
+    "description": "Response, Body, Hex: summary above the hex dump",
+    "placeholders": {
+      "type": {
+        "content": "$1"
+      },
+      "size": {
+        "content": "$2"
+      },
+      "count": {
+        "content": "$3"
+      }
+    }
+  },
+  "responseNoContentType": {
+    "message": "no content type",
+    "description": "Response, Body, Hex: shown when the response has no content type"
+  },
+  "runnerTitle": {
+    "message": "Run “$NAME$”",
+    "description": "Runner dialog title with the collection or folder name",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "runnerEnvironment": {
+    "message": "Environment: $NAME$",
+    "description": "Runner dialog footer: the active environment",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "runnerNoEnvironment": {
+    "message": "No environment active",
+    "description": "Runner dialog footer: no active environment"
+  },
+  "runnerRerunFailed": {
+    "message": "Re-run $COUNT$ failed",
+    "description": "Runner dialog: button that runs only the failed requests",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "runnerRunAgain": {
+    "message": "Run again",
+    "description": "Runner dialog: button after a run"
+  },
+  "runnerRunOne": {
+    "message": "Run $COUNT$ request",
+    "description": "Runner dialog: start button for exactly one request",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "runnerRunOther": {
+    "message": "Run $COUNT$ requests",
+    "description": "Runner dialog: start button for any other number",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "runnerDelay": {
+    "message": "Delay between requests",
+    "description": "Runner dialog: delay field label"
+  },
+  "runnerDelayUnit": {
+    "message": "ms",
+    "description": "Runner dialog: unit after the delay field (milliseconds)"
+  },
+  "runnerStopOnFailure": {
+    "message": "Stop at the first failure",
+    "description": "Runner dialog: checkbox label"
+  },
+  "runnerSkipped": {
+    "message": "$COUNT$ skipped",
+    "description": "Runner dialog summary: skipped requests",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "runnerStopped": {
+    "message": "stopped",
+    "description": "Runner dialog summary: the run was stopped"
+  },
+  "runnerRunning": {
+    "message": "Running $CURRENT$ of $TOTAL$…",
+    "description": "Runner dialog: progress",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "runnerEmpty": {
+    "message": "There are no requests to run here yet.",
+    "description": "Runner dialog: nothing to run"
+  },
+  "runnerColResult": {
+    "message": "Result",
+    "description": "Runner dialog: column heading"
+  },
+  "runnerColRequest": {
+    "message": "Request",
+    "description": "Runner dialog: column heading"
+  },
+  "runnerColStatus": {
+    "message": "Status",
+    "description": "Runner dialog: column heading"
+  },
+  "runnerColTime": {
+    "message": "Time",
+    "description": "Runner dialog: column heading"
+  },
+  "runnerColTests": {
+    "message": "Tests",
+    "description": "Runner dialog: column heading"
+  },
+  "runnerBadgeRunning": {
+    "message": "Running",
+    "description": "Runner dialog: request state"
+  },
+  "runnerBadgePending": {
+    "message": "Pending",
+    "description": "Runner dialog: request state"
+  },
+  "runnerBadgeSkipped": {
+    "message": "Skipped",
+    "description": "Runner dialog: request state"
+  },
+  "runnerBadgePass": {
+    "message": "Pass",
+    "description": "Runner dialog: request state"
+  },
+  "runnerBadgeFail": {
+    "message": "Fail",
+    "description": "Runner dialog: request state"
+  },
+  "runnerNoTests": {
+    "message": "none",
+    "description": "Runner dialog: Tests column for a request without tests"
+  },
+  "sidebarHistory": {
+    "message": "History",
+    "description": "Sidebar section tab"
+  },
+  "sidebarCollections": {
+    "message": "Collections",
+    "description": "Sidebar section tab and accessible label of the collection tree"
+  },
+  "sidebarEnvironments": {
+    "message": "Environments",
+    "description": "Sidebar section tab and accessible label of the environment list"
+  },
+  "sidebarLabel": {
+    "message": "Library",
+    "description": "Accessible label of the sidebar"
+  },
+  "sidebarSectionsLabel": {
+    "message": "Library sections",
+    "description": "Accessible label of the sidebar tabs"
+  },
+  "sidebarResize": {
+    "message": "Resize sidebar",
+    "description": "Accessible label of the sidebar divider"
+  },
+  "historyFilterStatusAll": {
+    "message": "Status",
+    "description": "Sidebar, History: status filter option for any status"
+  },
+  "historyFilterFailed": {
+    "message": "Failed",
+    "description": "Sidebar, History: status filter option for requests that got no response"
+  },
+  "historyEmptyTitle": {
+    "message": "No history yet",
+    "description": "Sidebar, History: empty state title"
+  },
+  "historyEmptyHint": {
+    "message": "Every request you send is kept here, newest first, so you can open it again.",
+    "description": "Sidebar, History: empty state text"
+  },
+  "historySearchPlaceholder": {
+    "message": "Search URL or name",
+    "description": "Sidebar, History: search placeholder"
+  },
+  "historySearchLabel": {
+    "message": "Search history",
+    "description": "Sidebar, History: accessible label of the search field"
+  },
+  "historyFilterMethodLabel": {
+    "message": "Filter by method",
+    "description": "Sidebar, History: accessible label of the method filter"
+  },
+  "historyFilterMethodAll": {
+    "message": "Method",
+    "description": "Sidebar, History: method filter option for any method"
+  },
+  "historyFilterStatusLabel": {
+    "message": "Filter by status",
+    "description": "Sidebar, History: accessible label of the status filter"
+  },
+  "historyClearConfirm": {
+    "message": "Clear all request history?",
+    "description": "Confirmation before clearing history (sidebar and settings)"
+  },
+  "historyNoMatches": {
+    "message": "No requests match these filters.",
+    "description": "Sidebar, History: filters match nothing"
+  },
+  "historyNoUrl": {
+    "message": "(no URL)",
+    "description": "Sidebar, History: entry without a URL"
+  },
+  "historyErrorStatus": {
+    "message": "ERR",
+    "description": "Sidebar, History: status of a request that got no response (keep it very short)"
+  },
+  "historyDeleteLabel": {
+    "message": "Delete $REQUEST$ from history",
+    "description": "Sidebar, History: accessible label of a delete button; the placeholder is method and URL",
+    "placeholders": {
+      "request": {
+        "content": "$1"
+      }
+    }
+  },
+  "collectionDefaultName": {
+    "message": "New collection",
+    "description": "Name given to a newly created collection"
+  },
+  "collectionsEmptyTitle": {
+    "message": "No collections yet",
+    "description": "Sidebar, Collections: empty state title"
+  },
+  "collectionNew": {
+    "message": "New collection",
+    "description": "Button and tooltip that create a collection"
+  },
+  "collectionsImportEllipsis": {
+    "message": "Import…",
+    "description": "Sidebar, Collections: empty state button that opens the import dialog"
+  },
+  "collectionsEmptyHint": {
+    "message": "Save requests into collections with $SHORTCUT$, or import a Postman collection, an OpenAPI spec or a cURL command.",
+    "description": "Sidebar, Collections: empty state text; the placeholder is the save shortcut",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1"
+      }
+    }
+  },
+  "collectionDeleteRequestConfirm": {
+    "message": "Delete “$REQUEST$” from “$COLLECTION$”?",
+    "description": "Sidebar, Collections: confirmation before deleting a request",
+    "placeholders": {
+      "request": {
+        "content": "$1"
+      },
+      "collection": {
+        "content": "$2"
+      }
+    }
+  },
+  "collectionsSearch": {
+    "message": "Search collections",
+    "description": "Sidebar, Collections: search placeholder and accessible label"
+  },
+  "collectionNameLabel": {
+    "message": "Collection name",
+    "description": "Sidebar, Collections: accessible label of the rename field"
+  },
+  "collectionRun": {
+    "message": "Run collection",
+    "description": "Sidebar, Collections: menu item that opens the runner"
+  },
+  "folderNew": {
+    "message": "New folder",
+    "description": "Sidebar, Collections: menu item that creates a folder"
+  },
+  "folderDefaultName": {
+    "message": "New folder",
+    "description": "Name given to a newly created folder"
+  },
+  "collectionExportPostman": {
+    "message": "Export as Postman v2.1",
+    "description": "Sidebar, Collections: menu item that downloads a Postman collection"
+  },
+  "collectionDeleteConfirm": {
+    "message": "Delete the collection “$NAME$” and its $COUNT$ requests?",
+    "description": "Sidebar, Collections: confirmation before deleting a collection",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "folderNameLabel": {
+    "message": "Folder name",
+    "description": "Sidebar, Collections: accessible label of the folder rename field"
+  },
+  "folderActionsFor": {
+    "message": "Actions for folder $NAME$",
+    "description": "Sidebar, Collections: accessible label of a folder’s menu",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "folderRun": {
+    "message": "Run folder",
+    "description": "Sidebar, Collections: menu item that runs a folder"
+  },
+  "folderDeleteConfirm": {
+    "message": "Delete the folder “$NAME$” and its $COUNT$ requests?",
+    "description": "Sidebar, Collections: confirmation before deleting a folder",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "folderEmpty": {
+    "message": "Empty folder — drag requests here",
+    "description": "Sidebar, Collections: empty folder"
+  },
+  "collectionEmpty": {
+    "message": "No requests yet — save one with $SHORTCUT$",
+    "description": "Sidebar, Collections: empty collection; the placeholder is the save shortcut",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1"
+      }
+    }
+  },
+  "collectionsNoMatch": {
+    "message": "Nothing matches “$QUERY$”.",
+    "description": "Sidebar, Collections: search found nothing",
+    "placeholders": {
+      "query": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabCloseConfirm": {
+    "message": "Close “$TITLE$”? Its unsaved changes will be discarded.",
+    "description": "Tab strip: confirmation before closing a tab with unsaved changes",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabsLabel": {
+    "message": "Open requests",
+    "description": "Tab strip: accessible label"
+  },
+  "tabSending": {
+    "message": "Sending",
+    "description": "Tab strip: accessible label of the spinner on a sending tab"
+  },
+  "tabUnsaved": {
+    "message": "Unsaved changes",
+    "description": "Tab strip: label and tooltip of the unsaved-changes dot"
+  },
+  "tabCloseNamed": {
+    "message": "Close $TITLE$",
+    "description": "Tab strip: accessible label of a tab’s close button",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabClose": {
+    "message": "Close tab",
+    "description": "Tab strip: tooltip of a tab’s close button"
+  },
+  "tabNew": {
+    "message": "New request tab",
+    "description": "Tab strip: button that opens a new tab"
+  },
+  "testsSourceStatus": {
+    "message": "Status code",
+    "description": "Tests tab: what a test or variable rule reads"
+  },
+  "testsSourceHeader": {
+    "message": "Header",
+    "description": "Tests tab: what a test or variable rule reads"
+  },
+  "testsSourceJsonPath": {
+    "message": "JSON body path",
+    "description": "Tests tab: what a test or variable rule reads"
+  },
+  "testsSourceBody": {
+    "message": "Body text",
+    "description": "Tests tab: what a test reads"
+  },
+  "testsSourceTime": {
+    "message": "Response time (ms)",
+    "description": "Tests tab: what a test reads"
+  },
+  "testsSourceWholeBody": {
+    "message": "Whole body",
+    "description": "Tests tab: what a variable rule reads"
+  },
+  "testsOpEquals": {
+    "message": "equals",
+    "description": "Tests tab: condition (reads after the checked value)"
+  },
+  "testsOpNotEquals": {
+    "message": "does not equal",
+    "description": "Tests tab: condition"
+  },
+  "testsOpExists": {
+    "message": "exists",
+    "description": "Tests tab: condition"
+  },
+  "testsOpNotExists": {
+    "message": "does not exist",
+    "description": "Tests tab: condition"
+  },
+  "testsOpContains": {
+    "message": "contains",
+    "description": "Tests tab: condition"
+  },
+  "testsOpNotContains": {
+    "message": "does not contain",
+    "description": "Tests tab: condition"
+  },
+  "testsOpLt": {
+    "message": "is less than",
+    "description": "Tests tab: condition"
+  },
+  "testsOpLte": {
+    "message": "is at most",
+    "description": "Tests tab: condition"
+  },
+  "testsOpGt": {
+    "message": "is greater than",
+    "description": "Tests tab: condition"
+  },
+  "testsOpGte": {
+    "message": "is at least",
+    "description": "Tests tab: condition"
+  },
+  "testsOpMatches": {
+    "message": "matches regex",
+    "description": "Tests tab: condition"
+  },
+  "testsOpTypeIs": {
+    "message": "is of type",
+    "description": "Tests tab: condition"
+  },
+  "testsTitle": {
+    "message": "Tests",
+    "description": "Tests tab: section heading and accessible label of the tests table"
+  },
+  "testsHint": {
+    "message": "Checked on every response. Each row is a rule — no scripts to write.",
+    "description": "Tests tab: hint next to the heading"
+  },
+  "testsAdd": {
+    "message": "Add test",
+    "description": "Tests tab: button that adds a test"
+  },
+  "testsEmpty": {
+    "message": "No tests yet.",
+    "description": "Tests tab: empty state, followed by a quick-add link"
+  },
+  "testsAddStatus200": {
+    "message": "Add “status code equals 200”",
+    "description": "Tests tab: quick-add link"
+  },
+  "testsRunN": {
+    "message": "Run test $NUMBER$",
+    "description": "Tests tab: accessible label of a test’s on/off checkbox",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "testsSourceN": {
+    "message": "What test $NUMBER$ checks",
+    "description": "Tests tab: accessible label of a test’s source choice",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "testsHeaderNameN": {
+    "message": "Header name for test $NUMBER$",
+    "description": "Tests tab: accessible label of a test’s header name field",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "testsJsonPathN": {
+    "message": "JSON path for test $NUMBER$",
+    "description": "Tests tab: accessible label of a test’s JSONPath field",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "testsConditionN": {
+    "message": "Condition for test $NUMBER$",
+    "description": "Tests tab: accessible label of a test’s condition choice",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "testsExpectedN": {
+    "message": "Expected value for test $NUMBER$",
+    "description": "Tests tab: accessible label of a test’s expected value field",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "testsRemoveN": {
+    "message": "Remove test $NUMBER$",
+    "description": "Tests tab: accessible label of a test’s remove button",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "extractTitle": {
+    "message": "Set variables from the response",
+    "description": "Tests tab: variable rules section heading"
+  },
+  "extractHintEnv": {
+    "message": "Saved into “$ENV$” after each response, so the next request can use $VARIABLE$.",
+    "description": "Tests tab: hint when an environment is active; the second placeholder is the {{name}} syntax",
+    "placeholders": {
+      "env": {
+        "content": "$1"
+      },
+      "variable": {
+        "content": "$2"
+      }
+    }
+  },
+  "extractHintNoEnv": {
+    "message": "Activate an environment to save these values.",
+    "description": "Tests tab: hint when no environment is active"
+  },
+  "extractAdd": {
+    "message": "Add variable",
+    "description": "Tests tab: button that adds a variable rule"
+  },
+  "extractEmpty": {
+    "message": "Chain requests without scripts: take a token or an id from this response and use it in the next one.",
+    "description": "Tests tab: variable rules empty state"
+  },
+  "extractTableLabel": {
+    "message": "Variables from the response",
+    "description": "Tests tab: accessible label of the variable rules table"
+  },
+  "extractUseN": {
+    "message": "Use variable rule $NUMBER$",
+    "description": "Tests tab: accessible label of a variable rule’s on/off checkbox",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "extractVariableNameN": {
+    "message": "Variable name for rule $NUMBER$",
+    "description": "Tests tab: accessible label of a variable rule’s name field",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "extractFrom": {
+    "message": "from",
+    "description": "Tests tab: word between the variable name and its source"
+  },
+  "extractSourceN": {
+    "message": "Source for variable rule $NUMBER$",
+    "description": "Tests tab: accessible label of a variable rule’s source choice",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "extractHeaderNameN": {
+    "message": "Header name for variable rule $NUMBER$",
+    "description": "Tests tab: accessible label of a variable rule’s header name field",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "extractJsonPathN": {
+    "message": "JSON path for variable rule $NUMBER$",
+    "description": "Tests tab: accessible label of a variable rule’s JSONPath field",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "extractRemoveN": {
+    "message": "Remove variable rule $NUMBER$",
+    "description": "Tests tab: accessible label of a variable rule’s remove button",
+    "placeholders": {
+      "number": {
+        "content": "$1"
+      }
+    }
+  },
+  "extractNoEnvNote": {
+    "message": "No environment is active, so these values were not saved. Pick or create one in the header.",
+    "description": "Response, Tests: note when extracted values had nowhere to go"
+  },
+  "extractSavedNote": {
+    "message": "Saved to “$ENV$”.",
+    "description": "Response, Tests: note naming the environment that received extracted values",
+    "placeholders": {
+      "env": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorTimeoutMessage": {
+    "message": "No response within $MS$ ms",
+    "description": "Error message of a timed-out request",
+    "placeholders": {
+      "ms": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorFileMissingMessage": {
+    "message": "File \"$NAME$\" is no longer available",
+    "description": "Error message when a chosen file is gone (shown in the runner)",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorFileMissingTitle": {
+    "message": "A file needs to be chosen again",
+    "description": "Response error title"
+  },
+  "errorFileMissingDetail": {
+    "message": "The contents of \"$NAME$\" are no longer stored. Choose the file again on the Body tab.",
+    "description": "Response error detail",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorHeaderTitle": {
+    "message": "A header can’t be sent",
+    "description": "Response error title"
+  },
+  "errorHeaderDetail": {
+    "message": "$MESSAGE$. Header values must be single-line Latin-1 text.",
+    "description": "Response error detail; the placeholder is the browser’s message",
+    "placeholders": {
+      "message": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorOAuthTitle": {
+    "message": "Couldn’t get an OAuth 2.0 access token",
+    "description": "Response error title"
+  },
+  "errorCannotSendTitle": {
+    "message": "This request can’t be sent yet",
+    "description": "Response error title before sending (for example an invalid URL)"
+  },
+  "errorTimedOutTitle": {
+    "message": "Request timed out",
+    "description": "Response error title"
+  },
+  "errorTimedOutDetail": {
+    "message": "No response arrived within $SECONDS$ s. The server may be slow or unreachable; raise the timeout in Settings if this endpoint is expected to be slow.",
+    "description": "Response error detail",
+    "placeholders": {
+      "seconds": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorCancelledTitle": {
+    "message": "Request cancelled",
+    "description": "Response error title"
+  },
+  "errorCancelledDetail": {
+    "message": "You cancelled the request before a response arrived.",
+    "description": "Response error detail"
+  },
+  "errorCouldNotConnectTitle": {
+    "message": "Could not connect",
+    "description": "Response error title"
+  },
+  "errorCouldNotConnectDetail": {
+    "message": "No response from $HOST$. Check the address, that the server is running, and your network or VPN. A DNS failure, a refused connection and an invalid TLS certificate all fail this way in the browser.",
+    "description": "Response error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorRequestFailedTitle": {
+    "message": "Request failed",
+    "description": "Response error title"
+  },
+  "errorTheServer": {
+    "message": "the server",
+    "description": "Stands in for the host name in network error details when it is unknown"
+  },
+  "errorHostNotFoundTitle": {
+    "message": "Host not found",
+    "description": "Network error title (DNS)"
+  },
+  "errorHostNotFoundDetail": {
+    "message": "The name $HOST$ could not be resolved (DNS). Check the spelling, or whether the host only exists on a VPN or local network.",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorConnectionRefusedTitle": {
+    "message": "Connection refused",
+    "description": "Network error title"
+  },
+  "errorConnectionRefusedDetail": {
+    "message": "Nothing accepted the connection at $HOST$. Is the server running, and on that port?",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorConnectionTimedOutTitle": {
+    "message": "Connection timed out",
+    "description": "Network error title"
+  },
+  "errorConnectionTimedOutDetail": {
+    "message": "$HOST$ did not answer in time. The host may be down, firewalled, or unreachable from this network.",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorTlsTitle": {
+    "message": "Secure connection failed",
+    "description": "Network error title (TLS)"
+  },
+  "errorTlsDetail": {
+    "message": "The TLS connection to $HOST$ failed. The certificate may be self-signed, expired or issued for another name, or the server may not speak https on this port. Open the URL in a normal tab to see the details, or use http:// for a local server.",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorOfflineTitle": {
+    "message": "No network",
+    "description": "Network error title"
+  },
+  "errorOfflineDetail": {
+    "message": "This computer appears to be offline or changed networks during the request.",
+    "description": "Network error detail"
+  },
+  "errorBlockedTitle": {
+    "message": "Blocked in the browser",
+    "description": "Network error title"
+  },
+  "errorBlockedDetail": {
+    "message": "Another extension, a browser policy or an administrator blocked this request to $HOST$.",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorConnectionDroppedTitle": {
+    "message": "Connection dropped",
+    "description": "Network error title"
+  },
+  "errorConnectionDroppedDetail": {
+    "message": "$HOST$ closed the connection before sending a complete response.",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorInvalidResponseTitle": {
+    "message": "Invalid response",
+    "description": "Network error title"
+  },
+  "errorInvalidResponseDetail": {
+    "message": "$HOST$ sent a response the browser could not read (a protocol or framing error).",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorTooManyRedirectsTitle": {
+    "message": "Too many redirects",
+    "description": "Network error title"
+  },
+  "errorTooManyRedirectsDetail": {
+    "message": "$HOST$ kept redirecting. Check for a redirect loop between http and https or between hosts.",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorUnsafePortTitle": {
+    "message": "Port blocked by the browser",
+    "description": "Network error title"
+  },
+  "errorUnsafePortDetail": {
+    "message": "Browsers refuse to connect to this port because it belongs to another protocol (for example SMTP or IRC). Use a different port for $HOST$.",
+    "description": "Network error detail",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorNoResponseFrom": {
+    "message": "No response from $HOST$.",
+    "description": "Network error detail for an unrecognised error",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorBrowserReported": {
+    "message": "$DETAIL$ The browser reported $CODE$.",
+    "description": "Network error detail for an unrecognised error, with the browser’s error code",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      },
+      "code": {
+        "content": "$2"
+      }
+    }
+  },
+  "resolveInvalidHeaderName": {
+    "message": "\"$NAME$\" is not a valid header name.",
+    "description": "Error that stops a request from being sent",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "resolveInvalidApiKeyHeaderName": {
+    "message": "\"$NAME$\" is not a valid header name for the API key.",
+    "description": "Error that stops a request from being sent",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnForbiddenHeader": {
+    "message": "The browser does not let extensions set the $NAME$ header, so it will not be sent.",
+    "description": "Warning above the response",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnAuthReplacesHeader": {
+    "message": "The Auth tab replaces the Authorization header you set on the Headers tab.",
+    "description": "Warning above the response"
+  },
+  "warnMethodNoBody": {
+    "message": "$METHOD$ requests cannot carry a body in the browser, so the body will not be sent.",
+    "description": "Warning above the response",
+    "placeholders": {
+      "method": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnInvalidJsonBody": {
+    "message": "The JSON body is not valid JSON.",
+    "description": "Warning above the response"
+  },
+  "warnInvalidGraphqlVariables": {
+    "message": "GraphQL variables are not valid JSON, so they were left out.",
+    "description": "Warning above the response"
+  },
+  "warnMultipartNoFile": {
+    "message": "No file is chosen for the \"$FIELD$\" field, so it will not be sent.",
+    "description": "Warning above the response",
+    "placeholders": {
+      "field": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnMultipartContentType": {
+    "message": "A Content-Type header set by hand replaces the multipart boundary the browser would add.",
+    "description": "Warning above the response"
+  },
+  "warnBinaryNoFile": {
+    "message": "No file is chosen for the binary body, so no body will be sent.",
+    "description": "Warning above the response"
+  },
+  "optionsPageTitle": {
+    "message": "Browser API Client — Settings",
+    "description": "Settings page: browser tab title"
+  },
+  "optionsHeading": {
+    "message": "Browser API Client Settings",
+    "description": "Settings page: heading"
+  },
+  "optionsAppearance": {
+    "message": "Appearance",
+    "description": "Settings page: section heading"
+  },
+  "optionsTheme": {
+    "message": "Theme",
+    "description": "Settings page: theme field label"
+  },
+  "optionsThemeAuto": {
+    "message": "Match system",
+    "description": "Settings page: theme option"
+  },
+  "optionsThemeLight": {
+    "message": "Light",
+    "description": "Settings page: theme option"
+  },
+  "optionsThemeDark": {
+    "message": "Dark",
+    "description": "Settings page: theme option"
+  },
+  "optionsRequests": {
+    "message": "Requests",
+    "description": "Settings page: section heading"
+  },
+  "optionsTimeoutLabel": {
+    "message": "Give up after",
+    "description": "Settings page: label before the timeout number"
+  },
+  "optionsTimeoutUnit": {
+    "message": "seconds (0 = wait as long as the server takes)",
+    "description": "Settings page: text after the timeout number"
+  },
+  "optionsHistory": {
+    "message": "History",
+    "description": "Settings page: section heading"
+  },
+  "optionsMaxHistoryLabel": {
+    "message": "Keep the last",
+    "description": "Settings page: label before the history size number"
+  },
+  "optionsMaxHistoryUnit": {
+    "message": "requests",
+    "description": "Settings page: text after the history size number"
+  },
+  "optionsClearHistory": {
+    "message": "Clear All History",
+    "description": "Settings page: button"
+  },
+  "optionsBackup": {
+    "message": "Backup",
+    "description": "Settings page: section heading"
+  },
+  "optionsBackupHelp": {
+    "message": "A backup holds your collections, environments, history and settings. Importing merges it into what you have; records with the same id are replaced.",
+    "description": "Settings page: backup explanation"
+  },
+  "optionsExportBackup": {
+    "message": "Export backup",
+    "description": "Settings page: button"
+  },
+  "optionsImportBackup": {
+    "message": "Import backup…",
+    "description": "Settings page: button"
+  },
+  "optionsAbout": {
+    "message": "About",
+    "description": "Settings page: section heading"
+  },
+  "optionsAboutVersion": {
+    "message": "Browser API Client $VERSION$",
+    "description": "Settings page: product line; the placeholder is the version number",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAboutPrivacy": {
+    "message": "No account, no pairing, no cloud. Everything you create stays in this browser.",
+    "description": "Settings page: privacy line"
+  },
+  "optionsBuiltBy": {
+    "message": "Built by $LINK$",
+    "description": "Settings page: the placeholder is a link reading Brightbar",
+    "placeholders": {
+      "link": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsHistoryCleared": {
+    "message": "History cleared.",
+    "description": "Settings page: status after clearing history"
+  },
+  "optionsBackupExported": {
+    "message": "Backup exported.",
+    "description": "Settings page: status after exporting a backup"
   }
 }

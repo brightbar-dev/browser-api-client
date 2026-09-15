@@ -9,6 +9,7 @@ import { base64Utf8 } from './request';
 import type { EnvVariable } from './environment';
 import { interpolate, extractVariables } from './environment';
 import { parseQuery, serializeQuery, splitUrl, toRequestUrl, urlWithParams } from './url';
+import { t } from './i18n';
 
 export const TEXT_CONTENT_TYPES = [
   'text/plain',
@@ -106,9 +107,9 @@ export function resolveRequest(req: ApiRequest, variables: EnvVariable[], opts: 
     const name = v(h.key).trim();
     headers.push([name, v(h.value)]);
     if (!isValidHeaderName(name)) {
-      error ??= `"${name}" is not a valid header name.`;
+      error ??= t('resolveInvalidHeaderName', name);
     } else if (isForbiddenHeader(name)) {
-      warnings.push(`The browser does not let extensions set the ${name} header, so it will not be sent.`);
+      warnings.push(t('warnForbiddenHeader', name));
     }
   }
 
@@ -127,10 +128,10 @@ export function resolveRequest(req: ApiRequest, variables: EnvVariable[], opts: 
   } else if (auth.type === 'api-key' && auth.apiKeyIn !== 'query' && auth.headerName && auth.headerValue) {
     const name = v(auth.headerName).trim();
     if (isValidHeaderName(name)) headers = setHeader(headers, name, v(auth.headerValue));
-    else error ??= `"${name}" is not a valid header name for the API key.`;
+    else error ??= t('resolveInvalidApiKeyHeaderName', name);
   }
   if (userSetAuthorization && authorizationApplied) {
-    warnings.push('The Auth tab replaces the Authorization header you set on the Headers tab.');
+    warnings.push(t('warnAuthReplacesHeader'));
   }
 
   // Body.
@@ -140,7 +141,7 @@ export function resolveRequest(req: ApiRequest, variables: EnvVariable[], opts: 
   };
 
   if (req.bodyType !== 'none' && !methodAllowsBody(req.method)) {
-    warnings.push(`${req.method} requests cannot carry a body in the browser, so the body will not be sent.`);
+    warnings.push(t('warnMethodNoBody', req.method));
   } else {
     switch (req.bodyType) {
       case 'json': {
@@ -151,7 +152,7 @@ export function resolveRequest(req: ApiRequest, variables: EnvVariable[], opts: 
           try {
             JSON.parse(text);
           } catch {
-            warnings.push('The JSON body is not valid JSON.');
+            warnings.push(t('warnInvalidJsonBody'));
           }
         }
         break;
@@ -167,7 +168,7 @@ export function resolveRequest(req: ApiRequest, variables: EnvVariable[], opts: 
           try {
             variablesValue = JSON.parse(varsText);
           } catch {
-            warnings.push('GraphQL variables are not valid JSON, so they were left out.');
+            warnings.push(t('warnInvalidGraphqlVariables'));
           }
         }
         const payload: Record<string, unknown> = { query: v(req.body) };
@@ -190,14 +191,14 @@ export function resolveRequest(req: ApiRequest, variables: EnvVariable[], opts: 
           if (!f.enabled || f.key === '') continue;
           if (f.kind === 'file') {
             if (f.file) fields.push({ name: v(f.key), file: f.file });
-            else warnings.push(`No file is chosen for the "${f.key}" field, so it will not be sent.`);
+            else warnings.push(t('warnMultipartNoFile', f.key));
           } else {
             fields.push({ name: v(f.key), value: v(f.value) });
           }
         }
         body = { kind: 'multipart', fields: fields as Array<{ name: string; value?: string; file?: NonNullable<ApiRequest['binaryFile']> }> };
         if (findHeader(headers, 'content-type') !== undefined) {
-          warnings.push('A Content-Type header set by hand replaces the multipart boundary the browser would add.');
+          warnings.push(t('warnMultipartContentType'));
         }
         break;
       }
@@ -206,7 +207,7 @@ export function resolveRequest(req: ApiRequest, variables: EnvVariable[], opts: 
           body = { kind: 'binary', file: req.binaryFile };
           withContentType(req.binaryFile.type || 'application/octet-stream');
         } else {
-          warnings.push('No file is chosen for the binary body, so no body will be sent.');
+          warnings.push(t('warnBinaryNoFile'));
         }
         break;
     }

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 import { IconClose } from './icons';
+import { t } from '@/utils/i18n';
 
 interface DialogProps {
   title: string;
@@ -44,7 +45,7 @@ export function Dialog({ title, onClose, children, footer, wide }: DialogProps) 
       <div class="bac-dialog-inner">
         <header class="bac-dialog-head">
           <h2 id={titleId}>{title}</h2>
-          <button type="button" class="bac-icon-btn" aria-label="Close" onClick={onClose}>
+          <button type="button" class="bac-icon-btn" aria-label={t('dialogClose')} onClick={onClose}>
             <IconClose />
           </button>
         </header>
