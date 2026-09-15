@@ -75,7 +75,7 @@ describe('truncateHistory', () => {
     );
     const truncated = truncateHistory(entries, 3);
     expect(truncated).toHaveLength(3);
-    expect(truncated[0].id).toBe('9');
+    expect(truncated[0]!.id).toBe('9');
   });
 });
 

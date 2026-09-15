@@ -115,7 +115,7 @@ function postmanItemToRequest(item: PostmanItem): ApiRequest {
 
   // Strip query string from URL if we extracted params
   if (params.length > 0 && url.includes('?')) {
-    url = url.split('?')[0];
+    url = url.split('?')[0] ?? url;
   }
 
   // Method
