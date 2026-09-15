@@ -52,6 +52,17 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - UI framework: Preact (MIT, ~10 KB), because the workspace is large enough that declarative rendering removes a class of stale-DOM bugs. Keep logic in `utils/` (Node-tested); components stay thin.
 - All DOM classes are prefixed with `bac-`
 
+## Store listing assets
+- `store/cws.json` — listing copy, single purpose and permission justifications (the dashboard is updated from it by hand).
+- `store/screenshots/` — five 1280×800 PNGs (no alpha); `store/promo/` — 440×280 and 1400×560 tiles (no alpha).
+- They are generated from the real built extension by `store/capture/capture.mjs` against `store/capture/server.mjs`, a local HTTPS demo API that Chrome reaches as `https://api.example.com` through `--host-resolver-rules`. **Re-run it in any PR that changes what a screenshot shows:**
+  ```bash
+  npx wxt build
+  (cd store/capture && openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 7 -subj "/CN=api.example.com" -addext "subjectAltName=DNS:api.example.com" && node server.mjs &)
+  PLAYWRIGHT=<path to playwright/index.mjs> CHROME=<Chrome for Testing binary> node store/capture/capture.mjs .output/chrome-mv3 store
+  ```
+  Needs Python 3 with Pillow (strips alpha). The key and certificate are ignored by git.
+
 ## Monetization
 - Free for everyone: full request builder, unlimited history, multiple environments, collections. No payment code ships in the package.
 - Ruling (Ken, 2026-09-15): keep the whole extension free for now; a Pro tier may come later. Sunk cost — no hosting/server bills to recoup. If a paid tier is added, see brightbar-dev/org-work `RUNBOOK.md` § "Adding a paid tier later" for the checklist (ExtensionPay registration, re-adding `wxt-extpay`, CWS Payments toggle, etc.).
