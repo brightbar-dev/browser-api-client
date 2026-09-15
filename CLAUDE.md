@@ -29,12 +29,8 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - All DOM elements prefixed with `bac-` to avoid host page conflicts
 
 ## Monetization
-- Free tier: full request builder, 50 history entries, 1 environment
-- Pro tier: unlimited history, multiple environments, collections, request chaining
-- Pricing: $49/yr or $5/mo via ExtensionPay
-- Payment: `@brightbar-dev/wxt-extpay` module (auto-injects content script, provides helpers)
-- ExtPay ID: `browser-api-client` (not yet registered on extensionpay.com — see HT-025)
-- **Architecture:** Popup calls ExtPay directly via `createExtPay()`. Background only runs `initBackground()`. Do NOT proxy ExtPay through background messaging.
+- Free for everyone: full request builder, unlimited history, multiple environments, collections. No payment code ships in the package.
+- Ruling (Ken, 2026-09-15): keep the whole extension free for now; a Pro tier may come later. Sunk cost — no hosting/server bills to recoup. If a paid tier is added, see brightbar-dev/org-work `RUNBOOK.md` § "Adding a paid tier later" for the checklist (ExtensionPay registration, re-adding `wxt-extpay`, CWS Payments toggle, etc.).
 
 ## Commands
 ```bash
@@ -51,9 +47,9 @@ npm run test:watch   # Watch mode
 ```bash
 npm test
 ```
-- 138 unit tests via Vitest + WXT testing plugin
-- 8 test files: request (31), environment (12), export (9), history (9), collections (19), import-export (16), payment (22), tier-gate (20)
-- All pure utility logic, no browser API mocking needed
+- 101 unit tests via Vitest + WXT testing plugin
+- 7 test files: request (31), environment (12), export (9), history (9), collections (19), import-export (16), background (5)
+- Mostly pure utility logic; background.test.ts uses `wxt/testing/fake-browser` to exercise the message handlers
 
 ## Conventions
 - WXT framework with vanilla TypeScript (no UI framework)

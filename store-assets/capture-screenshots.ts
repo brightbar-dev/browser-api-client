@@ -55,7 +55,7 @@ test('Open browser for popup screenshots', async () => {
   console.log('Needed screenshots (resize to 1280x800 or 640x400):');
   console.log('  screenshot-01-request-response.png — GET to jsonplaceholder, show response');
   console.log('  screenshot-02-post-with-body.png — POST with JSON body + Bearer auth');
-  console.log('  screenshot-03-environments.png — Show environment vars (Pro feature)');
+  console.log('  screenshot-03-environments.png — Show environment vars');
   console.log('  screenshot-04-export-curl.png — Show cURL export of a request');
   console.log('  screenshot-05-collections.png — Show organized request groups');
   console.log('');
