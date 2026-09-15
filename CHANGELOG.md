@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.0](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.4.0...browser-api-client-v0.5.0) (2026-09-15)
+
+
+### Features
+
+* full-tab workspace that never loses work ([#16](https://github.com/brightbar-dev/browser-api-client/issues/16)) ([37bd9f3](https://github.com/brightbar-dev/browser-api-client/commit/37bd9f36baca9e3e66b0a31c8a3e3cbeeb1033f1))
+* localizable UI — every app and settings string through _locales/en/messages.json ([#22](https://github.com/brightbar-dev/browser-api-client/issues/22)) ([0ea730c](https://github.com/brightbar-dev/browser-api-client/commit/0ea730c4ad31833c0fce324b56328e014fa3d2a8))
+* make every advertised feature real — history, environments, collections, import, export ([#18](https://github.com/brightbar-dev/browser-api-client/issues/18)) ([ffaf601](https://github.com/brightbar-dev/browser-api-client/commit/ffaf60195c9f791f761ec92c7f342a7a69c48199))
+* OAuth 2.0, tests and chaining without scripts, collection runner, GraphQL, live SSE ([#19](https://github.com/brightbar-dev/browser-api-client/issues/19)) ([ce929f3](https://github.com/brightbar-dev/browser-api-client/commit/ce929f34c29fb7b0c9636ccfcd5033f342371f4e))
+* polish — named network errors, redirect chain and Set-Cookie, keyboard model, first run, contrast ([#20](https://github.com/brightbar-dev/browser-api-client/issues/20)) ([1c3a305](https://github.com/brightbar-dev/browser-api-client/commit/1c3a305fc2f0a4956d7d3b19413e32d0acda4309))
+
 ## [0.4.0](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.3.2...browser-api-client-v0.4.0) (2026-09-15)
 
 
