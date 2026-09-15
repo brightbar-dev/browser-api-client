@@ -53,16 +53,16 @@ describe('importPostmanCollection', () => {
 
   it('parses GET request with params', () => {
     const c = importPostmanCollection(postmanJson);
-    const r = c.requests[0];
+    const r = c.requests[0]!;
     expect(r.name).toBe('Get Users');
     expect(r.method).toBe('GET');
     expect(r.params).toHaveLength(1);
-    expect(r.params[0].key).toBe('limit');
+    expect(r.params[0]!.key).toBe('limit');
   });
 
   it('parses POST with JSON body and auth', () => {
     const c = importPostmanCollection(postmanJson);
-    const r = c.requests[1];
+    const r = c.requests[1]!;
     expect(r.method).toBe('POST');
     expect(r.body).toBe('{"name":"test"}');
     expect(r.bodyType).toBe('json');
@@ -83,8 +83,8 @@ describe('importPostmanCollection', () => {
       }],
     });
     const c = importPostmanCollection(json);
-    expect(c.requests[0].auth.type).toBe('basic');
-    expect(c.requests[0].auth.username).toBe('user');
+    expect(c.requests[0]!.auth.type).toBe('basic');
+    expect(c.requests[0]!.auth.username).toBe('user');
   });
 });
 
@@ -106,7 +106,7 @@ describe('importPostmanEnvironment', () => {
   it('imports variables with enabled state', () => {
     const env = importPostmanEnvironment(envJson);
     expect(env.variables).toHaveLength(3);
-    expect(env.variables[2].enabled).toBe(false);
+    expect(env.variables[2]!.enabled).toBe(false);
   });
 });
 
@@ -120,8 +120,8 @@ describe('exportToPostman', () => {
     expect(parsed.info.name).toBe('My Collection');
     expect(parsed.info.schema).toContain('getpostman.com');
     expect(parsed.item).toHaveLength(1);
-    expect(parsed.item[0].request.method).toBe('POST');
-    expect(parsed.item[0].request.body.raw).toBe('{"a":1}');
+    expect(parsed.item[0]!.request.method).toBe('POST');
+    expect(parsed.item[0]!.request.body.raw).toBe('{"a":1}');
   });
 
   it('roundtrips: export then import preserves data', () => {
@@ -132,8 +132,8 @@ describe('exportToPostman', () => {
 
     expect(imported.name).toBe('Round Trip');
     expect(imported.requests).toHaveLength(1);
-    expect(imported.requests[0].name).toBe('Roundtrip');
-    expect(imported.requests[0].method).toBe('GET');
+    expect(imported.requests[0]!.name).toBe('Roundtrip');
+    expect(imported.requests[0]!.method).toBe('GET');
   });
 });
 
@@ -144,7 +144,7 @@ describe('exportEnvironmentToPostman', () => {
     const parsed = JSON.parse(json);
     expect(parsed.name).toBe('Staging');
     expect(parsed.values).toHaveLength(1);
-    expect(parsed.values[0].key).toBe('host');
+    expect(parsed.values[0]!.key).toBe('host');
   });
 });
 
@@ -160,7 +160,7 @@ describe('native format', () => {
     expect(result!.version).toBe(1);
     expect(result!.collections).toHaveLength(1);
     expect(result!.environments).toHaveLength(1);
-    expect(result!.collections[0].name).toBe('Native Test');
+    expect(result!.collections[0]!.name).toBe('Native Test');
   });
 
   it('returns null for invalid native format', () => {

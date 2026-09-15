@@ -71,8 +71,8 @@ describe('buildHeaders', () => {
 
   it('adds basic auth', () => {
     const headers = buildHeaders([], { type: 'basic', username: 'user', password: 'pass' });
-    expect(headers['Authorization'].startsWith('Basic ')).toBe(true);
-    expect(atob(headers['Authorization'].replace('Basic ', ''))).toBe('user:pass');
+    expect(headers['Authorization']!.startsWith('Basic ')).toBe(true);
+    expect(atob(headers['Authorization']!.replace('Basic ', ''))).toBe('user:pass');
   });
 
   it('adds api key', () => {

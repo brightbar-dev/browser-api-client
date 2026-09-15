@@ -60,7 +60,7 @@ export function moveRequest(collection: Collection, requestId: string, newIndex:
   if (newIndex < 0 || newIndex >= requests.length) return collection;
 
   const [moved] = requests.splice(oldIndex, 1);
-  requests.splice(newIndex, 0, moved);
+  requests.splice(newIndex, 0, moved!);
 
   return {
     ...collection,

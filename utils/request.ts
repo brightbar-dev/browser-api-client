@@ -1,4 +1,4 @@
-/** HTTP request building and parsing utilities. */
+/** HTTP request model, building and formatting utilities. */
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
@@ -10,15 +10,49 @@ export interface KeyValuePair {
   enabled: boolean;
 }
 
+/**
+ * Request body modes.
+ * - `json` / `text` / `graphql` keep their source in `body`.
+ * - `form` is application/x-www-form-urlencoded, fields in `formFields`.
+ * - `multipart` is multipart/form-data, fields in `multipartFields`.
+ * - `binary` sends one file, `binaryFile`.
+ */
+export type BodyType = 'none' | 'json' | 'form' | 'multipart' | 'text' | 'binary' | 'graphql';
+
+/** A file chosen by the user. Its bytes live in IndexedDB under `id`, never in storage.local. */
+export interface FileRef {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+}
+
+export interface MultipartField {
+  key: string;
+  value: string;
+  enabled: boolean;
+  kind: 'text' | 'file';
+  file?: FileRef;
+}
+
 export interface ApiRequest {
   id: string;
   name: string;
   method: HttpMethod;
+  /** The URL as typed, including its query string. `params` mirrors the query. */
   url: string;
   headers: KeyValuePair[];
+  /** Every query param, including disabled ones (which are not in `url`). */
   params: KeyValuePair[];
   body: string;
-  bodyType: 'none' | 'json' | 'form' | 'text';
+  bodyType: BodyType;
+  /** Content type for `text` bodies. Defaults to text/plain. */
+  textContentType?: string;
+  formFields?: KeyValuePair[];
+  multipartFields?: MultipartField[];
+  binaryFile?: FileRef;
+  /** JSON source of GraphQL variables, for `graphql` bodies. */
+  graphqlVariables?: string;
   auth: AuthConfig;
 }
 
@@ -29,8 +63,11 @@ export interface AuthConfig {
   password?: string;
   headerName?: string;
   headerValue?: string;
+  /** Where an API key goes. Defaults to header. */
+  apiKeyIn?: 'header' | 'query';
 }
 
+/** Stored response summary (history entries). */
 export interface ApiResponse {
   status: number;
   statusText: string;
@@ -39,6 +76,27 @@ export interface ApiResponse {
   size: number;
   time: number;
   contentType: string;
+}
+
+/** A body after variables are resolved, ready to encode or to print as code. */
+export type ResolvedBody =
+  | { kind: 'none' }
+  | { kind: 'text'; text: string }
+  | { kind: 'urlencoded'; fields: Array<[string, string]> }
+  | { kind: 'multipart'; fields: Array<{ name: string; value?: string; file?: FileRef }> }
+  | { kind: 'binary'; file: FileRef };
+
+/**
+ * A request with variables interpolated, auth applied and the URL made absolute.
+ * `headers` is ordered and may repeat a name. Content-Type is present for text,
+ * urlencoded and binary bodies (unless the user chose otherwise) and absent for
+ * multipart, whose boundary the encoder must choose.
+ */
+export interface ResolvedRequest {
+  method: HttpMethod;
+  url: string;
+  headers: Array<[string, string]>;
+  body: ResolvedBody;
 }
 
 /** Build URL with query parameters. */
@@ -83,18 +141,26 @@ export function buildHeaders(headers: KeyValuePair[], auth: AuthConfig): Record<
       break;
     case 'basic':
       if (auth.username) {
-        const encoded = btoa(`${auth.username}:${auth.password || ''}`);
+        const encoded = base64Utf8(`${auth.username}:${auth.password || ''}`);
         result['Authorization'] = `Basic ${encoded}`;
       }
       break;
     case 'api-key':
-      if (auth.headerName && auth.headerValue) {
+      if (auth.headerName && auth.headerValue && auth.apiKeyIn !== 'query') {
         result[auth.headerName] = auth.headerValue;
       }
       break;
   }
 
   return result;
+}
+
+/** Base64 of a string's UTF-8 bytes (btoa alone throws on non-Latin-1). */
+export function base64Utf8(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin);
 }
 
 /** Format response size for display. */
@@ -132,7 +198,7 @@ export function newRequest(name = 'New Request'): ApiRequest {
     name,
     method: 'GET',
     url: '',
-    headers: [{ key: '', value: '', enabled: true }],
+    headers: [],
     params: [],
     body: '',
     bodyType: 'none',

@@ -35,7 +35,7 @@ describe('addRequest', () => {
     const r = newRequest('GET users');
     const updated = addRequest(c, r);
     expect(updated.requests).toHaveLength(1);
-    expect(updated.requests[0].name).toBe('GET users');
+    expect(updated.requests[0]!.name).toBe('GET users');
   });
 
   it('does not mutate original', () => {
@@ -67,7 +67,7 @@ describe('updateRequest', () => {
     const c = addRequest(newCollection('Test'), r);
     const updatedReq = { ...r, name: 'Updated' };
     const result = updateRequest(c, updatedReq);
-    expect(result.requests[0].name).toBe('Updated');
+    expect(result.requests[0]!.name).toBe('Updated');
   });
 });
 
@@ -79,14 +79,14 @@ describe('moveRequest', () => {
     const r3 = newRequest('Third');
     let col = addRequest(addRequest(addRequest(c, r1), r2), r3);
     col = moveRequest(col, r3.id, 0);
-    expect(col.requests[0].name).toBe('Third');
-    expect(col.requests[1].name).toBe('First');
-    expect(col.requests[2].name).toBe('Second');
+    expect(col.requests[0]!.name).toBe('Third');
+    expect(col.requests[1]!.name).toBe('First');
+    expect(col.requests[2]!.name).toBe('Second');
   });
 
   it('returns unchanged for invalid index', () => {
     const c = addRequest(newCollection('Test'), newRequest());
-    const result = moveRequest(c, c.requests[0].id, 5);
+    const result = moveRequest(c, c.requests[0]!.id, 5);
     expect(result).toBe(c);
   });
 });
@@ -109,7 +109,7 @@ describe('sortByUpdated', () => {
     const c1 = { ...newCollection('Old'), updated: 1000 };
     const c2 = { ...newCollection('New'), updated: 2000 };
     const sorted = sortByUpdated([c1, c2]);
-    expect(sorted[0].name).toBe('New');
+    expect(sorted[0]!.name).toBe('New');
   });
 });
 
@@ -118,7 +118,7 @@ describe('sortByName', () => {
     const c1 = newCollection('Zebra');
     const c2 = newCollection('Alpha');
     const sorted = sortByName([c1, c2]);
-    expect(sorted[0].name).toBe('Alpha');
+    expect(sorted[0]!.name).toBe('Alpha');
   });
 });
 
@@ -128,7 +128,7 @@ describe('searchCollections', () => {
     const c2 = newCollection('Auth Endpoints');
     const results = searchCollections([c1, c2], 'user');
     expect(results).toHaveLength(1);
-    expect(results[0].name).toBe('User API');
+    expect(results[0]!.name).toBe('User API');
   });
 
   it('searches request URLs', () => {
@@ -150,7 +150,7 @@ describe('duplicateCollection', () => {
     expect(copy.id).not.toBe(original.id);
     expect(copy.name).toBe('Original (copy)');
     expect(copy.requests).toHaveLength(1);
-    expect(copy.requests[0].id).not.toBe(original.requests[0].id);
+    expect(copy.requests[0]!.id).not.toBe(original.requests[0]!.id);
   });
 });
 

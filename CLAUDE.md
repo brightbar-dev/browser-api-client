@@ -6,10 +6,16 @@ Lightweight API client right in your browser. Build requests, inspect responses,
 Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2) from one codebase.
 
 ## Architecture
-- **entrypoints/background.ts** — Service worker. Executes HTTP requests (bypasses CORS), manages storage for history/environments/collections.
-- **entrypoints/popup/** — Main UI: URL bar with method selector, tabbed request config (Params, Headers, Auth, Body), response viewer with status/time/size, response body/headers tabs.
-- **entrypoints/options/** — Settings page (theme, history limit, data export/import).
-- **utils/request.ts** — HTTP request/response types, URL building/parsing, header building with auth, formatting.
+- **entrypoints/background.ts** — Service worker. The toolbar button opens `app.html` in a tab, or focuses the one already open (Chrome: `runtime.getContexts`; Firefox: the app page answers a `focusApp` message). Serializes history writes and owns the history, environment and collection storage messages.
+- **entrypoints/app/** — The workspace, a full-tab Preact app. `store.ts` holds state and persists the open tabs' drafts to `storage.local` (debounced, flushed on pagehide); `send.ts` executes requests from the page itself (extension pages bypass CORS for `<all_urls>`), with `AbortController` cancel and `credentials: 'omit'`; `components/` has the sidebar (History, Collections, Environments), request tab strip, request editor (URL ⇄ params sync, headers, auth, body modes) and response viewer (pretty/tree/raw JSON, sandboxed HTML preview, image preview, hex view, search, download).
+- **entrypoints/options/** — Settings page (theme, history limit, backup export/import through `utils/backup.ts`).
+- **utils/request.ts** — Request model (body modes: none, JSON, x-www-form-urlencoded, multipart, raw text, binary file, GraphQL), resolved-request types, formatting.
+- **utils/url.ts** — Raw-text URL ⇄ query params sync, scheme defaulting (`http://` for local hosts, `https://` otherwise).
+- **utils/resolve.ts** — Turns an editable request into exactly what is sent: variables, auth, Content-Type, forbidden-header and body warnings.
+- **utils/response.ts** — Body classification (json/html/xml/text/image/binary), decoding, hex dump, search, history summaries, fetch error explanations.
+- **utils/workspace.ts** — Open request tabs: add/close/move, unsaved-change detection, restore from storage.
+- **utils/sanitize.ts** / **utils/backup.ts** — Validate stored and imported data; backups only ever carry known keys.
+- **utils/idb.ts** — IndexedDB for file bodies and each tab's last response (bytes that don't belong in `storage.local`).
 - **utils/environment.ts** — Environment variable interpolation (`{{var}}` syntax), variable extraction, merging.
 - **utils/export.ts** — Export requests as cURL, JavaScript fetch(), or Python requests.
 - **utils/history.ts** — Request history sorting, filtering (method, URL, status), truncation.
@@ -17,16 +23,16 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - **utils/import-export.ts** — Postman v2.1 import/export, native backup/restore, format detection.
 
 ## Key Implementation Details
-- Requests execute via background service worker (bypasses page CORS restrictions)
+- The UI is a full browser tab, never a popup, so nothing is lost when focus leaves it. Every edit to an open request is saved as a draft and restored on reload; a page with an in-flight request asks before unloading.
+- Requests run in the app page with `fetch()`: host permission `<all_urls>` bypasses CORS; the browser's cookies are never attached (`credentials: 'omit'`).
 - Environment variables use `{{variable}}` mustache syntax, interpolated at send time
-- Auth support: Bearer Token, Basic Auth, API Key header
-- Response body auto-formats JSON with pretty-print
-- Export to cURL, fetch(), or Python requests
-- History auto-saves with configurable max entries
-- Collections: named groups of saved requests with search and duplicate
+- Auth support: Bearer Token, Basic Auth, API Key (header or query)
+- Files chosen for multipart/binary bodies are stored in IndexedDB so drafts with files survive a reload
+- History is written by the background (serialized) up to the user's max-entries setting; response bodies over 64 KB are cut in history
 - Import/export: Postman v2.1 collections and environments, native backup format
-- Auto-detects import format (Postman collection, Postman environment, or native)
-- All DOM elements prefixed with `bac-` to avoid host page conflicts
+- No account, no pairing, no cloud — ever. Everything stays in the browser.
+- UI framework: Preact (MIT, ~10 KB), because the workspace is large enough that declarative rendering removes a class of stale-DOM bugs. Keep logic in `utils/` (Node-tested); components stay thin.
+- All DOM classes are prefixed with `bac-`
 
 ## Monetization
 - Free for everyone: full request builder, unlimited history, multiple environments, collections. No payment code ships in the package.
@@ -46,13 +52,13 @@ npm run test:watch   # Watch mode
 ## Testing
 ```bash
 npm test
+npx tsc --noEmit   # CI runs this too
 ```
-- 101 unit tests via Vitest + WXT testing plugin
-- 7 test files: request (31), environment (12), export (9), history (9), collections (19), import-export (16), background (5)
-- Mostly pure utility logic; background.test.ts uses `wxt/testing/fake-browser` to exercise the message handlers
+- Vitest unit tests for every `utils/` module (Node environment, no DOM); `background.test.ts` uses `wxt/testing/fake-browser` for the message handlers
+- UI behaviour is verified by hand in Chrome for Testing; each PR description lists what was checked
 
 ## Conventions
-- WXT framework with vanilla TypeScript (no UI framework)
+- WXT framework, TypeScript; Preact for the app page (the options page stays vanilla)
 - Version: semver, 0.2.x (CWS-submitted), 1.x = production-ready
 - Conventional commits: feat:, fix:, chore:
 - Do NOT add Claude/AI as co-author or contributor
