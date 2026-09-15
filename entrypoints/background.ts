@@ -1,11 +1,4 @@
-import { initBackground } from '@brightbar-dev/wxt-extpay/helpers';
-import { EXTPAY_ID, maxHistory, maxEnvironments, collectionsEnabled } from '@/utils/payment';
-
 export default defineBackground(() => {
-  // ExtPay: only startBackground() runs here.
-  // Popup/options call ExtPay directly — do NOT proxy via messaging.
-  initBackground(EXTPAY_ID);
-
   // Set defaults on install
   browser.runtime.onInstalled.addListener(async (details) => {
     if (details.reason === 'install') {
@@ -62,7 +55,7 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'getSettings') {
-      return browser.storage.local.get(['theme', 'maxHistory', 'proUnlocked']);
+      return browser.storage.local.get(['theme', 'maxHistory']);
     }
 
     if (msg.action === 'saveSettings') {
@@ -75,12 +68,10 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'addHistory') {
-      // Pro status check via storage flag (set by popup when it resolves status)
-      const { proUnlocked = false } = await browser.storage.local.get('proUnlocked');
-      const limit = maxHistory(proUnlocked);
+      const { maxHistory = 100 } = await browser.storage.local.get('maxHistory');
       const { history = [] } = await browser.storage.local.get('history');
       history.unshift(msg.entry);
-      if (history.length > limit) history.length = limit;
+      if (history.length > maxHistory) history.length = maxHistory;
       await browser.storage.local.set({ history });
       return true;
     }
@@ -96,13 +87,7 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'saveEnvironments') {
-      const { proUnlocked = false } = await browser.storage.local.get('proUnlocked');
-      const max = maxEnvironments(proUnlocked);
-      const envs = msg.environments || [];
-      if (envs.length > max) {
-        return { error: 'limit', max, current: envs.length };
-      }
-      return browser.storage.local.set({ environments: envs });
+      return browser.storage.local.set({ environments: msg.environments || [] });
     }
 
     if (msg.action === 'getCollections') {
@@ -111,10 +96,6 @@ export default defineBackground(() => {
     }
 
     if (msg.action === 'saveCollections') {
-      const { proUnlocked = false } = await browser.storage.local.get('proUnlocked');
-      if (!collectionsEnabled(proUnlocked)) {
-        return { error: 'pro_required', feature: 'collections' };
-      }
       return browser.storage.local.set({ collections: msg.collections });
     }
   });
