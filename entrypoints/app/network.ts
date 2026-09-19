@@ -14,12 +14,13 @@ export interface RedirectHop {
 
 export interface NetworkTrace {
   hops: RedirectHop[];
-  /** Raw Set-Cookie values with the URL that sent them. */
-  cookies: Array<{ url: string; header: string }>;
+  /** Raw Set-Cookie values with the URL that sent them; undefined when the browser's requests cannot be observed. */
+  cookies?: Array<{ url: string; header: string }>;
   errorCode?: string;
 }
 
 interface Pending extends NetworkTrace {
+  cookies: Array<{ url: string; header: string }>;
   method: string;
   url: string;
   requestId?: string;
@@ -103,7 +104,8 @@ export function beginTrace(method: string, url: string): Pending {
 
 /** Wait briefly for the browser's final event, then stop tracking. */
 export async function endTrace(p: Pending, waitMs = 250): Promise<NetworkTrace> {
-  if (!p.settled && (await started)) {
+  const observed = (await started) === true;
+  if (!p.settled && observed) {
     await new Promise<void>((resolve) => {
       const t = setTimeout(resolve, waitMs);
       p.waiters.push(() => {
@@ -114,5 +116,6 @@ export async function endTrace(p: Pending, waitMs = 250): Promise<NetworkTrace> 
   }
   const i = pending.indexOf(p);
   if (i !== -1) pending.splice(i, 1);
-  return { hops: p.hops, cookies: p.cookies, errorCode: p.errorCode };
+  // No observer means no Set-Cookie was seen, not that none was sent.
+  return { hops: p.hops, cookies: observed ? p.cookies : undefined, errorCode: p.errorCode };
 }

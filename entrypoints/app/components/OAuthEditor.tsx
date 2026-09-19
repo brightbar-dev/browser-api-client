@@ -153,7 +153,7 @@ export function OAuth2Editor({ config, onChange }: { config: OAuth2Config; onCha
             {t('commonClear')}
           </button>
         )}
-        <button type="button" class="bac-btn bac-btn-small bac-btn-primary" disabled={busy} onClick={() => void getToken()}>
+        <button type="button" class="bac-btn bac-btn-small bac-btn-primary" disabled={busy || (authCode && !identityAvailable())} onClick={() => void getToken()}>
           {busy ? t('oauthWaiting') : t('oauthGetToken')}
         </button>
       </div>
