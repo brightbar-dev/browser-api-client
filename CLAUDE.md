@@ -90,5 +90,6 @@ npx tsc --noEmit   # CI runs this too
 ## Conventions
 - WXT framework, TypeScript; Preact for the app page (the options page stays vanilla)
 - Version: semver, 0.2.x (CWS-submitted), 1.x = production-ready
+- Release: merging the release-please PR runs `.github/workflows/release.yml`, which builds both zips and calls `scripts/cws-publish.sh` (Chrome Web Store API v2, the only API that works after 2026-10-15; `CWS_AUTO_PUBLISH=false` uploads to the draft without submitting). `tests/cws-publish.test.mjs` runs that script against a stub `curl`, because nothing else exercises the release path before a release is cut. Change the script, run the test.
 - Conventional commits: feat:, fix:, chore:
 - Do NOT add Claude/AI as co-author or contributor
