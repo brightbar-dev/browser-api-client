@@ -897,8 +897,8 @@
     "description": "Auth tab, OAuth 2.0: note under the redirect URL"
   },
   "oauthNoIdentity": {
-    "message": "This browser doesn’t offer the identity API, so only the client-credentials grant works here.",
-    "description": "Auth tab, OAuth 2.0: warning where browser.identity is missing"
+    "message": "Authorization-code sign-in isn’t available in this version. Use the client-credentials grant, or paste a token you already have as a Bearer token.",
+    "description": "Auth tab, OAuth 2.0: warning where browser.identity is unavailable (the extension does not request the identity permission)"
   },
   "oauthAccessToken": {
     "message": "Access token",
@@ -962,7 +962,7 @@
     }
   },
   "oauthErrorNoIdentity": {
-    "message": "This browser does not offer the identity API needed for the authorization-code flow.",
+    "message": "Authorization-code sign-in isn’t available in this version. Use the client-credentials grant instead.",
     "description": "OAuth 2.0 error"
   },
   "oauthErrorSignInUnfinished": {
@@ -1483,7 +1483,7 @@
     "description": "Response, Headers: heading of the redirect hops"
   },
   "responseSetCookieUnavailable": {
-    "message": "Set-Cookie headers can’t be shown in this browser, so they are not listed here.",
+    "message": "Browsers hide Set-Cookie headers from extensions, so any the server sent are not listed here.",
     "description": "Response, Headers: note where Set-Cookie cannot be observed"
   },
   "responseCookieDomainPath": {

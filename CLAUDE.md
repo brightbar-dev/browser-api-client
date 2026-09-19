@@ -37,10 +37,10 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - The UI is a full browser tab, never a popup, so nothing is lost when focus leaves it. Every edit to an open request is saved as a draft and restored on reload; a page with an in-flight request asks before unloading.
 - Requests run in the app page with `fetch()`: host permission `<all_urls>` bypasses CORS; the browser's cookies are never attached (`credentials: 'omit'`).
 - Environment variables use `{{variable}}` mustache syntax, interpolated at send time
-- Auth support: Bearer Token, Basic Auth, API Key (header or query), OAuth 2.0 (client credentials; authorization code with PKCE — needs the `identity` permission, which adds no install warning)
+- Auth support: Bearer Token, Basic Auth, API Key (header or query), OAuth 2.0 (client credentials; authorization code with PKCE is built but needs the `identity` permission, which the manifest does not request since 0.5.0 — the Auth tab says so and disables Get token)
 - Tests and chaining: per-request assertion rules and "set variable from response" rules (JSONPath/header/status/body → active environment); no scripts
 - GraphQL body mode (query + variables, sent as JSON POST); Server-Sent Events shown live as they arrive
-- Errors name their cause (DNS, refused connection, TLS, timeout, unsafe port, blocked) via `webRequest` (no extra install warning); a request timeout lives in Settings (`requestTimeout`, seconds, 0 = none)
+- Errors name their cause (DNS, refused connection, TLS, timeout, unsafe port, blocked) via `webRequest` when it is available (not requested since 0.5.0: `network.ts` then observes nothing, errors fall back to `describeFetchError`, and the Headers tab says Set-Cookie is hidden rather than showing none); a request timeout lives in Settings (`requestTimeout`, seconds, 0 = none)
 - Keyboard: Cmd/Ctrl+Enter send, Cmd/Ctrl+S save, Alt+T/W/L new tab, close tab, focus URL (browsers reserve Cmd/Ctrl+T/W/L), Esc cancel, ? shortcut sheet
 - First run opens a sample request to httpbin.org and a welcome panel; nothing is sent until the user clicks Send (`welcomed` in storage)
 - "Send this site's cookies" is a per-request toggle (`credentials: 'include'`), off by default; no `cookies` permission
