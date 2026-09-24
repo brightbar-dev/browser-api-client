@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.5.0...browser-api-client-v0.6.0) (2026-09-24)
+
+
+### Features
+
+* ask for a store review once, after real use, with a separate link for problems ([#31](https://github.com/brightbar-dev/browser-api-client/issues/31)) ([fe8d221](https://github.com/brightbar-dev/browser-api-client/commit/fe8d2218ad9789c93415c5e46e1b2afbe5d11aa2))
+
 ## [0.5.0](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.4.0...browser-api-client-v0.5.0) (2026-09-19)
 
 
