@@ -1013,6 +1013,25 @@ kbd {
   margin: 0;
 }
 
+/* The one-time review request (utils/review-nudge.ts); the slot stays empty unless it is showing. */
+.bac-review-nudge {
+  --bb-nudge-padding: var(--space-2) 0 0;
+  --bb-nudge-font-size: var(--fs-sm);
+  --bb-nudge-color: var(--text-muted);
+  --bb-nudge-link: var(--accent);
+  --bb-nudge-border: var(--border);
+  margin-top: var(--space-4);
+}
+
+.bac-review-nudge .bb-review-nudge {
+  justify-content: center;
+}
+
+.bac-review-nudge .bb-review-nudge-dismiss {
+  margin-left: var(--space-2);
+  opacity: 1; /* the package dims it to 70%, which drops muted text below 4.5:1 */
+}
+
 .bac-sending {
   display: flex;
   align-items: center;

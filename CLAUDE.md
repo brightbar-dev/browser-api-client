@@ -32,6 +32,7 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - **utils/history.ts** — Request history sorting, grouping by day, filtering (query, method, status bucket), truncation.
 - **utils/collections.ts** — Collections with one level of folders: upsert/move/duplicate/remove requests anywhere, folder operations, tree search.
 - **utils/import-export.ts** — Postman v2.1 collection (nested folders, every body mode) and environment import/export, native export.
+- **utils/review-nudge.ts** — The one-time store review request (`@brightbar-dev/review-nudge`, private on GitHub Packages; `.npmrc` + `NODE_AUTH_TOKEN` in CI). `sendTab` counts a request that got a response and closes the window on its first send; `ResponsePane`'s idle empty state (not the first-run welcome) tries once per page load. The package owns the thresholds and the once-only rule. Never in the Firefox build. Strings are `reviewNudge*` in messages.json.
 
 ## Key Implementation Details
 - The UI is a full browser tab, never a popup, so nothing is lost when focus leaves it. Every edit to an open request is saved as a draft and restored on reload; a page with an in-flight request asks before unloading.

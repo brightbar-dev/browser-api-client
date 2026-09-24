@@ -2675,5 +2675,27 @@
   "optionsBackupExported": {
     "message": "Backup exported.",
     "description": "Settings page: status after exporting a backup"
+  },
+  "reviewNudgePrompt": {
+    "message": "Is $NAME$ useful to you?",
+    "description": "One-time review request, shown once after real use: the question; the placeholder is the extension's name",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Browser API Client"
+      }
+    }
+  },
+  "reviewNudgeReview": {
+    "message": "Leave a review",
+    "description": "One-time review request: link to this extension's Chrome Web Store reviews page"
+  },
+  "reviewNudgeFeedback": {
+    "message": "Something wrong? Tell us",
+    "description": "One-time review request: link to report a problem instead (GitHub issues)"
+  },
+  "reviewNudgeDismiss": {
+    "message": "Don’t ask again",
+    "description": "One-time review request: button that hides it for good"
   }
 }
