@@ -18,6 +18,7 @@ import type { ExtractionResult, ResponseSnapshot } from '@/utils/assertions';
 import { createSseParser, isEventStream, type SseEvent } from '@/utils/sse';
 import { idbGet, idbPut } from '@/utils/idb';
 import { activeVariables, findTab, getState, markWelcomed, setRun, updateRequest } from './store';
+import { closeReviewNudgeWindow, recordRequestAnswered } from '@/utils/review-nudge';
 import { beginTrace, endTrace } from './network';
 import { updateEnvironment } from './library';
 import { interpolateOAuth, tokenForSend } from './oauth';
@@ -245,6 +246,7 @@ export async function sendTab(tabId: string): Promise<void> {
   }
   const request = findTab(tabId)!.request;
   markWelcomed();
+  closeReviewNudgeWindow();
   const previous = getState().runs[tabId]?.response;
   const controller = new AbortController();
   controllers.set(tabId, controller);
@@ -291,6 +293,7 @@ export async function sendTab(tabId: string): Promise<void> {
       if (response.size <= MAX_STORED_RESPONSE) idbPut('responses', tabId, response).catch(() => undefined);
     }
     recordHistory(request, toHistoryResponse({ ...response }), startedAt);
+    void recordRequestAnswered();
   } catch (err) {
     const cancelled = controller.signal.aborted;
     const network = await endTrace(trace);

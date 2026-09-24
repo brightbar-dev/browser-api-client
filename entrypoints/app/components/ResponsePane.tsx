@@ -12,6 +12,7 @@ import { JsonTree } from './JsonTree';
 import { SEND_SHORTCUT } from './RequestEditor';
 import { IconChevronDown, IconChevronUp, IconCopy, IconDownload, IconSearch } from './icons';
 import { t, tParts } from '@/utils/i18n';
+import { showReviewNudge } from '@/utils/review-nudge';
 
 type Mode = 'pretty' | 'tree' | 'raw' | 'preview' | 'hex';
 const MODE_LABELS: Record<Mode, string> = {
@@ -104,8 +105,18 @@ function EmptyResponse() {
     <div class="bac-empty">
       <p class="bac-empty-title">{t('responseEmptyTitle')}</p>
       <p class="bac-muted">{tParts('responseEmptyHint', <kbd>{t('requestSend')}</kbd>, <kbd>{SEND_SHORTCUT}</kbd>)}</p>
+      <ReviewNudgeSlot />
     </div>
   );
+}
+
+/** The one-time review request, in the idle response pane of a freshly opened app tab only (utils/review-nudge.ts). */
+function ReviewNudgeSlot() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (ref.current) void showReviewNudge(ref.current);
+  }, []);
+  return <div class="bac-review-nudge" ref={ref} />;
 }
 
 function SendingBar({ startedAt, onCancel }: { startedAt: number; onCancel: () => void }) {
