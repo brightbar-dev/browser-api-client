@@ -32,7 +32,7 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - **utils/history.ts** — Request history sorting, grouping by day, filtering (query, method, status bucket), truncation.
 - **utils/collections.ts** — Collections with one level of folders: upsert/move/duplicate/remove requests anywhere, folder operations, tree search.
 - **utils/import-export.ts** — Postman v2.1 collection (nested folders, every body mode) and environment import/export, native export.
-- **utils/review-nudge.ts** — The one-time store review request (`@brightbar-dev/review-nudge`, private on GitHub Packages; `.npmrc` + `NODE_AUTH_TOKEN` in CI). `sendTab` counts a request that got a response and closes the window on its first send; `ResponsePane`'s idle empty state (not the first-run welcome) tries once per page load. The package owns the thresholds and the once-only rule. Never in the Firefox build. Strings are `reviewNudge*` in messages.json.
+- **utils/review-nudge.ts** — The one-time store review request (`@brightbar-dev/review-nudge`, private on GitHub Packages; `.npmrc` + `NODE_AUTH_TOKEN` in CI, a proxy-injected credential in cloud sessions — see Installing). `sendTab` counts a request that got a response and closes the window on its first send; `ResponsePane`'s idle empty state (not the first-run welcome) tries once per page load. The package owns the thresholds and the once-only rule. Never in the Firefox build. Strings are `reviewNudge*` in messages.json.
 
 ## Key Implementation Details
 - The UI is a full browser tab, never a popup, so nothing is lost when focus leaves it. Every edit to an open request is saved as a draft and restored on reload; a page with an in-flight request asks before unloading.
@@ -68,6 +68,11 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 ## Monetization
 - Free for everyone: full request builder, unlimited history, multiple environments, collections. No payment code ships in the package.
 - Ruling (Ken, 2026-09-15): keep the whole extension free for now; a Pro tier may come later. Sunk cost — no hosting/server bills to recoup. If a paid tier is added, see brightbar-dev/org-work `RUNBOOK.md` § "Adding a paid tier later" for the checklist (ExtensionPay registration, re-adding `wxt-extpay`, CWS Payments toggle, etc.).
+
+## Installing
+- **`npm ci` only.** `package-lock.json` pins every version and integrity hash; `@brightbar-dev/review-nudge` is pinned exactly (`0.1.0`) in `package.json` too. Never `npm install <pkg>` or `npm update` a `@brightbar-dev/*` package: moving it is a deliberate PR that changes `package.json` and the lock together.
+- `.npmrc` sends only the `@brightbar-dev` scope to `npm.pkg.github.com`; everything else comes from the public npm registry.
+- **Claude cloud sessions:** `.claude/hooks/cloud-install.sh` runs `npm ci` + `wxt prepare` at session start (`CLAUDE_CODE_REMOTE=true` only; locally it does nothing). The GitHub Packages token is an API credential the cloud environment's proxy attaches to `npm.pkg.github.com` requests. It is never in a file or an environment variable, so do not add an `_authToken` line to `.npmrc`.
 
 ## Commands
 ```bash
