@@ -59,7 +59,7 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - `store/screenshots/` — five 1280×800 PNGs (no alpha); `store/promo/` — 440×280 and 1400×560 tiles (no alpha).
 - They are generated from the real built extension by `store/capture/capture.mjs` against `store/capture/server.mjs`, a local HTTPS demo API that Chrome reaches as `https://api.example.com` through `--host-resolver-rules`. **Re-run it in any PR that changes what a screenshot shows:**
   ```bash
-  npx wxt build
+  pnpm exec wxt build
   (cd store/capture && openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 7 -subj "/CN=api.example.com" -addext "subjectAltName=DNS:api.example.com" && node server.mjs &)
   PLAYWRIGHT=<path to playwright/index.mjs> CHROME=<Chrome for Testing binary> node store/capture/capture.mjs .output/chrome-mv3 store
   ```
@@ -70,25 +70,26 @@ Built with [WXT](https://wxt.dev/) — builds for Chrome (MV3) and Firefox (MV2)
 - Ruling (Ken, 2026-09-15): keep the whole extension free for now; a Pro tier may come later. Sunk cost — no hosting/server bills to recoup. If a paid tier is added, see brightbar-dev/org-work `RUNBOOK.md` § "Adding a paid tier later" for the checklist (ExtensionPay registration, re-adding `wxt-extpay`, CWS Payments toggle, etc.).
 
 ## Installing
-- **`npm ci` only.** `package-lock.json` pins every version and integrity hash; `@brightbar-dev/review-nudge` is pinned exactly (`0.1.0`) in `package.json` too. Never `npm install <pkg>` or `npm update` a `@brightbar-dev/*` package: moving it is a deliberate PR that changes `package.json` and the lock together.
+- **`pnpm install --frozen-lockfile` only.** `pnpm-lock.yaml` pins every version and integrity hash; `@brightbar-dev/review-nudge` is pinned exactly (`0.1.0`) in `package.json` too. Never `pnpm add <pkg>` or `pnpm update` a `@brightbar-dev/*` package: moving it is a deliberate PR that changes `package.json` and the lock together.
 - `.npmrc` sends only the `@brightbar-dev` scope to `npm.pkg.github.com`; everything else comes from the public npm registry.
-- **Claude cloud sessions:** `.claude/hooks/cloud-install.sh` runs `npm ci` + `wxt prepare` at session start (`CLAUDE_CODE_REMOTE=true` only; locally it does nothing). The GitHub Packages token is an API credential the cloud environment's proxy attaches to `npm.pkg.github.com` requests. It is never in a file or an environment variable, so do not add an `_authToken` line to `.npmrc`.
+- pnpm 12.6.0 (pinned via `packageManager` in `package.json` and `[tools]` in `mise.toml`) denies dependency build scripts by default; `pnpm-workspace.yaml` allow-lists `esbuild` (needed for its postinstall) and excludes `@brightbar-dev/*` from the release-age hold (`minimumReleaseAgeExclude`), since our own packages must not wait a day.
+- **Claude cloud sessions:** `.claude/hooks/cloud-install.sh` runs `pnpm install --frozen-lockfile` + `wxt prepare` at session start (`CLAUDE_CODE_REMOTE=true` only; locally it does nothing). The GitHub Packages token is an API credential the cloud environment's proxy attaches to `npm.pkg.github.com` requests. It is never in a file or an environment variable, so do not add an `_authToken` line to `.npmrc`.
 
 ## Commands
 ```bash
-npm run dev          # Dev mode with HMR (Chrome)
-npm run dev:firefox  # Dev mode (Firefox)
-npm run build        # Production build (Chrome)
-npm run build:firefox # Production build (Firefox)
-npm run zip          # Build + zip for store submission
-npm run test         # Run Vitest tests
-npm run test:watch   # Watch mode
+pnpm run dev          # Dev mode with HMR (Chrome)
+pnpm run dev:firefox  # Dev mode (Firefox)
+pnpm run build        # Production build (Chrome)
+pnpm run build:firefox # Production build (Firefox)
+pnpm run zip          # Build + zip for store submission
+pnpm test             # Run Vitest tests
+pnpm run test:watch   # Watch mode
 ```
 
 ## Testing
 ```bash
-npm test
-npx tsc --noEmit   # CI runs this too
+pnpm test
+pnpm exec tsc --noEmit   # CI runs this too
 ```
 - Vitest unit tests for every `utils/` module (Node environment, no DOM); `background.test.ts` uses `wxt/testing/fake-browser` for the message handlers
 - UI behaviour is verified by hand in Chrome for Testing; each PR description lists what was checked
