@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.6.0...browser-api-client-v0.6.1) (2026-09-28)
+
+
+### Bug Fixes
+
+* **deps:** review-nudge 0.1.1, so the nudge shows only once when two pages open together ([#38](https://github.com/brightbar-dev/browser-api-client/issues/38)) ([2016961](https://github.com/brightbar-dev/browser-api-client/commit/20169617ee14334f2cbc727ef01aa67c711633d3))
+
 ## [0.6.0](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.5.0...browser-api-client-v0.6.0) (2026-09-24)
 
 

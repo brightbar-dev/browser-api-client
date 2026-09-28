@@ -2,7 +2,7 @@
   "name": "browser-api-client",
   "description": "Lightweight API client right in your browser — build requests, inspect responses, manage environments. No desktop app needed.",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.6.1",
   "type": "module",
   "packageManager": "pnpm@12.6.0",
   "scripts": {
