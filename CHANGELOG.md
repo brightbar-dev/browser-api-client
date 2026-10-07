@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.6.1...browser-api-client-v0.7.0) (2026-10-07)
+
+
+### Features
+
+* WebSocket client ([#43](https://github.com/brightbar-dev/browser-api-client/issues/43)) ([bb194e4](https://github.com/brightbar-dev/browser-api-client/commit/bb194e42d1b16ef4b9d7cd91fb513e99ebb294dc))
+
 ## [0.6.1](https://github.com/brightbar-dev/browser-api-client/compare/browser-api-client-v0.6.0...browser-api-client-v0.6.1) (2026-09-28)
 
 
