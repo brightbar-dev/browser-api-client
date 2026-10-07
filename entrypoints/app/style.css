@@ -42,6 +42,7 @@
   --m-delete: #b91c1c;
   --m-head: #475569;
   --m-options: #0e7490;
+  --m-ws: #be185d;
 
   --s-success: #036349;
   --s-redirect: #1d4ed8;
@@ -86,6 +87,7 @@
   --m-delete: #f87171;
   --m-head: #94a3b8;
   --m-options: #22d3ee;
+  --m-ws: #f472b6;
 
   --s-success: #34d399;
   --s-redirect: #60a5fa;
@@ -376,6 +378,7 @@ kbd {
 .m-delete { color: var(--m-delete); }
 .m-head { color: var(--m-head); }
 .m-options { color: var(--m-options); }
+.m-ws { color: var(--m-ws); }
 
 .s-success { --s: var(--s-success); }
 .s-redirect { --s: var(--s-redirect); }
@@ -2199,4 +2202,190 @@ kbd {
 .bac-shortcuts td {
   text-align: right;
   white-space: nowrap;
+}
+
+/* ---------- WebSocket requests ---------- */
+
+.bac-urlbar .bac-ws-state {
+  align-self: center;
+  flex: none;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bac-ws-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--s-info);
+}
+
+.bac-ws-state.is-open .bac-ws-dot { background: var(--s-success); }
+.bac-ws-state.is-connecting .bac-ws-dot,
+.bac-ws-state.is-closing .bac-ws-dot { background: var(--s-client-error); }
+.bac-ws-state.is-closed .bac-ws-dot { background: var(--s-info); }
+
+.bac-newtab-ws {
+  flex: none;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--m-ws);
+}
+
+.bac-ws-composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  height: 100%;
+  min-height: 0;
+}
+
+.bac-ws-composer-bar,
+.bac-ws-log-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bac-ws-composer .bac-varfield {
+  flex: 1;
+  min-height: 80px;
+}
+
+.bac-ws-format {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.bac-ws-validity {
+  min-height: 1.2em;
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.bac-ws-validity.is-ok { color: var(--s-success); }
+.bac-ws-validity.is-bad { color: var(--error-text); }
+.bac-ws-hint { margin: 0; font-size: var(--fs-sm); }
+
+.bac-ws-saved {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  list-style: none;
+}
+
+.bac-ws-saved-item {
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.bac-ws-saved-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bac-ws-saved-head .bac-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.bac-ws-saved-text {
+  max-height: 5.5em;
+  margin: var(--space-2) 0 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.bac-ws-log {
+  background: var(--bg);
+}
+
+.bac-ws-log-bar {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.bac-ws-filter {
+  width: 200px;
+}
+
+.bac-ws-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+.bac-ws-count {
+  font-size: var(--fs-sm);
+}
+
+.bac-ws-entries {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.bac-ws-entry {
+  padding: 4px var(--space-3);
+  border-bottom: 1px solid var(--border);
+  border-left: 3px solid transparent;
+}
+
+.bac-ws-entry.is-sent { border-left-color: var(--m-put); }
+.bac-ws-entry.is-received { border-left-color: var(--s-success); }
+.bac-ws-entry.is-system { background: var(--bg-subtle); }
+.bac-ws-entry.k-error { border-left-color: var(--m-delete); color: var(--error-text); }
+
+.bac-ws-entry-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+}
+
+.bac-ws-dir {
+  font-weight: 600;
+}
+
+.bac-ws-text {
+  margin: 2px 0 0;
+  font-size: var(--fs-sm);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.bac-method-select.m-ws {
+  width: 132px;
+}
+
+.bac-ws-log-bar .bac-select,
+.bac-ws-log-bar .bac-input {
+  width: auto;
+}
+
+.bac-ws-log-bar .bac-ws-filter {
+  width: 200px;
+}
+
+.bac-tabstrip .bac-newtab-ws {
+  align-self: center;
+  margin-left: 2px;
 }

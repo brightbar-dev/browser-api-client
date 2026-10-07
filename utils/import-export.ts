@@ -375,8 +375,9 @@ export function exportToPostman(collection: Collection): string {
       schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
     },
     item: [
-      ...(collection.folders ?? []).map(f => ({ name: f.name, item: f.requests.map(requestToPostmanItem) })),
-      ...collection.requests.map(requestToPostmanItem),
+      // Postman's v2.1 format has no WebSocket request, so those stay out of the export.
+      ...(collection.folders ?? []).map(f => ({ name: f.name, item: f.requests.filter(isHttp).map(requestToPostmanItem) })),
+      ...collection.requests.filter(isHttp).map(requestToPostmanItem),
     ],
   };
 
@@ -412,6 +413,8 @@ function postmanUrl(raw: string, params: KeyValuePair[]): PostmanUrl {
   if (query.length > 0) url.query = query;
   return url;
 }
+
+const isHttp = (r: ApiRequest) => r.kind !== 'websocket';
 
 function requestToPostmanItem(req: ApiRequest): PostmanItem {
   const headers: PostmanHeader[] = req.headers

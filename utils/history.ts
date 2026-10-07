@@ -1,6 +1,7 @@
 /** Request history management. */
 
 import type { ApiRequest, ApiResponse } from './request';
+import { methodLabel } from './websocket';
 
 export interface HistoryEntry {
   id: string;
@@ -25,7 +26,7 @@ export function sortByRecent(entries: HistoryEntry[]): HistoryEntry[] {
 
 /** Filter history by method. */
 export function filterByMethod(entries: HistoryEntry[], method: string): HistoryEntry[] {
-  return entries.filter(e => e.request.method === method);
+  return entries.filter(e => methodLabel(e.request) === method);
 }
 
 /** Filter history by URL substring. */
@@ -59,7 +60,7 @@ export function filterHistory(
   const method = f.method && f.method.toLowerCase() !== 'all' ? f.method.toUpperCase() : undefined;
   const status = f.status ?? 'all';
   return entries.filter(e => {
-    if (method && e.request.method.toUpperCase() !== method) return false;
+    if (method && methodLabel(e.request).toUpperCase() !== method) return false;
     if (status === 'error') {
       if (e.response.status !== 0) return false;
     } else if (status !== 'all') {

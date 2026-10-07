@@ -10,6 +10,7 @@ import { commitCollections, commitEnvironments, createCollection, saveTabToColle
 import { Dialog } from './Dialog';
 import { RunnerDialog } from './Runner';
 import { IconClose, IconCopy, IconEye, IconEyeOff } from './icons';
+import { methodLabel } from '@/utils/websocket';
 import { t, tParts } from '@/utils/i18n';
 
 const NO_VARS: EnvVariable[] = [];
@@ -51,7 +52,7 @@ export function Toast() {
 function suggestName(request: ApiRequest): string {
   if (request.name && request.name !== 'New Request') return request.name;
   const path = request.url.replace(/^[a-z][a-z0-9+.-]*:\/\/[^/]*/i, '').split(/[?#]/)[0] || request.url;
-  return `${request.method} ${path || t('saveSuggestedNameFallback')}`.trim();
+  return `${methodLabel(request)} ${path || t('saveSuggestedNameFallback')}`.trim();
 }
 
 function SaveDialog({ tabId }: { tabId: string }) {
@@ -449,6 +450,7 @@ const ALT = mac ? '⌥' : 'Alt';
 
 const SHORTCUTS: Array<[string, string[]]> = [
   [t('shortcutSend'), [`${MOD} Enter`]],
+  [t('shortcutWebSocket'), [`${MOD} Enter`]],
   [t('shortcutSave'), [`${MOD} S`]],
   [t('shortcutNewTab'), [`${ALT} T`]],
   [t('shortcutCloseTab'), [`${ALT} W`]],

@@ -1,6 +1,7 @@
 import type { BodyKind, FetchFailure } from '@/utils/response';
 import type { AssertionResult, ExtractionResult } from '@/utils/assertions';
 import type { SseEvent } from '@/utils/sse';
+import type { WsLogEntry } from '@/utils/websocket';
 import type { RedirectHop } from './network';
 
 /** A response as the app holds it: full bytes, decoded text when textual. */
@@ -63,3 +64,22 @@ export const DEFAULT_LAYOUT: Layout = {
   sidebarPanel: 'history',
   requestFraction: 0.45,
 };
+
+/** One WebSocket connection's state and message log, kept in memory (never in storage). */
+export interface WsSession {
+  state: 'connecting' | 'open' | 'closing' | 'closed';
+  /** The URL actually connected to, after variables and scheme. */
+  url: string;
+  /** Subprotocol the server chose, if any. */
+  protocol: string;
+  log: WsLogEntry[];
+  /** Log entries dropped from the front once the log was full. */
+  dropped: number;
+  sent: number;
+  received: number;
+  startedAt: number;
+  openedAt?: number;
+  /** Why it never connected, when the request could not be set up (bad URL, bad subprotocol). */
+  error?: string;
+  closeCode?: number;
+}

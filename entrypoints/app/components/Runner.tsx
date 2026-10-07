@@ -33,7 +33,7 @@ export function RunnerDialog({ collectionId, folderId }: { collectionId: string;
       collection
         ? col
             .allRequests(collection)
-            .filter((x) => !folderId || x.folder?.id === folderId)
+            .filter((x) => x.request.kind !== 'websocket' && (!folderId || x.folder?.id === folderId))
             .map(({ request, folder }) => ({ id: request.id, name: request.name, folder: folder?.name ?? null, request }))
         : [],
     [collection, folderId],

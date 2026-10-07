@@ -2697,5 +2697,437 @@
   "reviewNudgeDismiss": {
     "message": "Don’t ask again",
     "description": "One-time review request: button that hides it for good"
+  },
+  "wsMethodOption": {
+    "message": "WebSocket",
+    "description": "Request editor: method dropdown option that turns the request into a WebSocket request"
+  },
+  "tabNewWebSocket": {
+    "message": "New WebSocket request",
+    "description": "Tab strip: button label and tooltip that opens a WebSocket request in a new tab"
+  },
+  "shortcutWebSocket": {
+    "message": "Connect, or send the message (WebSocket tab)",
+    "description": "Keyboard shortcuts dialog: action"
+  },
+  "wsSectionLabel": {
+    "message": "WebSocket request",
+    "description": "WebSocket request editor: region label"
+  },
+  "wsTypeLabel": {
+    "message": "Request type",
+    "description": "WebSocket request: label of the dropdown that switches between WebSocket and HTTP"
+  },
+  "wsTypeHttp": {
+    "message": "HTTP",
+    "description": "WebSocket request: dropdown option that turns the request back into an HTTP request"
+  },
+  "wsTypeLockedTitle": {
+    "message": "Disconnect before changing the request type",
+    "description": "WebSocket request: tooltip of the type dropdown while connected"
+  },
+  "wsUrlLabel": {
+    "message": "WebSocket URL",
+    "description": "WebSocket request: label of the URL field"
+  },
+  "wsConnect": {
+    "message": "Connect",
+    "description": "WebSocket request: connect button"
+  },
+  "wsConnectTitle": {
+    "message": "Connect ($SHORTCUT$)",
+    "description": "WebSocket request: tooltip of the connect button; placeholder is the keyboard shortcut",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsDisconnect": {
+    "message": "Disconnect",
+    "description": "WebSocket request: disconnect button"
+  },
+  "wsStateIdle": {
+    "message": "Not connected",
+    "description": "WebSocket request: connection state before the first connect"
+  },
+  "wsStateConnecting": {
+    "message": "Connecting…",
+    "description": "WebSocket request: connection state while the handshake is under way"
+  },
+  "wsStateOpen": {
+    "message": "Connected",
+    "description": "WebSocket request: connection state while open"
+  },
+  "wsStateClosing": {
+    "message": "Disconnecting…",
+    "description": "WebSocket request: connection state while closing"
+  },
+  "wsStateClosed": {
+    "message": "Disconnected",
+    "description": "WebSocket request: connection state after the connection ended"
+  },
+  "wsPartsLabel": {
+    "message": "WebSocket request parts",
+    "description": "WebSocket request: label of the tab list (message, saved messages, connection)"
+  },
+  "wsTabMessage": {
+    "message": "Message",
+    "description": "WebSocket request: tab with the message composer"
+  },
+  "wsTabSaved": {
+    "message": "Saved messages",
+    "description": "WebSocket request: tab listing saved messages"
+  },
+  "wsTabConnection": {
+    "message": "Connection",
+    "description": "WebSocket request: tab with subprotocols and the note about headers"
+  },
+  "wsFormatLabel": {
+    "message": "Message format",
+    "description": "WebSocket request: label of the Text/JSON choice"
+  },
+  "wsFormatText": {
+    "message": "Text",
+    "description": "WebSocket request: message format name; plain text"
+  },
+  "wsPrettyPrint": {
+    "message": "Pretty-print",
+    "description": "WebSocket request: button that reformats the JSON message"
+  },
+  "wsSaveMessage": {
+    "message": "Save message",
+    "description": "WebSocket request: button that keeps the message with the request"
+  },
+  "wsSend": {
+    "message": "Send",
+    "description": "WebSocket request: send message button"
+  },
+  "wsSendTitle": {
+    "message": "Send message ($SHORTCUT$)",
+    "description": "WebSocket request: tooltip of the send button; placeholder is the keyboard shortcut",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsSendNeedsConnection": {
+    "message": "Connect first to send messages.",
+    "description": "WebSocket request: shown where a message cannot be sent because the socket is not open"
+  },
+  "wsMessageLabel": {
+    "message": "Message to send",
+    "description": "WebSocket request: label of the message text area"
+  },
+  "wsMessagePlaceholder": {
+    "message": "Type a message, or use {{variables}}",
+    "description": "WebSocket request: placeholder of the message text area; keep {{variables}} as is"
+  },
+  "wsJsonValid": {
+    "message": "Valid JSON",
+    "description": "WebSocket request: shown under the message when it parses as JSON"
+  },
+  "wsJsonInvalid": {
+    "message": "Not valid JSON: $ERROR$",
+    "description": "WebSocket request: shown under the message when it does not parse; placeholder is the parser error",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsSavedLimit": {
+    "message": "A request keeps at most $COUNT$ saved messages.",
+    "description": "WebSocket request: toast when the saved message limit is reached",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsMessageSaved": {
+    "message": "Saved “$NAME$”",
+    "description": "WebSocket request: toast after saving a message; placeholder is its name",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsSavedEmpty": {
+    "message": "No saved messages yet. Write a message and choose Save message to keep it with this request.",
+    "description": "WebSocket request: empty state of the saved messages tab"
+  },
+  "wsSavedNameLabel": {
+    "message": "Saved message name",
+    "description": "WebSocket request: label of the name field of a saved message"
+  },
+  "wsSendNamed": {
+    "message": "Send “$NAME$”",
+    "description": "WebSocket request: label of the send button of a saved message",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsEdit": {
+    "message": "Edit",
+    "description": "WebSocket request: button that loads a saved message into the composer"
+  },
+  "wsEditNamed": {
+    "message": "Edit “$NAME$” in the composer",
+    "description": "WebSocket request: label of the edit button of a saved message",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsDeleteNamed": {
+    "message": "Delete saved message “$NAME$”",
+    "description": "WebSocket request: label of the delete button of a saved message",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsProtocolsLabel": {
+    "message": "Subprotocols",
+    "description": "WebSocket request: label of the subprotocols field"
+  },
+  "wsProtocolsHint": {
+    "message": "Names the server may choose from, separated by commas or spaces. Leave empty to offer none.",
+    "description": "WebSocket request: help under the subprotocols field"
+  },
+  "wsProtocolsInvalid": {
+    "message": "Not a valid subprotocol name: $NAMES$. Use letters, digits and ! # $$ % & ' * + - . ^ _ ` | ~ only.",
+    "description": "WebSocket request: error under the subprotocols field; placeholder is the offending names",
+    "placeholders": {
+      "names": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsHeadersNoticeTitle": {
+    "message": "Headers cannot be set.",
+    "description": "WebSocket request: start of the note about handshake headers"
+  },
+  "wsHeadersNotice": {
+    "message": "Browsers do not let a page add headers (such as Authorization) to a WebSocket handshake, so this request sends only the URL and the subprotocols above, and the Headers and Auth settings of HTTP requests do not apply. To authenticate, put the credential in the URL (for example $EXAMPLE$), offer it as a subprotocol, or send it as your first message.",
+    "description": "WebSocket request: note about the browser limit; placeholder is an example query string",
+    "placeholders": {
+      "example": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsLogSectionLabel": {
+    "message": "WebSocket messages",
+    "description": "WebSocket request: label of the message log region"
+  },
+  "wsFilterLabel": {
+    "message": "Filter messages",
+    "description": "WebSocket log: label of the text filter"
+  },
+  "wsFilterPlaceholder": {
+    "message": "Filter messages",
+    "description": "WebSocket log: placeholder of the text filter"
+  },
+  "wsFilterDirectionLabel": {
+    "message": "Show",
+    "description": "WebSocket log: label of the direction filter"
+  },
+  "wsFilterAll": {
+    "message": "All entries",
+    "description": "WebSocket log: direction filter option showing everything"
+  },
+  "wsFilterMessages": {
+    "message": "Messages only",
+    "description": "WebSocket log: direction filter option hiding connection events"
+  },
+  "wsDirSent": {
+    "message": "Sent",
+    "description": "WebSocket log: direction of a message the user sent"
+  },
+  "wsDirReceived": {
+    "message": "Received",
+    "description": "WebSocket log: direction of a message from the server"
+  },
+  "wsDirEvent": {
+    "message": "Events",
+    "description": "WebSocket log: connection events such as connected and closed"
+  },
+  "wsPrettyJson": {
+    "message": "Pretty JSON",
+    "description": "WebSocket log: checkbox that pretty-prints JSON messages"
+  },
+  "wsFollow": {
+    "message": "Follow new",
+    "description": "WebSocket log: checkbox that keeps the log scrolled to the newest entry"
+  },
+  "wsCountSentReceived": {
+    "message": "$SENT$ sent · $RECEIVED$ received",
+    "description": "WebSocket log: message counts",
+    "placeholders": {
+      "sent": {
+        "content": "$1"
+      },
+      "received": {
+        "content": "$2"
+      }
+    }
+  },
+  "wsCountFiltered": {
+    "message": "$SHOWN$ of $TOTAL$ shown",
+    "description": "WebSocket log: count while a filter is active",
+    "placeholders": {
+      "shown": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "wsCopyLog": {
+    "message": "Copy log",
+    "description": "WebSocket log: button that copies the shown entries"
+  },
+  "wsDownloadLog": {
+    "message": "Download log",
+    "description": "WebSocket log: button that saves the shown entries as a file"
+  },
+  "wsClear": {
+    "message": "Clear",
+    "description": "WebSocket log: button that empties the log"
+  },
+  "wsLogEmptyTitle": {
+    "message": "No messages yet",
+    "description": "WebSocket log: empty state title"
+  },
+  "wsLogEmptyHint": {
+    "message": "Connect, then send a message with the Send button or $SHORTCUT$.",
+    "description": "WebSocket log: empty state hint; placeholder is the keyboard shortcut",
+    "placeholders": {
+      "shortcut": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsLogDropped": {
+    "message": "The oldest $COUNT$ entries were dropped to keep the log responsive.",
+    "description": "WebSocket log: note shown when the log is full",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsLogNoMatches": {
+    "message": "No entries match the filter.",
+    "description": "WebSocket log: shown when the filter hides everything"
+  },
+  "wsLogListLabel": {
+    "message": "Message log",
+    "description": "WebSocket log: label of the list of entries"
+  },
+  "wsBinary": {
+    "message": "binary",
+    "description": "WebSocket log: marks a binary message"
+  },
+  "wsCopyEntry": {
+    "message": "Copy this message",
+    "description": "WebSocket log: label of the copy button of an entry"
+  },
+  "wsReuseEntry": {
+    "message": "Use this message in the composer",
+    "description": "WebSocket log: label of the button that loads an entry into the composer"
+  },
+  "wsReuse": {
+    "message": "Reuse",
+    "description": "WebSocket log: button that loads an entry into the composer"
+  },
+  "wsCopied": {
+    "message": "Copied",
+    "description": "WebSocket log: toast after copying"
+  },
+  "wsLoadedIntoComposer": {
+    "message": "Loaded into the Message tab.",
+    "description": "WebSocket log: toast after reusing an entry"
+  },
+  "wsLogConnecting": {
+    "message": "Connecting to $URL$",
+    "description": "WebSocket log: event when connecting starts",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsOfferingProtocols": {
+    "message": "offering $PROTOCOLS$",
+    "description": "WebSocket log: appended to the connecting event when subprotocols are offered",
+    "placeholders": {
+      "protocols": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsLogConnected": {
+    "message": "Connected",
+    "description": "WebSocket log: event when the connection opened"
+  },
+  "wsLogConnectedProtocol": {
+    "message": "Connected, subprotocol: $PROTOCOL$",
+    "description": "WebSocket log: event when the connection opened and the server chose a subprotocol",
+    "placeholders": {
+      "protocol": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsBinaryMessage": {
+    "message": "Binary message, $SIZE$ bytes",
+    "description": "WebSocket log: heading of a binary message above its hex dump",
+    "placeholders": {
+      "size": {
+        "content": "$1"
+      }
+    }
+  },
+  "wsLogErrorConnect": {
+    "message": "The connection failed. Browsers do not say why: check the URL, that the server is running and accepts WebSockets, the certificate for wss://, and the subprotocols offered.",
+    "description": "WebSocket log: event when the connection could not be made"
+  },
+  "wsLogErrorOpen": {
+    "message": "The connection reported an error.",
+    "description": "WebSocket log: event when an open connection fails"
+  },
+  "wsErrorCannotOpen": {
+    "message": "The browser would not open this WebSocket.",
+    "description": "WebSocket log: fallback error when the constructor throws without a message"
+  },
+  "wsErrorNotConnected": {
+    "message": "Not connected: connect before sending.",
+    "description": "WebSocket request: error when sending without an open connection"
+  },
+  "wsHistoryStatus": {
+    "message": "Connected · $SENT$ sent, $RECEIVED$ received",
+    "description": "History: status text of a WebSocket session that connected",
+    "placeholders": {
+      "sent": {
+        "content": "$1"
+      },
+      "received": {
+        "content": "$2"
+      }
+    }
+  },
+  "wsHistoryFailed": {
+    "message": "Could not connect",
+    "description": "History: status text of a WebSocket session that never connected"
   }
 }

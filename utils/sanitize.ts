@@ -11,6 +11,8 @@ import type { Collection, CollectionFolder } from './collections';
 import type { HistoryEntry } from './history';
 import type { Assertion, AssertionOp, AssertionSource, Extraction } from './assertions';
 import type { OAuth2Config } from './oauth2';
+import type { SavedWsMessage, WsConfig, WsMessageFormat } from './websocket';
+import { MAX_SAVED_MESSAGES } from './websocket';
 
 const MAX_ROWS = 500;
 const BODY_TYPES: BodyType[] = ['none', 'json', 'form', 'multipart', 'text', 'binary', 'graphql'];
@@ -138,6 +140,21 @@ export function sanitizeExtractions(v: unknown): Extraction[] {
     }));
 }
 
+function sanitizeWsFormat(v: unknown): WsMessageFormat {
+  return v === 'json' ? 'json' : 'text';
+}
+
+export function sanitizeWsConfig(v: unknown): WsConfig {
+  const o = isObj(v) ? v : {};
+  const saved: SavedWsMessage[] = Array.isArray(o.saved)
+    ? o.saved
+        .slice(0, MAX_SAVED_MESSAGES)
+        .filter(isObj)
+        .map(m => ({ id: id(m.id), name: str(m.name, 'Message'), format: sanitizeWsFormat(m.format), text: str(m.text) }))
+    : [];
+  return { protocols: str(o.protocols), draft: str(o.draft), draftFormat: sanitizeWsFormat(o.draftFormat), saved };
+}
+
 export function sanitizeRequest(v: unknown): ApiRequest | null {
   if (!isObj(v)) return null;
   const method = str(v.method, 'GET').toUpperCase();
@@ -163,6 +180,10 @@ export function sanitizeRequest(v: unknown): ApiRequest | null {
   if (Array.isArray(v.assertions)) req.assertions = sanitizeAssertions(v.assertions);
   if (Array.isArray(v.extractions)) req.extractions = sanitizeExtractions(v.extractions);
   if (v.sendCookies === true) req.sendCookies = true;
+  if (v.kind === 'websocket') {
+    req.kind = 'websocket';
+    req.ws = sanitizeWsConfig(v.ws);
+  }
   return req;
 }
 

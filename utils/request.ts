@@ -2,6 +2,7 @@
 
 import type { Assertion, Extraction } from './assertions';
 import type { OAuth2Config } from './oauth2';
+import type { WsConfig } from './websocket';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 
@@ -63,6 +64,13 @@ export interface ApiRequest {
   extractions?: Extraction[];
   /** Attach the browser's cookies for the target site. Off unless the user turns it on. */
   sendCookies?: boolean;
+  /**
+   * Absent on every request saved before WebSocket support: those are HTTP requests.
+   * A `websocket` request keeps its settings in `ws`; `method` stays GET and its HTTP-only
+   * members (headers, body, auth) are ignored.
+   */
+  kind?: 'websocket';
+  ws?: WsConfig;
 }
 
 export interface AuthConfig {

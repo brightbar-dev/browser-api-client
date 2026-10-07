@@ -5,6 +5,8 @@ import { requestClose } from './TabStrip';
 import { createEnvironment, requestSave } from '../library';
 import { Dialogs, Toast } from './Dialogs';
 import { cancelSend, sendTab } from '../send';
+import { disconnectWs, hasLiveSocket, primaryWsAction } from '../websocket';
+import { WebSocketEditor, WebSocketLog } from './WebSocketPane';
 import { Sidebar } from './Sidebar';
 import { TabStrip } from './TabStrip';
 import { RequestEditor } from './RequestEditor';
@@ -26,6 +28,10 @@ function useTheme() {
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
   }, [theme]);
+}
+
+function isWebSocketTab(tabId: string): boolean {
+  return getState().workspace.tabs.find((x) => x.id === tabId)?.request.kind === 'websocket';
 }
 
 function focusUrl() {
@@ -73,17 +79,20 @@ function useShortcuts() {
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
-        void sendTab(activeTabId);
+        if (isWebSocketTab(activeTabId)) primaryWsAction(activeTabId);
+        else void sendTab(activeTabId);
       } else if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 's') {
         e.preventDefault();
         requestSave(activeTabId);
+      } else if (e.key === 'Escape' && getState().wsSessions[activeTabId]?.state === 'connecting') {
+        disconnectWs(activeTabId);
       } else if (e.key === 'Escape' && ['sending', 'streaming'].includes(getState().runs[activeTabId]?.state ?? '')) {
         cancelSend(activeTabId);
       }
     };
     // Leaving the page kills in-flight requests, so ask first.
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (Object.values(getState().runs).some((r) => r.state === 'sending' || r.state === 'streaming')) e.preventDefault();
+      if (hasLiveSocket() || Object.values(getState().runs).some((r) => r.state === 'sending' || r.state === 'streaming')) e.preventDefault();
     };
     window.addEventListener('keydown', onKey);
     window.addEventListener('beforeunload', onBeforeUnload);
@@ -157,6 +166,7 @@ function Header() {
 function Workbench() {
   const tabId = useApp((s) => s.workspace.activeTabId);
   const fraction = useApp((s) => s.layout.requestFraction);
+  const websocket = useApp((s) => s.workspace.tabs.find((x) => x.id === tabId)?.request.kind === 'websocket');
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div
@@ -165,7 +175,7 @@ function Workbench() {
       ref={ref}
       style={{ gridTemplateRows: `minmax(140px, ${fraction}fr) auto minmax(140px, ${1 - fraction}fr)` }}
     >
-      <RequestEditor key={tabId} tabId={tabId} />
+      {websocket ? <WebSocketEditor key={tabId} tabId={tabId} /> : <RequestEditor key={tabId} tabId={tabId} />}
       <Splitter
         orientation="horizontal"
         label={t('benchResizeLabel')}
@@ -178,7 +188,7 @@ function Workbench() {
         }}
         onStep={(dir) => setLayout({ requestFraction: clamp(fraction + dir * 0.05, 0.15, 0.85) })}
       />
-      <ResponsePane key={tabId} tabId={tabId} />
+      {websocket ? <WebSocketLog key={tabId} tabId={tabId} /> : <ResponsePane key={tabId} tabId={tabId} />}
     </div>
   );
 }

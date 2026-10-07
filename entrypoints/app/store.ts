@@ -15,7 +15,7 @@ import * as wsOps from '@/utils/workspace';
 import { sanitizeCollection, sanitizeEnvironment, sanitizeHistoryEntry, sanitizeList } from '@/utils/sanitize';
 import { clampMaxHistory, type Theme } from '@/utils/backup';
 import { idbDelete, idbGet } from '@/utils/idb';
-import { DEFAULT_LAYOUT, type Layout, type ResponseData, type TabRun } from './types';
+import { DEFAULT_LAYOUT, type Layout, type ResponseData, type TabRun, type WsSession } from './types';
 import { startNetworkObserver } from './network';
 import { t } from '@/utils/i18n';
 
@@ -35,6 +35,8 @@ export interface AppState {
   version: string;
   workspace: Workspace;
   runs: Record<string, TabRun>;
+  /** WebSocket connections by tab id. */
+  wsSessions: Record<string, WsSession>;
   environments: Environment[];
   activeEnvId: string | null;
   collections: Collection[];
@@ -55,6 +57,7 @@ let state: AppState = {
   version: '',
   workspace: wsOps.newWorkspace(),
   runs: {},
+  wsSessions: {},
   environments: [],
   activeEnvId: null,
   collections: [],
@@ -252,10 +255,12 @@ export function moveTab(from: number, to: number): void {
 export function closeTab(tabId: string, onClose?: (tabId: string) => void): void {
   onClose?.(tabId);
   setState((s) => {
-    if (!(tabId in s.runs)) return s;
+    if (!(tabId in s.runs) && !(tabId in s.wsSessions)) return s;
     const runs = { ...s.runs };
     delete runs[tabId];
-    return { ...s, runs };
+    const wsSessions = { ...s.wsSessions };
+    delete wsSessions[tabId];
+    return { ...s, runs, wsSessions };
   });
   idbDelete('responses', tabId).catch(() => undefined);
   updateWorkspace((w) => wsOps.closeTab(w, tabId));
@@ -263,6 +268,19 @@ export function closeTab(tabId: string, onClose?: (tabId: string) => void): void
 
 export function setRun(tabId: string, run: TabRun): void {
   setState((s) => ({ ...s, runs: { ...s.runs, [tabId]: run } }));
+}
+
+/** Replace a tab's WebSocket session; `null` forgets it. */
+export function setWsSession(tabId: string, session: WsSession | null): void {
+  setState((s) => {
+    if (!session) {
+      if (!(tabId in s.wsSessions)) return s;
+      const wsSessions = { ...s.wsSessions };
+      delete wsSessions[tabId];
+      return { ...s, wsSessions };
+    }
+    return { ...s, wsSessions: { ...s.wsSessions, [tabId]: session } };
+  });
 }
 
 // --- other state ---
