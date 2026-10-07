@@ -9,6 +9,7 @@
 
 import type { ApiRequest } from './request';
 import { generateId } from './request';
+import { methodLabel } from './websocket';
 
 /** A folder inside a collection. Folders are one level deep. */
 export interface CollectionFolder {
@@ -309,7 +310,7 @@ export function filterCollectionTree(collections: Collection[], query: string): 
   const q = query.trim().toLowerCase();
   if (!q) return collections;
   const matchesRequest = (r: ApiRequest) =>
-    r.name.toLowerCase().includes(q) || r.url.toLowerCase().includes(q) || r.method.toLowerCase().includes(q);
+    r.name.toLowerCase().includes(q) || r.url.toLowerCase().includes(q) || methodLabel(r).toLowerCase().includes(q);
 
   const out: Collection[] = [];
   for (const c of collections) {

@@ -7,6 +7,7 @@ import type { Collection, CollectionFolder } from '@/utils/collections';
 import * as col from '@/utils/collections';
 import { exportEnvironmentToPostman, exportToPostman } from '@/utils/import-export';
 import { HTTP_METHODS } from '@/utils/request';
+import { methodLabel } from '@/utils/websocket';
 import { activeTab } from '@/utils/workspace';
 import { clearHistory, deleteHistory, openDialog, openRequest, setActiveEnv, setLayout, useApp } from '../store';
 import {
@@ -149,7 +150,7 @@ function HistoryPanel() {
         <div class="bac-row">
           <select class="bac-select" aria-label={t('historyFilterMethodLabel')} value={method} onChange={(e) => setMethod(e.currentTarget.value)}>
             <option value="all">{t('historyFilterMethodAll')}</option>
-            {HTTP_METHODS.map((m) => (
+            {[...HTTP_METHODS, 'WS'].map((m) => (
               <option key={m} value={m}>
                 {m}
               </option>
@@ -195,15 +196,15 @@ function HistoryRow({ entry }: { entry: HistoryEntry }) {
       <button
         type="button"
         class="bac-list-item"
-        title={`${request.method} ${request.url}\n${response.status ? `${response.status} ${response.statusText}` : response.statusText} · ${t('commonMs', response.time)}`}
+        title={`${methodLabel(request)} ${request.url}\n${response.status ? `${response.status} ${response.statusText}` : response.statusText} · ${t('commonMs', response.time)}`}
         onClick={() => openRequest({ ...request, id: generateId() })}
       >
-        <span class={`bac-method-tag m-${request.method.toLowerCase()}`}>{request.method}</span>
+        <span class={`bac-method-tag m-${methodLabel(request).toLowerCase()}`}>{methodLabel(request)}</span>
         <span class="bac-list-main bac-mono">{request.name && request.name !== 'New Request' ? request.name : displayUrl(request.url) || t('historyNoUrl')}</span>
         <span class={`bac-status-mini s-${statusColor(response.status)}`}>{response.status || t('historyErrorStatus')}</span>
         <span class="bac-list-meta">{timeOf(entry.timestamp)}</span>
       </button>
-      <button type="button" class="bac-icon-btn bac-row-action" aria-label={t('historyDeleteLabel', `${request.method} ${displayUrl(request.url)}`)} title={t('commonDelete')} onClick={() => void deleteHistory([entry.id])}>
+      <button type="button" class="bac-icon-btn bac-row-action" aria-label={t('historyDeleteLabel', `${methodLabel(request)} ${displayUrl(request.url)}`)} title={t('commonDelete')} onClick={() => void deleteHistory([entry.id])}>
         <IconClose />
       </button>
     </li>
@@ -304,7 +305,7 @@ function CollectionsPanel() {
             <button
               type="button"
               class="bac-tree-main"
-              title={`${r.method} ${r.url}`}
+              title={`${methodLabel(r)} ${r.url}`}
               onClick={() => openFromCollection(c.id, r.id)}
               onKeyDown={(e) => {
                 if (e.altKey && e.key === 'ArrowUp') move(-1);
@@ -314,7 +315,7 @@ function CollectionsPanel() {
                 e.preventDefault();
               }}
             >
-              <span class={`bac-method-tag m-${r.method.toLowerCase()}`}>{r.method}</span>
+              <span class={`bac-method-tag m-${methodLabel(r).toLowerCase()}`}>{methodLabel(r)}</span>
               <span class="bac-list-main">{r.name}</span>
             </button>
           )}

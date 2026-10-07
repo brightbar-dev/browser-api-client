@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'preact/hooks';
 import type { ApiRequest, AuthConfig, HttpMethod } from '@/utils/request';
 import { HTTP_METHODS } from '@/utils/request';
+import { toWebSocketRequest } from '@/utils/websocket';
 import { impliedScheme, paramsFromUrl, urlWithParams } from '@/utils/url';
 import { resolveRequest } from '@/utils/resolve';
 import { parseCurl } from '@/utils/curl-import';
@@ -133,13 +134,17 @@ export function RequestEditor({ tabId }: { tabId: string }) {
           class={`bac-method-select m-${request.method.toLowerCase()}`}
           aria-label={t('requestMethodLabel')}
           value={request.method}
-          onChange={(e) => update((r) => ({ ...r, method: e.currentTarget.value as HttpMethod }))}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            update((r) => (value === 'WS' ? toWebSocketRequest(r) : { ...r, method: value as HttpMethod }));
+          }}
         >
           {HTTP_METHODS.map((m) => (
             <option key={m} value={m}>
               {m}
             </option>
           ))}
+          <option value="WS">{t('wsMethodOption')}</option>
         </select>
         <VarField
           class="bac-url-input bac-mono"

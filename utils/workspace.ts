@@ -54,6 +54,10 @@ function stableStringify(value: unknown): string {
 }
 
 export function isBlankRequest(req: ApiRequest): boolean {
+  if (req.kind === 'websocket') {
+    const ws = req.ws;
+    return req.url.trim() === '' && !ws?.protocols.trim() && !ws?.draft.trim() && !ws?.saved.length;
+  }
   return (
     req.url.trim() === '' &&
     req.headers.every(h => !h.key && !h.value) &&

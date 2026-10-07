@@ -1,19 +1,25 @@
 import { useRef } from 'preact/hooks';
 import { isTabDirty, tabTitle, type WorkspaceTab } from '@/utils/workspace';
-import { activateTab, closeTab, moveTab, newTab, useApp } from '../store';
+import { activateTab, closeTab, moveTab, newTab, openRequest, useApp } from '../store';
 import { cancelSend } from '../send';
+import { discardWs } from '../websocket';
+import { methodLabel, newWebSocketRequest } from '@/utils/websocket';
 import { IconClose, IconPlus } from './icons';
 import { t } from '@/utils/i18n';
 
 export function requestClose(tab: WorkspaceTab) {
   if (isTabDirty(tab) && !window.confirm(t('tabCloseConfirm', tabTitle(tab)))) return;
-  closeTab(tab.id, cancelSend);
+  closeTab(tab.id, (id) => {
+    cancelSend(id);
+    discardWs(id);
+  });
 }
 
 export function TabStrip() {
   const tabs = useApp((s) => s.workspace.tabs);
   const activeId = useApp((s) => s.workspace.activeTabId);
   const runs = useApp((s) => s.runs);
+  const sockets = useApp((s) => s.wsSessions);
   const dragFrom = useRef<number | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -30,7 +36,7 @@ export function TabStrip() {
         {tabs.map((tab, index) => {
           const active = tab.id === activeId;
           const title = tabTitle(tab);
-          const sending = runs[tab.id]?.state === 'sending' || runs[tab.id]?.state === 'streaming';
+          const sending = runs[tab.id]?.state === 'sending' || runs[tab.id]?.state === 'streaming' || sockets[tab.id]?.state === 'connecting';
           const dirty = isTabDirty(tab);
           return (
             <div
@@ -71,7 +77,7 @@ export function TabStrip() {
                   e.preventDefault();
                 }}
               >
-                <span class={`bac-method-tag m-${tab.request.method.toLowerCase()}`}>{tab.request.method}</span>
+                <span class={`bac-method-tag m-${methodLabel(tab.request).toLowerCase()}`}>{methodLabel(tab.request)}</span>
                 <span class="bac-reqtab-title">{title}</span>
                 {sending ? (
                   <span class="bac-spinner" role="img" aria-label={t('tabSending')} />
@@ -95,6 +101,9 @@ export function TabStrip() {
       </div>
       <button type="button" class="bac-icon-btn bac-newtab" aria-label={t('tabNew')} title={t('tabNew')} onClick={newTab}>
         <IconPlus />
+      </button>
+      <button type="button" class="bac-btn bac-btn-small bac-btn-ghost bac-newtab-ws" title={t('tabNewWebSocket')} aria-label={t('tabNewWebSocket')} onClick={() => openRequest(newWebSocketRequest())}>
+        WS
       </button>
     </div>
   );
